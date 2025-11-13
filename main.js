@@ -1,17 +1,71 @@
-const SHEET_URL = "Zhttps://docs.google.com/spreadsheets/d/e/2PACX-1vQwhygsZ9TqHoqgeU7NSq9iUsKqPgbdGCV6nI_C4Phu_TyB9qCeby5GrRNsKMGYP-bYfEb-r-ur3ePF/pub?output=csv";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwhygsZ9TqHoqgeU7NSq9iUsKqPgbdGCV6nI_C4Phu_TyB9qCeby5GrRNsKMGYP-bYfEb-r-ur3ePF/pub?output=csv";
+
+function parseCSVRow(row) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < row.length; i++) {
+    const char = row[i];
+    const nextChar = row[i + 1];
+    
+    if (char === '"') {
+      if (!inQuotes) {
+        // Starting a quoted field
+        inQuotes = true;
+      } else if (nextChar === '"') {
+        // Escaped quote: "" becomes "
+        current += '"';
+        i++; // Skip the next quote
+      } else {
+        // Ending a quoted field
+        inQuotes = false;
+      }
+    } else if (char === ',' && !inQuotes) {
+      // Field separator (only when not in quotes)
+      result.push(current.trim());
+      current = '';
+    } else {
+      // Regular character
+      current += char;
+    }
+  }
+  
+  // Don't forget the last field!
+  result.push(current.trim());
+  return result;
+}
 
 async function loadResources() {
-  const res = await fetch(SHEET_URL);
-  const text = await res.text();
-  const rows = text.split("\n").slice(1).map(r => r.split(","));
-  return rows.map(r => ({
-    name: r[0],
-    category: r[6],
-    type: r[7],
-    lat: parseFloat(r[8]),
-    lng: parseFloat(r[9]),
-    description: r[10]
-  }));
+  try {
+    const res = await fetch(SHEET_URL);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    
+    const text = await res.text();
+    const lines = text.split('\n').filter(line => line.trim());
+    
+    // Skip header row and parse each line
+    const rows = lines.slice(1).map(parseCSVRow);
+    
+    return rows.map(r => ({
+      name: r[0] || '',
+      purpose: r[1] || '',
+      location: r[2] || '',
+      website: r[3] || '',
+      phone: r[4] || '',
+      hours: r[5] || '',
+      category: (r[6] || '').trim(),
+      type: (r[7] || '').trim(),
+      lat: parseFloat(r[8]) || null,
+      lng: parseFloat(r[9]) || null,
+      description: r[10] || ''
+    })).filter(resource => 
+      resource.lat && resource.lng && resource.category
+    );
+  } catch (error) {
+    console.error('Error loading resources:', error);
+    return [];
+  }
 }
 
 let map = L.map('map').setView([39.9612, -82.9988], 12);
