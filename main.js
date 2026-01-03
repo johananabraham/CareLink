@@ -380,14 +380,14 @@ const INTENT_PATTERNS = {
     phrases: ["need shelter", "can't pay rent", "being evicted", "homeless shelter", "housing assistance", "affordable housing", "rental help", "utility assistance"],
     weight: 1.0
   },
-  "Healthcare": {
-    keywords: ["medical", "clinic", "health", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment"],
-    phrases: ["primary care", "health clinic", "free clinic", "medical care", "doctor visit", "health insurance", "medical help", "dental care", "vision care"],
-    weight: 1.0
-  },
   "Mental Health": {
     keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd"],
-    phrases: ["mental health", "feeling depressed", "need therapy", "counseling services", "mental health support", "psychological help", "emotional support"],
+    phrases: ["mental health", "mental health help", "feeling depressed", "need therapy", "counseling services", "mental health support", "psychological help", "emotional support"],
+    weight: 1.1
+  },
+  "Healthcare": {
+    keywords: ["medical", "clinic", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment"],
+    phrases: ["primary care", "health clinic", "free clinic", "medical care", "doctor visit", "health insurance", "medical help", "dental care", "vision care"],
     weight: 1.0
   },
   "Substance Use": {
