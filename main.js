@@ -253,35 +253,55 @@ async function showResources(category) {
   // Clear existing markers
   map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
   
-  // Enhanced category matching with flexible patterns
+  // Enhanced category matching with flexible patterns  
   const matchedResources = resources.filter(r => {
-    const resourceCategory = r.category.toLowerCase();
-    const targetCategory = category.toLowerCase();
+    const resourceCategory = r.category.toLowerCase().trim();
+    const targetCategory = category.toLowerCase().trim();
     
-    // Direct match
+    // Direct exact match first
     if (resourceCategory === targetCategory) {
+      console.log(`✅ Direct match: "${r.category}" === "${category}"`);
       return true;
     }
     
-    // Flexible matching patterns
-    const categoryMappings = {
-      'food': ['food', 'nutrition', 'meal', 'pantry', 'kitchen', 'hunger'],
-      'housing': ['housing', 'shelter', 'homeless', 'rent', 'apartment'],
-      'healthcare': ['healthcare', 'health', 'medical', 'clinic', 'doctor'],
-      'mental health': ['mental', 'therapy', 'counseling', 'behavioral', 'psychiatric'],
-      'substance use': ['substance', 'addiction', 'recovery', 'drug', 'alcohol'],
-      'crisis': ['crisis', 'emergency', 'urgent', 'immediate', 'hotline'],
-      'employment': ['employment', 'job', 'work', 'career', 'training'],
-      'veterans': ['veteran', 'military', 'va', 'armed forces']
+    // Map intent categories to Google Sheet categories
+    const intentToSheetMapping = {
+      'food': 'food',
+      'housing': 'housing', 
+      'healthcare': 'healthcare',
+      'mental health': 'mental health',
+      'substance use': 'substance use',
+      'crisis': 'crisis',
+      'employment': 'employment',
+      'veterans': 'veterans'
     };
     
-    const keywords = categoryMappings[targetCategory] || [targetCategory];
+    // Check if we have a direct mapping
+    const mappedCategory = intentToSheetMapping[targetCategory];
+    if (mappedCategory && resourceCategory === mappedCategory) {
+      console.log(`✅ Mapped match: "${r.category}" maps to "${category}"`);
+      return true;
+    }
+    
+    // Fallback: flexible keyword matching
+    const categoryMappings = {
+      'food': ['food', 'nutrition', 'meal', 'pantry', 'kitchen'],
+      'housing': ['housing', 'shelter', 'homeless'],
+      'healthcare': ['healthcare', 'health', 'medical', 'clinic'],
+      'mental health': ['mental', 'therapy', 'counseling', 'behavioral'],
+      'substance use': ['substance', 'addiction', 'recovery', 'drug'],
+      'crisis': ['crisis', 'emergency', 'urgent', 'immediate'],
+      'employment': ['employment', 'job', 'work', 'career'],
+      'veterans': ['veteran', 'military', 'va']
+    };
+    
+    const keywords = categoryMappings[targetCategory] || [];
     const matches = keywords.some(keyword => resourceCategory.includes(keyword));
     
     if (!matches) {
-      console.log(`❌ No match: "${r.category}" !== "${category}"`);
+      console.log(`❌ No match: "${r.category}" vs "${category}"`);
     } else {
-      console.log(`✅ Flexible match: "${r.category}" matches "${category}"`);
+      console.log(`✅ Keyword match: "${r.category}" matches "${category}"`);
     }
     
     return matches;
