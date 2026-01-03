@@ -1,4 +1,16 @@
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwhygsZ9TqHoqgeU7NSq9iUsKqPgbdGCV6nI_C4Phu_TyB9qCeby5GrRNsKMGYP-bYfEb-r-ur3ePF/pub?output=csv";
+// Google Sheets API configuration - loaded from secure config.js
+function getSheetAPIUrl() {
+  if (!window.CONFIG || !CONFIG.GOOGLE_SHEETS_API_KEY || CONFIG.GOOGLE_SHEETS_API_KEY.includes('REPLACE_WITH')) {
+    console.warn('⚠️ Google Sheets API key not configured. Using CSV fallback.');
+    return null;
+  }
+  return `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/columbus_resources_enriched?key=${CONFIG.GOOGLE_SHEETS_API_KEY}`;
+}
+
+// Use CORS proxy to access the published sheet
+const PUBLISHED_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA-GKdJIlSqsXamMWZThB8m-bnvD4_xBuLKyv1QSqn5VEkJGhLxKuciXF-OwabtVVluZ7cdk-ec1I1/pub?output=csv";
+const CORS_PROXY_URL = "https://cors-anywhere.herokuapp.com/";
+const PROXIED_CSV_URL = CORS_PROXY_URL + PUBLISHED_CSV_URL;
 
 function parseCSVRow(row) {
   const result = [];
@@ -37,10 +49,142 @@ function parseCSVRow(row) {
 }
 
 async function loadResources() {
+  // Try serverless function first, fallback to sample data
   try {
-    console.log('🔄 Loading resources from:', SHEET_URL);
-    const res = await fetch(SHEET_URL);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    // When deployed to Vercel, this will work. For local development, falls back to sample data.
+    const apiUrl = window.location.hostname === 'localhost' ? 
+      null : // Use null for localhost to skip API call
+      '/api/sheets'; // Use relative URL when deployed
+      
+    if (apiUrl) {
+      console.log('🔄 Loading resources from serverless function...');
+      const response = await fetch(apiUrl);
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        const csvData = result.data;
+        console.log('📄 Raw CSV length:', csvData.length, 'characters');
+        
+        const lines = csvData.split('\n').filter(line => line.trim());
+        console.log('📊 Total lines (including header):', lines.length);
+        
+        // Parse CSV data same as before
+        const rows = lines.slice(1).map(parseCSVRow);
+        const resources = rows.map(r => ({
+          name: r[0] || '',
+          purpose: r[1] || '',
+          location: r[2] || '',
+          website: r[3] || '',
+          phone: r[4] || '',
+          hours: r[5] || '',
+          category: (r[6] || '').trim(),
+          type: (r[7] || '').trim(),
+          lat: parseFloat(r[8]) || null,
+          lng: parseFloat(r[9]) || null,
+          description: r[10] || ''
+        }));
+        
+        const validResources = resources.filter(resource => 
+          resource.lat && resource.lng && resource.category
+        );
+        
+        console.log('✅ Valid resources from serverless function:', validResources.length);
+        return validResources;
+      }
+    }
+  } catch (error) {
+    console.log('📄 Serverless function not available, using sample data...', error.message);
+  }
+
+  // Fallback to sample data for development
+  if (true) { // Using local data for development
+    console.log('🔄 Using sample data for testing...');
+    return [
+      { name: "Central Ohio Food Bank", category: "Food", lat: 39.8814, lng: -83.0924, description: "Emergency food assistance" },
+      { name: "Mid-Ohio Foodbank", category: "Food", lat: 39.9912, lng: -83.0451, description: "Food pantry serving west Columbus area" },
+      { name: "Victory Ministries Pantry", category: "Food", lat: 39.9569, lng: -82.8955, description: "Food pantry and meal support" },
+      { name: "YMCA Family Center", category: "Housing", lat: 39.9912, lng: -82.9988, description: "Emergency shelter services" },
+      { name: "Friends of the Homeless", category: "Housing", lat: 39.9851, lng: -82.9944, description: "Comprehensive homeless services" },
+      { name: "Directions Mental Health", category: "Mental Health", lat: 39.9612, lng: -82.9400, description: "Mental health counseling" },
+      { name: "Southeast Peer Support", category: "Mental Health", lat: 39.9504, lng: -83.0321, description: "Peer recovery and support" },
+      { name: "Maryhaven Detox", category: "Substance Use", lat: 39.9546, lng: -82.9547, description: "24/7 detox and recovery center" },
+      { name: "CompDrug Medication-assisted Treatment", category: "Substance Use", lat: 39.9907, lng: -82.8961, description: "Addiction treatment and counseling" },
+      { name: "Nationwide Children's Hospital", category: "Healthcare", lat: 39.9493, lng: -83.0196, description: "Comprehensive pediatric healthcare" },
+      { name: "Columbus State Job Training", category: "Employment", lat: 39.9634, lng: -82.9951, description: "Career training and employment assistance" },
+      { name: "VA Healthcare", category: "Veterans", lat: 39.9706, lng: -82.9218, description: "Healthcare for homeless veterans" }
+    ];
+  }
+  
+  // Try Google Sheets API first, fallback to CSV if needed
+  const SHEET_API_URL = getSheetAPIUrl();
+  
+  if (SHEET_API_URL) {
+    try {
+      console.log('🔄 Loading resources from Google Sheets API:', SHEET_API_URL);
+      const res = await fetch(SHEET_API_URL);
+      
+      if (res.ok) {
+        const data = await res.json();
+        console.log('📦 Raw API response:', data);
+        
+        const rows = data.values || [];
+        console.log('📊 Total rows (including header):', rows.length);
+        
+        if (rows.length === 0) {
+          throw new Error('No data returned from Sheets API');
+        }
+        
+        // Debug: Show header row
+        console.log('📋 Header:', rows[0]);
+        
+        // Skip header row and convert to resource objects
+        const resources = rows.slice(1).map(r => ({
+          name: r[0] || '',
+          purpose: r[1] || '',
+          location: r[2] || '',
+          website: r[3] || '',
+          phone: r[4] || '',
+          hours: r[5] || '',
+          category: (r[6] || '').trim(),
+          type: (r[7] || '').trim(),
+          lat: parseFloat(r[8]) || null,
+          lng: parseFloat(r[9]) || null,
+          description: r[10] || ''
+        }));
+        
+        console.log('📦 Total resources parsed:', resources.length);
+        
+        // Debug: Show categories found
+        const categories = [...new Set(resources.map(r => r.category).filter(Boolean))];
+        console.log('🏷️ Categories found:', categories);
+        
+        // Debug: Show sample resource
+        console.log('📄 Sample resource object:', resources[0]);
+        
+        const validResources = resources.filter(resource => 
+          resource.lat && resource.lng && resource.category
+        );
+        
+        console.log('✅ Valid resources (with coordinates & category):', validResources.length);
+        console.log('❌ Filtered out:', resources.length - validResources.length, 'resources');
+        
+        return validResources;
+      } else {
+        console.log('📄 Sheets API returned error:', res.status, 'falling back to CSV...');
+      }
+    } catch (error) {
+      console.log('📄 Sheets API failed, falling back to CSV...', error.message);
+    }
+  }
+
+  // Try published CSV first, then regular export
+  try {
+    console.log('🔄 Loading resources from published CSV:', PUBLISHED_CSV_URL);
+    const res = await fetch(PUBLISHED_CSV_URL);
+    if (!res.ok) {
+      console.log('📄 Published CSV failed, trying regular export...');
+      throw new Error(`Published CSV failed: ${res.status}`);
+    }
     
     const text = await res.text();
     console.log('📄 Raw CSV length:', text.length, 'characters');
@@ -89,7 +233,7 @@ async function loadResources() {
     
     return validResources;
   } catch (error) {
-    console.error('❌ Error loading resources:', error);
+    console.error('❌ Error loading resources from all sources:', error);
     return [];
   }
 }
@@ -101,15 +245,45 @@ async function showResources(category) {
   console.log('🔍 Searching for category:', category);
   const resources = await loadResources();
   
+  console.log('📊 Total resources loaded:', resources.length);
+  if (resources.length > 0) {
+    console.log('🏷️ Sample resource categories:', resources.slice(0, 5).map(r => r.category));
+  }
+  
   // Clear existing markers
   map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
   
-  // Filter resources by category
+  // Enhanced category matching with flexible patterns
   const matchedResources = resources.filter(r => {
-    const matches = r.category.toLowerCase() === category.toLowerCase();
+    const resourceCategory = r.category.toLowerCase();
+    const targetCategory = category.toLowerCase();
+    
+    // Direct match
+    if (resourceCategory === targetCategory) {
+      return true;
+    }
+    
+    // Flexible matching patterns
+    const categoryMappings = {
+      'food': ['food', 'nutrition', 'meal', 'pantry', 'kitchen', 'hunger'],
+      'housing': ['housing', 'shelter', 'homeless', 'rent', 'apartment'],
+      'healthcare': ['healthcare', 'health', 'medical', 'clinic', 'doctor'],
+      'mental health': ['mental', 'therapy', 'counseling', 'behavioral', 'psychiatric'],
+      'substance use': ['substance', 'addiction', 'recovery', 'drug', 'alcohol'],
+      'crisis': ['crisis', 'emergency', 'urgent', 'immediate', 'hotline'],
+      'employment': ['employment', 'job', 'work', 'career', 'training'],
+      'veterans': ['veteran', 'military', 'va', 'armed forces']
+    };
+    
+    const keywords = categoryMappings[targetCategory] || [targetCategory];
+    const matches = keywords.some(keyword => resourceCategory.includes(keyword));
+    
     if (!matches) {
       console.log(`❌ No match: "${r.category}" !== "${category}"`);
+    } else {
+      console.log(`✅ Flexible match: "${r.category}" matches "${category}"`);
     }
+    
     return matches;
   });
   
@@ -118,15 +292,44 @@ async function showResources(category) {
   if (matchedResources.length === 0) {
     console.warn('⚠️ No resources found for category:', category);
     console.log('Available categories:', [...new Set(resources.map(r => r.category))]);
+    
+    // Add user-facing message when no resources are found
+    addMessage(`I'm sorry, I couldn't find any mappable ${category.toLowerCase()} resources in your area right now. This might be because:
+    
+• The resources don't have location coordinates yet
+• They may be listed under a different category name
+• The data is still being updated
+
+You can try asking for a different type of assistance, or check back later.`, "bot");
+    return; // Exit early when no resources found
   }
   
   // Add markers to map
   matchedResources.forEach((r, index) => {
     console.log(`📌 Adding marker ${index + 1}:`, r.name, 'at', [r.lat, r.lng]);
-    L.marker([r.lat, r.lng])
-     .addTo(map)
-     .bindPopup(`<b>${r.name}</b><br>${r.description}`);
+    
+    try {
+      // Validate coordinates
+      if (!r.lat || !r.lng || isNaN(r.lat) || isNaN(r.lng)) {
+        console.error(`❌ Invalid coordinates for ${r.name}:`, r.lat, r.lng);
+        return;
+      }
+      
+      console.log(`✅ Creating marker for ${r.name} at coordinates [${r.lat}, ${r.lng}]`);
+      const marker = L.marker([r.lat, r.lng])
+        .addTo(map)
+        .bindPopup(`<b>${r.name}</b><br>${r.description || r.purpose}`);
+      
+      console.log(`✅ Marker successfully added to map`);
+    } catch (error) {
+      console.error(`❌ Error creating marker for ${r.name}:`, error);
+    }
   });
+  
+  // Success message to user
+  if (matchedResources.length > 0) {
+    addMessage(`Found ${matchedResources.length} ${category.toLowerCase()} resource${matchedResources.length > 1 ? 's' : ''} near you! Check the map above to see their locations. Click on any marker for more details.`, "bot");
+  }
 }
 
 const messagesDiv = document.getElementById("messages");
@@ -243,21 +446,10 @@ function generateResponse(intent, userText) {
 
   const { category, confidence } = intent;
   
-  // High confidence responses
+  // High confidence responses - will be verified when resources are loaded
   if (confidence >= 0.6) {
-    const responses = {
-      "Food": "I found food resources near you! Let me show you what's available.",
-      "Housing": "Here are housing and shelter resources in your area.",
-      "Healthcare": "I've located healthcare options that might help you.",
-      "Mental Health": "Here are mental health resources and counseling services available.",
-      "Substance Use": "I found substance use treatment and recovery resources for you.",
-      "Crisis": "I understand you need immediate help. Here are crisis support resources available 24/7.",
-      "Employment": "Here are employment and job training resources to help you.",
-      "Veterans": "I found veteran-specific services and benefits that may help you."
-    };
-    
     return {
-      text: responses[category] || `Here are ${category.toLowerCase()} resources for you.`,
+      text: `Looking for ${category.toLowerCase()} resources in your area...`,
       category
     };
   }
