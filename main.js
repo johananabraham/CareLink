@@ -145,42 +145,159 @@ function addMessage(text, sender) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+// Enhanced Intent Detection System
+const INTENT_PATTERNS = {
+  "Food": {
+    keywords: ["food", "hungry", "eat", "meal", "kitchen", "pantry", "nutrition", "groceries", "feeding", "starving", "appetite", "dining", "nourishment", "sustenance"],
+    phrases: ["food bank", "soup kitchen", "food pantry", "free meals", "food assistance", "can't afford food", "need food", "food stamps", "snap benefits"],
+    weight: 1.0
+  },
+  "Housing": {
+    keywords: ["shelter", "housing", "homeless", "rent", "apartment", "home", "eviction", "foreclosure", "roommate", "lease", "landlord", "utilities"],
+    phrases: ["need shelter", "can't pay rent", "being evicted", "homeless shelter", "housing assistance", "affordable housing", "rental help", "utility assistance"],
+    weight: 1.0
+  },
+  "Healthcare": {
+    keywords: ["medical", "clinic", "health", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment"],
+    phrases: ["primary care", "health clinic", "free clinic", "medical care", "doctor visit", "health insurance", "medical help", "dental care", "vision care"],
+    weight: 1.0
+  },
+  "Mental Health": {
+    keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd"],
+    phrases: ["mental health", "feeling depressed", "need therapy", "counseling services", "mental health support", "psychological help", "emotional support"],
+    weight: 1.0
+  },
+  "Substance Use": {
+    keywords: ["drug", "alcohol", "addiction", "recovery", "rehab", "substance", "detox", "sober", "sobriety", "withdrawal", "overdose", "clean"],
+    phrases: ["substance abuse", "drug addiction", "alcohol problem", "need rehab", "drug treatment", "addiction recovery", "detox program", "getting clean"],
+    weight: 1.0
+  },
+  "Crisis": {
+    keywords: ["crisis", "emergency", "urgent", "immediate", "suicide", "suicidal", "harm", "danger", "distress", "desperate", "hopeless"],
+    phrases: ["suicide hotline", "crisis line", "emergency help", "need help now", "feeling suicidal", "crisis support", "immediate assistance"],
+    weight: 1.2
+  },
+  "Employment": {
+    keywords: ["job", "work", "employment", "career", "resume", "interview", "unemployed", "training", "skills", "hiring"],
+    phrases: ["need job", "job training", "resume help", "career services", "employment assistance", "job search", "work training"],
+    weight: 1.0
+  },
+  "Veterans": {
+    keywords: ["veteran", "military", "va", "army", "navy", "marines", "air force", "combat", "deployment", "service"],
+    phrases: ["veteran services", "va benefits", "military help", "veteran housing", "veteran healthcare"],
+    weight: 1.0
+  }
+};
+
+function detectIntent(text) {
+  const normalizedText = text.toLowerCase();
+  const results = [];
+
+  for (const [category, patterns] of Object.entries(INTENT_PATTERNS)) {
+    let score = 0;
+    let matches = [];
+
+    // Check keyword matches
+    for (const keyword of patterns.keywords) {
+      if (normalizedText.includes(keyword)) {
+        score += 1 * patterns.weight;
+        matches.push(keyword);
+      }
+    }
+
+    // Check phrase matches (higher weight)
+    for (const phrase of patterns.phrases) {
+      if (normalizedText.includes(phrase)) {
+        score += 2 * patterns.weight;
+        matches.push(phrase);
+      }
+    }
+
+    if (score > 0) {
+      results.push({
+        category,
+        score,
+        confidence: Math.min(score / 3, 1.0), // Normalize to 0-1
+        matches
+      });
+    }
+  }
+
+  // Sort by score and return best match
+  results.sort((a, b) => b.score - a.score);
+  return results.length > 0 ? results[0] : null;
+}
+
+function generateResponse(intent, userText) {
+  if (!intent) {
+    return {
+      text: "I can help you find resources for food, housing, healthcare, mental health, substance use treatment, employment, veteran services, or crisis support. What do you need help with?",
+      category: null
+    };
+  }
+
+  const { category, confidence } = intent;
+  
+  // High confidence responses
+  if (confidence >= 0.7) {
+    const responses = {
+      "Food": "I found food resources near you! Let me show you what's available.",
+      "Housing": "Here are housing and shelter resources in your area.",
+      "Healthcare": "I've located healthcare options that might help you.",
+      "Mental Health": "Here are mental health resources and counseling services available.",
+      "Substance Use": "I found substance use treatment and recovery resources for you.",
+      "Crisis": "I understand you need immediate help. Here are crisis support resources available 24/7.",
+      "Employment": "Here are employment and job training resources to help you.",
+      "Veterans": "I found veteran-specific services and benefits that may help you."
+    };
+    
+    return {
+      text: responses[category] || `Here are ${category.toLowerCase()} resources for you.`,
+      category
+    };
+  }
+
+  // Medium confidence - ask for clarification
+  if (confidence >= 0.4) {
+    const clarifications = {
+      "Food": "It sounds like you might need food assistance. Would you like to see food pantries, soup kitchens, or meal programs?",
+      "Housing": "Are you looking for emergency shelter, housing assistance, or help with rent?",
+      "Healthcare": "Do you need medical care, dental services, or help finding health insurance?",
+      "Mental Health": "Are you interested in counseling, therapy, or mental health support services?",
+      "Substance Use": "Are you looking for detox services, recovery programs, or ongoing addiction support?",
+      "Employment": "Would you like job training, resume help, or employment placement services?"
+    };
+    
+    return {
+      text: clarifications[category] || `Are you looking for ${category.toLowerCase()} resources?`,
+      category: null // Don't show resources yet, wait for clarification
+    };
+  }
+
+  // Low confidence - general help
+  return {
+    text: "I want to make sure I understand what you need. Could you tell me more specifically what kind of help you're looking for?",
+    category: null
+  };
+}
+
 async function handleUserInput() {
   const text = input.value.trim();
   if (!text) return;
+  
   addMessage(text, "user");
   input.value = "";
 
-  let reply = "";
-  let category = null;
+  // Detect user intent
+  const intent = detectIntent(text);
+  console.log("Detected intent:", intent); // For debugging
   
-  // Map user input to actual CSV categories
-  if (text.match(/food|hungry|eat|meal|kitchen|pantry|nutrition/i)) {
-    reply = "Here are food resources near you!";
-    category = "Food";
-  } else if (text.match(/shelter|housing|homeless|rent|apartment|home/i)) {
-    reply = "Here are housing resources available!";
-    category = "Housing";
-  } else if (text.match(/medical|clinic|health|doctor|hospital|primary care/i)) {
-    reply = "Here are healthcare options near you!";
-    category = "Healthcare";
-  } else if (text.match(/mental|therapy|counseling|depression|anxiety|psychiatric|psychological/i)) {
-    reply = "Here are mental health resources available!";
-    category = "Mental Health";
-  } else if (text.match(/drug|alcohol|addiction|recovery|rehab|substance|detox/i)) {
-    reply = "Here are substance use treatment options!";
-    category = "Substance Use";
-  } else if (text.match(/crisis|emergency|urgent|immediate|help|suicide/i)) {
-    reply = "Here are crisis support resources available immediately!";
-    category = "Crisis";
-  } else {
-    reply = "I can help you find food, housing, healthcare, mental health, substance use treatment, or crisis resources. What do you need help with?";
-  }
+  // Generate appropriate response
+  const response = generateResponse(intent, text);
+  addMessage(response.text, "bot");
 
-  addMessage(reply, "bot");
-
-  // Show resources if we have a matching category
-  if (category) {
-    showResources(category);
+  // Show resources if we have a confident category match
+  if (response.category) {
+    showResources(response.category);
   }
 }
