@@ -152,14 +152,35 @@ async function handleUserInput() {
   input.value = "";
 
   let reply = "";
-  if (text.match(/food/i)) reply = "Here are food resources near you!";
-  else if (text.match(/shelter|housing/i)) reply = "Here are housing resources!";
-  else if (text.match(/medical|clinic|health/i)) reply = "Here are healthcare options!";
-  else reply = "I can help you find food, housing, or healthcare resources.";
+  let category = null;
+  
+  // Map user input to actual CSV categories
+  if (text.match(/food|hungry|eat|meal|kitchen|pantry|nutrition/i)) {
+    reply = "Here are food resources near you!";
+    category = "Food";
+  } else if (text.match(/shelter|housing|homeless|rent|apartment|home/i)) {
+    reply = "Here are housing resources available!";
+    category = "Housing";
+  } else if (text.match(/medical|clinic|health|doctor|hospital|primary care/i)) {
+    reply = "Here are healthcare options near you!";
+    category = "Healthcare";
+  } else if (text.match(/mental|therapy|counseling|depression|anxiety|psychiatric|psychological/i)) {
+    reply = "Here are mental health resources available!";
+    category = "Mental Health";
+  } else if (text.match(/drug|alcohol|addiction|recovery|rehab|substance|detox/i)) {
+    reply = "Here are substance use treatment options!";
+    category = "Substance Use";
+  } else if (text.match(/crisis|emergency|urgent|immediate|help|suicide/i)) {
+    reply = "Here are crisis support resources available immediately!";
+    category = "Crisis";
+  } else {
+    reply = "I can help you find food, housing, healthcare, mental health, substance use treatment, or crisis resources. What do you need help with?";
+  }
 
   addMessage(reply, "bot");
 
-  if (reply.includes("food")) showResources("Food");
-  else if (reply.includes("housing")) showResources("Housing");
-  else if (reply.includes("health")) showResources("Healthcare");
+  // Show resources if we have a matching category
+  if (category) {
+    showResources(category);
+  }
 }
