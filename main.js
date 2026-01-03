@@ -382,12 +382,12 @@ const INTENT_PATTERNS = {
   },
   "Mental Health": {
     keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd"],
-    phrases: ["mental health", "mental health help", "feeling depressed", "need therapy", "counseling services", "mental health support", "psychological help", "emotional support"],
-    weight: 1.1
+    phrases: ["mental health", "mental health help", "need mental health", "mental health support", "feeling depressed", "need therapy", "counseling services", "psychological help", "emotional support"],
+    weight: 1.5
   },
   "Healthcare": {
     keywords: ["medical", "clinic", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment"],
-    phrases: ["primary care", "health clinic", "free clinic", "medical care", "doctor visit", "health insurance", "medical help", "dental care", "vision care"],
+    phrases: ["primary care", "medical clinic", "free clinic", "medical care", "doctor visit", "medical insurance", "medical help", "dental care", "vision care"],
     weight: 1.0
   },
   "Substance Use": {
