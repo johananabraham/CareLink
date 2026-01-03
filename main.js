@@ -214,10 +214,15 @@ function detectIntent(text) {
     }
 
     if (score > 0) {
+      // Better normalization: Crisis gets special handling, others use 2.5 divisor
+      let confidence = category === "Crisis" ? 
+        Math.min(score / 2, 1.0) : 
+        Math.min(score / 2.5, 1.0);
+      
       results.push({
         category,
         score,
-        confidence: Math.min(score / 3, 1.0), // Normalize to 0-1
+        confidence,
         matches
       });
     }
@@ -239,7 +244,7 @@ function generateResponse(intent, userText) {
   const { category, confidence } = intent;
   
   // High confidence responses
-  if (confidence >= 0.7) {
+  if (confidence >= 0.6) {
     const responses = {
       "Food": "I found food resources near you! Let me show you what's available.",
       "Housing": "Here are housing and shelter resources in your area.",
