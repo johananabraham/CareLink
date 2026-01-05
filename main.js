@@ -771,6 +771,135 @@ const INTENT_PATTERNS = {
       phrases: ["servicios para veteranos", "recursos para veteranos", "beneficios va", "ayuda militar", "asistencia militar", "vivienda para veteranos", "atención médica para veteranos"],
       weight: 1.6
     }
+  },
+  
+  so: {
+    "Food": {
+      keywords: ["cunto", "gaajo", "cuni", "cuntada", "jikada", "qado", "nafaqo", "dukaan", "cunno"],
+      phrases: ["bangiga cuntada", "matbakhyada guud", "caawimo cunto", "cunno bilaash ah", "ma heli karo cunto", "u baahan cunto", "kaalmada cuntada"],
+      weight: 1.0
+    },
+    "Housing": {
+      keywords: ["guri", "hoy", "galbeed", "kiro", "qaboojiye", "guryaha", "masaakinta", "dulucda"],
+      phrases: ["u baahan galbeed", "ma bixin karo kiro", "laga saari", "caawimo guri", "guryo jaban", "galbeed degdeg ah"],
+      weight: 1.3
+    },
+    "Mental Health": {
+      keywords: ["maskax", "daaweyn", "la-talin", "murugasho", "walwal", "cilmi-nafsiga", "dareen"],
+      phrases: ["caafimaadka maskaxda", "daaweynta maskaxda", "caawimo maskax", "la-talinta", "taageero dareen"],
+      weight: 1.5
+    },
+    "Healthcare": {
+      keywords: ["caafimaad", "dhakhtar", "isbitaal", "dawo", "caafimad", "bukaan", "daryeel"],
+      phrases: ["daryeelka guud", "xarun caafimaad", "dhakhtarka", "caymiska caafimaadka", "caawimo caafimaad"],
+      weight: 1.0
+    },
+    "Substance Use": {
+      keywords: ["daroog", "khamri", "qaylo", "dib-u-soo-kabashada", "dabaaldegga", "nadiifineed"],
+      phrases: ["isticmaalka daroogada", "dhibaatada khamriga", "caawimo daroog", "daaweynta qaylada"],
+      weight: 1.0
+    },
+    "Crisis": {
+      keywords: ["xiisad", "degdeg", "muhiim", "isla-markiiba", "dil-nafsi", "khataro"],
+      phrases: ["khadka xiisadaha", "caawimo degdeg ah", "taageero xiisad", "caawimo isla-markiiba"],
+      weight: 1.2
+    },
+    "Employment": {
+      keywords: ["shaqo", "hawl", "shaqaale", "tababar", "xirfad", "kiraysan"],
+      phrases: ["u baahan shaqo", "tababarka shaqada", "caawimo shaqo", "raadinta shaqada"],
+      weight: 1.0
+    },
+    "Veterans": {
+      keywords: ["askari", "ciidamada", "dagaalka", "hawlgal", "adeegga"],
+      phrases: ["adeegyada askarta", "faa'iidooyinka askarta", "caawimo askari", "guri askari"],
+      weight: 1.6
+    }
+  },
+
+  ar: {
+    "Food": {
+      keywords: ["طعام", "جوع", "أكل", "وجبة", "مطبخ", "مؤن", "غذاء", "طحين", "خضار"],
+      phrases: ["بنك الطعام", "مطبخ شعبي", "مساعدة غذائية", "وجبات مجانية", "لا أستطيع دفع ثمن الطعام", "أحتاج طعام"],
+      weight: 1.0
+    },
+    "Housing": {
+      keywords: ["مأوى", "سكن", "بيت", "إيجار", "شقة", "منزل", "طرد", "مشرد"],
+      phrases: ["أحتاج مأوى", "لا أستطيع دفع الإيجار", "مساعدة السكن", "مأوى طارئ", "مساعدة إيجار"],
+      weight: 1.3
+    },
+    "Mental Health": {
+      keywords: ["نفسي", "علاج", "استشارة", "اكتئاب", "قلق", "نفسية", "طبيب نفسي"],
+      phrases: ["الصحة النفسية", "مساعدة نفسية", "أحتاج علاج", "استشارة نفسية", "دعم عاطفي"],
+      weight: 1.5
+    },
+    "Healthcare": {
+      keywords: ["طبي", "عيادة", "طبيب", "مستشفى", "دواء", "تأمين", "علاج", "صحة"],
+      phrases: ["رعاية أولية", "عيادة طبية", "رعاية صحية", "مساعدة صحية", "تأمين صحي"],
+      weight: 1.0
+    },
+    "Substance Use": {
+      keywords: ["مخدرات", "كحول", "إدمان", "تعافي", "علاج إدمان", "مواد", "انسحاب"],
+      phrases: ["تعاطي المواد", "إدمان المخدرات", "مشكلة الكحول", "أحتاج علاج إدمان", "مساعدة مخدرات"],
+      weight: 1.0
+    },
+    "Crisis": {
+      keywords: ["أزمة", "طارئ", "عاجل", "فوري", "انتحار", "خطر", "ضائقة"],
+      phrases: ["خط الأزمة", "مساعدة طارئة", "أحتاج مساعدة الآن", "دعم أزمة"],
+      weight: 1.2
+    },
+    "Employment": {
+      keywords: ["عمل", "وظيفة", "مهنة", "سيرة ذاتية", "مقابلة", "عاطل", "تدريب"],
+      phrases: ["أحتاج عمل", "تدريب مهني", "مساعدة عمل", "البحث عن عمل", "مساعدة وظيفة"],
+      weight: 1.0
+    },
+    "Veterans": {
+      keywords: ["محارب قديم", "عسكري", "جيش", "بحرية", "قتال", "خدمة عسكرية"],
+      phrases: ["خدمات المحاربين القدامى", "مزايا المحاربين", "مساعدة عسكرية", "سكن المحاربين"],
+      weight: 1.6
+    }
+  },
+
+  hi: {
+    "Food": {
+      keywords: ["खाना", "भूख", "खाद्य", "भोजन", "रसोई", "पोषण", "राशन", "भंडार"],
+      phrases: ["फूड बैंक", "सूप किचन", "खाद्य सहायता", "मुफ्त भोजन", "खाना नहीं खरीद सकते", "खाने की जरूरत"],
+      weight: 1.0
+    },
+    "Housing": {
+      keywords: ["आश्रय", "आवास", "घर", "किराया", "मकान", "बेघर", "निकासी"],
+      phrases: ["आश्रय चाहिए", "किराया नहीं दे सकते", "आवास सहायता", "आपातकालीन आश्रय", "किराया मदद"],
+      weight: 1.3
+    },
+    "Mental Health": {
+      keywords: ["मानसिक", "चिकित्सा", "परामर्श", "अवसाद", "चिंता", "मनोवैज्ञानिक"],
+      phrases: ["मानसिक स्वास्थ्य", "मानसिक मदद", "चिकित्सा चाहिए", "परामर्श सेवा", "भावनात्मक सहायता"],
+      weight: 1.5
+    },
+    "Healthcare": {
+      keywords: ["चिकित्सा", "क्लिनिक", "डॉक्टर", "अस्पताल", "दवा", "बीमा", "इलाज", "स्वास्थ्य"],
+      phrases: ["प्राथमिक देखभाल", "मेडिकल क्लिनिक", "स्वास्थ्य देखभाल", "चिकित्सा मदद", "स्वास्थ्य बीमा"],
+      weight: 1.0
+    },
+    "Substance Use": {
+      keywords: ["नशा", "शराब", "लत", "रिकवरी", "पुनर्वास", "पदार्थ", "डिटॉक्स"],
+      phrases: ["पदार्थ दुरुपयोग", "नशे की लत", "शराब की समस्या", "पुनर्वास चाहिए", "नशा मदद"],
+      weight: 1.0
+    },
+    "Crisis": {
+      keywords: ["संकट", "आपातकाल", "तत्काल", "तुरंत", "आत्महत्या", "खतरा"],
+      phrases: ["संकट हॉटलाइन", "आपातकालीन मदद", "अभी मदद चाहिए", "संकट सहायता"],
+      weight: 1.2
+    },
+    "Employment": {
+      keywords: ["नौकरी", "काम", "रोजगार", "करियर", "रिज्यूमे", "साक्षात्कार", "बेरोजगार"],
+      phrases: ["नौकरी चाहिए", "नौकरी प्रशिक्षण", "काम की मदद", "नौकरी खोज", "रोजगार मदद"],
+      weight: 1.0
+    },
+    "Veterans": {
+      keywords: ["पूर्व सैनिक", "सैन्य", "सेना", "नौसेना", "युद्ध", "सेवा"],
+      phrases: ["पूर्व सैनिक सेवाएं", "सैन्य लाभ", "सैन्य मदद", "पूर्व सैनिक आवास"],
+      weight: 1.6
+    }
   }
 };
 
