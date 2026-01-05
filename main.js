@@ -414,7 +414,7 @@ const INTENT_PATTERNS = {
   },
   "Veterans": {
     keywords: ["veteran", "military", "va", "army", "navy", "marines", "air force", "combat", "deployment", "service"],
-    phrases: ["veteran services", "va benefits", "military help", "veteran housing", "veteran healthcare"],
+    phrases: ["veteran services", "va benefits", "military help", "military assistance", "veteran housing", "veteran healthcare"],
     weight: 1.3
   }
 };
@@ -505,6 +505,11 @@ function generateResponse(intent, userText) {
   
   // High confidence responses - will be verified when resources are loaded
   if (confidence >= 0.6) {
+    // Reset conversation state when showing immediate resources
+    conversationState.awaitingClarification = false;
+    conversationState.pendingCategory = null;
+    conversationState.lastQuestion = null;
+    
     return {
       text: `Looking for ${category.toLowerCase()} resources in your area...`,
       category
@@ -536,6 +541,11 @@ function generateResponse(intent, userText) {
   }
 
   // Low confidence - general help
+  // Reset conversation state for low confidence responses
+  conversationState.awaitingClarification = false;
+  conversationState.pendingCategory = null;
+  conversationState.lastQuestion = null;
+  
   return {
     text: "I want to make sure I understand what you need. Could you tell me more specifically what kind of help you're looking for?",
     category: null
