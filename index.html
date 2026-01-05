@@ -6,20 +6,65 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <style>
-    /* RTL Support */
-    [dir="rtl"] {
+    /* RTL Support - More specific and controlled */
+    
+    /* Maintain center alignment for main layout */
+    [dir="rtl"] body {
+      text-align: center; /* Keep body centered */
+    }
+    
+    /* RTL for specific text elements only */
+    [dir="rtl"] h1, 
+    [dir="rtl"] h2, 
+    [dir="rtl"] p {
       text-align: right;
     }
-    [dir="rtl"] .flex {
-      flex-direction: row-reverse;
-    }
+    
+    /* RTL for chat interface */
     [dir="rtl"] #userInput {
       text-align: right;
     }
+    
+    /* Reverse flex direction only for header */
+    [dir="rtl"] .header-flex {
+      flex-direction: row-reverse;
+    }
+    
+    /* Reverse chat message alignments */
     [dir="rtl"] .text-right {
       text-align: left;
     }
     [dir="rtl"] .text-left {
+      text-align: right;
+    }
+    
+    /* Language switcher RTL adjustments */
+    [dir="rtl"] #languageSwitcher {
+      direction: rtl;
+    }
+    
+    /* Ensure main content containers stay centered */
+    [dir="rtl"] .max-w-4xl,
+    [dir="rtl"] .max-w-lg {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Modal content RTL adjustments */
+    [dir="rtl"] .language-modal .bg-white {
+      direction: rtl;
+      text-align: center; /* Keep modal centered */
+    }
+    
+    /* Language option buttons - keep them LTR for consistent layout */
+    [dir="rtl"] .language-option {
+      direction: ltr; 
+      text-align: left;
+    }
+    
+    /* But allow native language text to be RTL */
+    [dir="rtl"] .language-option [dir="rtl"] {
+      direction: rtl;
       text-align: right;
     }
     
@@ -72,7 +117,7 @@
   <!-- Main App Content -->
   <div class="w-full max-w-4xl">
     <!-- Header with Language Switcher -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="header-flex flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold" data-i18n="appTitle">Carelink+</h1>
       
       <!-- Language Switcher Button -->
