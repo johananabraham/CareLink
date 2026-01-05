@@ -14,6 +14,8 @@ function initializeI18n() {
   // Listen for language changes
   window.i18n.addListener((newLanguage) => {
     updateUILanguage();
+    translateChatHistory();
+    refreshMapPopups();
   });
 }
 
@@ -97,6 +99,78 @@ function updateUILanguage() {
     const key = element.getAttribute('data-i18n-placeholder');
     element.placeholder = window.i18n.t(key);
   });
+}
+
+// Translate existing chat history when language changes
+function translateChatHistory() {
+  const messages = document.querySelectorAll('#messages .mb-2');
+  messages.forEach(messageDiv => {
+    const messageSpan = messageDiv.querySelector('span');
+    if (messageSpan) {
+      const messageText = messageSpan.textContent;
+      
+      // Check if this is a bot message that can be translated
+      if (messageDiv.className.includes('text-left')) {
+        const translatedText = translateBotMessage(messageText);
+        if (translatedText !== messageText) {
+          messageSpan.textContent = translatedText;
+        }
+      }
+    }
+  });
+}
+
+// Translate bot messages to current language
+function translateBotMessage(originalText) {
+  // Common bot message patterns to translate
+  const patterns = {
+    // Welcome message
+    'I can help you find resources': 'bot.welcome',
+    'Puedo ayudarte a encontrar recursos': 'bot.welcome',
+    
+    // Searching messages  
+    'Looking for': 'bot.searchingResources',
+    'Buscando recursos de': 'bot.searchingResources',
+    
+    // Resource found messages
+    'Found ': 'bot.resourcesFound',
+    'Encontré ': 'bot.resourcesFound',
+    
+    // Clarification prefix
+    'Great! Looking for': 'bot.clarificationPrefix',
+    '¡Perfecto! Buscando recursos de': 'bot.clarificationPrefix',
+    
+    // Need more info
+    'I want to make sure I understand': 'bot.needMoreInfo',
+    'Quiero asegurarme de entender': 'bot.needMoreInfo'
+  };
+  
+  // Try to match and translate common patterns
+  for (const [pattern, key] of Object.entries(patterns)) {
+    if (originalText.includes(pattern)) {
+      // For complex messages with parameters, return as-is for now
+      // Full implementation would require storing message context
+      if (key === 'bot.welcome' || key === 'bot.needMoreInfo') {
+        return window.i18n.t(key);
+      }
+    }
+  }
+  
+  return originalText; // Return original if no translation found
+}
+
+// Refresh map popups when language changes
+function refreshMapPopups() {
+  if (map) {
+    // Get current markers and refresh their popups
+    map.eachLayer(layer => {
+      if (layer instanceof L.Marker && layer.resourceData) {
+        // Update popup content with new language
+        const newContent = createPopupContent(layer.resourceData);
+        layer.getPopup().setContent(newContent);
+      }
+    });
+  }
 }
 
 // Setup language switcher
@@ -361,6 +435,109 @@ function initializeMap() {
   }
 }
 
+// Create popup content with potential translation
+function createPopupContent(resource) {
+  let popupContent = `<div style="min-width: 200px;">`;
+  
+  // Name (always show, it's the organization name)
+  popupContent += `<div style="font-weight: bold; margin-bottom: 8px; color: #1e40af;">${resource.name}</div>`;
+  
+  // Description/Purpose with translation attempt
+  if (resource.description || resource.purpose) {
+    const description = resource.description || resource.purpose;
+    const translatedDescription = translateResourceDescription(description);
+    
+    popupContent += `<div style="margin-bottom: 6px;">
+      <strong>${window.i18n.t('mapPopup.description')}:</strong><br>
+      <span style="color: #374151;">${translatedDescription}</span>
+    </div>`;
+  }
+  
+  // Location
+  if (resource.location) {
+    popupContent += `<div style="margin-bottom: 6px;">
+      <strong>${window.i18n.t('mapPopup.location')}:</strong><br>
+      <span style="color: #374151;">${resource.location}</span>
+    </div>`;
+  }
+  
+  // Phone
+  if (resource.phone) {
+    popupContent += `<div style="margin-bottom: 6px;">
+      <strong>${window.i18n.t('mapPopup.phone')}:</strong><br>
+      <a href="tel:${resource.phone}" style="color: #2563eb; text-decoration: none;">${resource.phone}</a>
+    </div>`;
+  }
+  
+  // Website
+  if (resource.website) {
+    popupContent += `<div style="margin-bottom: 6px;">
+      <strong>${window.i18n.t('mapPopup.website')}:</strong><br>
+      <a href="${resource.website}" target="_blank" style="color: #2563eb; text-decoration: none;">🔗 ${window.i18n.t('mapPopup.website')}</a>
+    </div>`;
+  }
+  
+  // Hours
+  if (resource.hours) {
+    popupContent += `<div>
+      <strong>${window.i18n.t('mapPopup.hours')}:</strong><br>
+      <span style="color: #374151;">${resource.hours}</span>
+    </div>`;
+  }
+  
+  popupContent += `</div>`;
+  return popupContent;
+}
+
+// Translate common resource descriptions
+function translateResourceDescription(description) {
+  const currentLang = window.i18n.getCurrentLanguage();
+  
+  // If already in English or no translation needed
+  if (currentLang === 'en') return description;
+  
+  // Common description translations
+  const translations = {
+    es: {
+      'Emergency food assistance': 'Asistencia alimentaria de emergencia',
+      'Food pantry serving west Columbus area': 'Despensa de alimentos que sirve el área oeste de Columbus',
+      'Food pantry and meal support': 'Despensa de alimentos y apoyo de comidas',
+      'Emergency shelter services': 'Servicios de refugio de emergencia',
+      'Comprehensive homeless services': 'Servicios integrales para personas sin hogar',
+      'Mental health counseling': 'Consejería de salud mental',
+      'Peer recovery and support': 'Recuperación y apoyo entre pares',
+      '24/7 detox and recovery center': 'Centro de desintoxicación y recuperación 24/7',
+      'Addiction treatment and counseling': 'Tratamiento de adicciones y consejería',
+      'Comprehensive pediatric healthcare': 'Atención médica pediátrica integral',
+      'Career training and employment assistance': 'Capacitación profesional y asistencia de empleo',
+      'Healthcare for homeless veterans': 'Atención médica para veteranos sin hogar'
+    },
+    ar: {
+      'Emergency food assistance': 'مساعدة غذائية طارئة',
+      'Mental health counseling': 'استشارة الصحة النفسية',
+      'Emergency shelter services': 'خدمات مأوى طارئ',
+      '24/7 detox and recovery center': 'مركز إزالة السموم والتعافي على مدار الساعة'
+    },
+    hi: {
+      'Emergency food assistance': 'आपातकालीन भोजन सहायता',
+      'Mental health counseling': 'मानसिक स्वास्थ्य परामर्श',
+      'Emergency shelter services': 'आपातकालीन आश्रय सेवाएं'
+    },
+    so: {
+      'Emergency food assistance': 'Caawimo cunto oo degdeg ah',
+      'Mental health counseling': 'La-talinta caafimaadka maskaxda',
+      'Emergency shelter services': 'Adeegyada galbeedka degdega ah'
+    }
+  };
+  
+  const langTranslations = translations[currentLang];
+  if (langTranslations && langTranslations[description]) {
+    return langTranslations[description];
+  }
+  
+  return description; // Return original if no translation found
+}
+
 async function showResources(category) {
   console.log('🔍 Searching for category:', category);
   const resources = await loadResources();
@@ -455,57 +632,15 @@ async function showResources(category) {
       
       console.log(`✅ Creating marker for ${r.name} at coordinates [${r.lat}, ${r.lng}]`);
       if (map) {
-        // Create multilingual popup content
-        let popupContent = `<div style="min-width: 200px;">`;
+        const marker = L.marker([r.lat, r.lng]);
         
-        // Name (always show, it's the organization name)
-        popupContent += `<div style="font-weight: bold; margin-bottom: 8px; color: #1e40af;">${r.name}</div>`;
+        // Store resource data with marker for language switching
+        marker.resourceData = r;
         
-        // Description/Purpose
-        if (r.description || r.purpose) {
-          popupContent += `<div style="margin-bottom: 6px;">
-            <strong>${window.i18n.t('mapPopup.description')}:</strong><br>
-            <span style="color: #374151;">${r.description || r.purpose}</span>
-          </div>`;
-        }
+        // Create popup content
+        const popupContent = createPopupContent(r);
         
-        // Location
-        if (r.location) {
-          popupContent += `<div style="margin-bottom: 6px;">
-            <strong>${window.i18n.t('mapPopup.location')}:</strong><br>
-            <span style="color: #374151;">${r.location}</span>
-          </div>`;
-        }
-        
-        // Phone
-        if (r.phone) {
-          popupContent += `<div style="margin-bottom: 6px;">
-            <strong>${window.i18n.t('mapPopup.phone')}:</strong><br>
-            <a href="tel:${r.phone}" style="color: #2563eb; text-decoration: none;">${r.phone}</a>
-          </div>`;
-        }
-        
-        // Website
-        if (r.website) {
-          popupContent += `<div style="margin-bottom: 6px;">
-            <strong>${window.i18n.t('mapPopup.website')}:</strong><br>
-            <a href="${r.website}" target="_blank" style="color: #2563eb; text-decoration: none;">🔗 ${window.i18n.t('mapPopup.website')}</a>
-          </div>`;
-        }
-        
-        // Hours
-        if (r.hours) {
-          popupContent += `<div>
-            <strong>${window.i18n.t('mapPopup.hours')}:</strong><br>
-            <span style="color: #374151;">${r.hours}</span>
-          </div>`;
-        }
-        
-        popupContent += `</div>`;
-        
-        const marker = L.marker([r.lat, r.lng])
-          .addTo(map)
-          .bindPopup(popupContent, { maxWidth: 300 });
+        marker.addTo(map).bindPopup(popupContent, { maxWidth: 300 });
         
         console.log(`✅ Marker successfully added to map`);
       } else {
