@@ -455,9 +455,57 @@ async function showResources(category) {
       
       console.log(`✅ Creating marker for ${r.name} at coordinates [${r.lat}, ${r.lng}]`);
       if (map) {
+        // Create multilingual popup content
+        let popupContent = `<div style="min-width: 200px;">`;
+        
+        // Name (always show, it's the organization name)
+        popupContent += `<div style="font-weight: bold; margin-bottom: 8px; color: #1e40af;">${r.name}</div>`;
+        
+        // Description/Purpose
+        if (r.description || r.purpose) {
+          popupContent += `<div style="margin-bottom: 6px;">
+            <strong>${window.i18n.t('mapPopup.description')}:</strong><br>
+            <span style="color: #374151;">${r.description || r.purpose}</span>
+          </div>`;
+        }
+        
+        // Location
+        if (r.location) {
+          popupContent += `<div style="margin-bottom: 6px;">
+            <strong>${window.i18n.t('mapPopup.location')}:</strong><br>
+            <span style="color: #374151;">${r.location}</span>
+          </div>`;
+        }
+        
+        // Phone
+        if (r.phone) {
+          popupContent += `<div style="margin-bottom: 6px;">
+            <strong>${window.i18n.t('mapPopup.phone')}:</strong><br>
+            <a href="tel:${r.phone}" style="color: #2563eb; text-decoration: none;">${r.phone}</a>
+          </div>`;
+        }
+        
+        // Website
+        if (r.website) {
+          popupContent += `<div style="margin-bottom: 6px;">
+            <strong>${window.i18n.t('mapPopup.website')}:</strong><br>
+            <a href="${r.website}" target="_blank" style="color: #2563eb; text-decoration: none;">🔗 ${window.i18n.t('mapPopup.website')}</a>
+          </div>`;
+        }
+        
+        // Hours
+        if (r.hours) {
+          popupContent += `<div>
+            <strong>${window.i18n.t('mapPopup.hours')}:</strong><br>
+            <span style="color: #374151;">${r.hours}</span>
+          </div>`;
+        }
+        
+        popupContent += `</div>`;
+        
         const marker = L.marker([r.lat, r.lng])
           .addTo(map)
-          .bindPopup(`<b>${r.name}</b><br>${r.description || r.purpose}`);
+          .bindPopup(popupContent, { maxWidth: 300 });
         
         console.log(`✅ Marker successfully added to map`);
       } else {

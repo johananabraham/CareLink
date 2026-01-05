@@ -54,6 +54,16 @@ const TRANSLATIONS = {
       Crisis: "crisis",
       Employment: "employment",
       Veterans: "veterans"
+    },
+    
+    // Map popup labels
+    mapPopup: {
+      name: "Name",
+      description: "Description",
+      location: "Location",
+      phone: "Phone",
+      website: "Website",
+      hours: "Hours"
     }
   },
 
@@ -111,6 +121,16 @@ const TRANSLATIONS = {
       Crisis: "crisis",
       Employment: "empleo",
       Veterans: "veteranos"
+    },
+    
+    // Map popup labels
+    mapPopup: {
+      name: "Nombre",
+      description: "Descripción",
+      location: "Ubicación",
+      phone: "Teléfono",
+      website: "Sitio web",
+      hours: "Horario"
     }
   },
 
@@ -168,6 +188,16 @@ const TRANSLATIONS = {
       Crisis: "xiisad",
       Employment: "shaqo",
       Veterans: "askarta hore"
+    },
+    
+    // Map popup labels
+    mapPopup: {
+      name: "Magaca",
+      description: "Sharaxaad",
+      location: "Goob",
+      phone: "Telefoon",
+      website: "Bogga internetka",
+      hours: "Saacadaha"
     }
   },
 
@@ -225,6 +255,16 @@ const TRANSLATIONS = {
       Crisis: "أزمة",
       Employment: "توظيف",
       Veterans: "محاربون قدامى"
+    },
+    
+    // Map popup labels
+    mapPopup: {
+      name: "الاسم",
+      description: "الوصف",
+      location: "الموقع",
+      phone: "الهاتف",
+      website: "الموقع الإلكتروني",
+      hours: "ساعات العمل"
     }
   },
 
@@ -282,6 +322,16 @@ const TRANSLATIONS = {
       Crisis: "संकट",
       Employment: "रोजगार",
       Veterans: "पूर्व सैनिक"
+    },
+    
+    // Map popup labels
+    mapPopup: {
+      name: "नाम",
+      description: "विवरण",
+      location: "स्थान",
+      phone: "फोन",
+      website: "वेबसाइट",
+      hours: "घंटे"
     }
   }
 };
