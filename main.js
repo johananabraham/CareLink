@@ -554,23 +554,23 @@ function addMessage(text, sender) {
 const INTENT_PATTERNS = {
   en: {
   "Food": {
-    keywords: ["food", "hungry", "eat", "meal", "kitchen", "pantry", "nutrition", "groceries", "feeding", "starving", "appetite", "dining", "nourishment", "sustenance"],
-    phrases: ["food bank", "soup kitchen", "food pantry", "free meals", "food assistance", "can't afford food", "need food", "food stamps", "snap benefits"],
+    keywords: ["food", "hungry", "eat", "meal", "kitchen", "pantry", "nutrition", "groceries", "feeding", "starving", "appetite", "dining", "nourishment", "sustenance", "help"],
+    phrases: ["food bank", "soup kitchen", "food pantry", "free meals", "food assistance", "help with food", "need food", "can't afford food", "food stamps", "snap benefits"],
     weight: 1.0
   },
   "Housing": {
-    keywords: ["shelter", "housing", "homeless", "rent", "apartment", "home", "eviction", "foreclosure", "roommate", "lease", "landlord", "utilities"],
-    phrases: ["need shelter", "can't pay rent", "being evicted", "homeless shelter", "housing assistance", "affordable housing", "rental help", "utility assistance"],
+    keywords: ["shelter", "housing", "homeless", "rent", "apartment", "home", "eviction", "foreclosure", "roommate", "lease", "landlord", "utilities", "help"],
+    phrases: ["need shelter", "need housing", "help with housing", "help with rent", "can't pay rent", "being evicted", "homeless shelter", "housing assistance", "affordable housing", "rental help", "utility assistance"],
     weight: 1.3
   },
   "Mental Health": {
-    keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd"],
-    phrases: ["mental health", "mental health help", "need mental health", "mental health support", "feeling depressed", "need therapy", "counseling services", "psychological help", "emotional support"],
+    keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd", "help"],
+    phrases: ["mental health", "mental health help", "help with mental health", "need mental health", "mental health support", "feeling depressed", "need therapy", "counseling services", "psychological help", "emotional support"],
     weight: 1.5
   },
   "Healthcare": {
-    keywords: ["medical", "clinic", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment"],
-    phrases: ["primary care", "medical clinic", "free clinic", "medical care", "doctor visit", "medical insurance", "medical help", "dental care", "vision care"],
+    keywords: ["medical", "clinic", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment", "health"],
+    phrases: ["primary care", "medical clinic", "free clinic", "medical care", "help with health", "health help", "doctor visit", "medical insurance", "medical help", "dental care", "vision care"],
     weight: 1.0
   },
   "Substance Use": {
@@ -584,8 +584,8 @@ const INTENT_PATTERNS = {
     weight: 1.2
   },
   "Employment": {
-    keywords: ["job", "work", "employment", "career", "resume", "interview", "unemployed", "training", "skills", "hiring"],
-    phrases: ["need job", "job training", "resume help", "career services", "employment assistance", "job search", "work training"],
+    keywords: ["job", "work", "employment", "career", "resume", "interview", "unemployed", "training", "skills", "hiring", "help"],
+    phrases: ["need job", "job training", "resume help", "help with job", "help with work", "career services", "employment assistance", "job search", "work training", "find job", "looking for work"],
     weight: 1.0
   },
   "Veterans": {
@@ -597,28 +597,28 @@ const INTENT_PATTERNS = {
   
   es: {
     "Food": {
-      keywords: ["comida", "hambre", "comer", "alimento", "cocina", "despensa", "nutrición", "víveres", "alimentación", "muerto de hambre", "apetito", "cenar", "alimentar"],
-      phrases: ["banco de alimentos", "comedor popular", "despensa de alimentos", "comidas gratis", "asistencia alimentaria", "no puedo pagar comida", "necesito comida", "cupones de comida", "beneficios snap"],
+      keywords: ["comida", "hambre", "comer", "alimento", "cocina", "despensa", "nutrición", "víveres", "alimentación", "muerto de hambre", "apetito", "cenar", "alimentar", "ayuda"],
+      phrases: ["banco de alimentos", "comedor popular", "despensa de alimentos", "comidas gratis", "asistencia alimentaria", "ayuda con comida", "no puedo pagar comida", "necesito comida", "cupones de comida", "beneficios snap"],
       weight: 1.0
     },
     "Housing": {
-      keywords: ["refugio", "vivienda", "sin hogar", "alquiler", "apartamento", "casa", "desalojo", "ejecución hipotecaria", "compañero de cuarto", "arrendamiento", "propietario", "servicios públicos"],
-      phrases: ["necesito refugio", "no puedo pagar alquiler", "siendo desalojado", "refugio para personas sin hogar", "asistencia de vivienda", "vivienda asequible", "ayuda con alquiler", "asistencia con servicios públicos"],
+      keywords: ["refugio", "vivienda", "sin hogar", "alquiler", "apartamento", "casa", "desalojo", "ejecución hipotecaria", "compañero de cuarto", "arrendamiento", "propietario", "servicios públicos", "ayuda"],
+      phrases: ["necesito refugio", "necesito vivienda", "ayuda con vivienda", "ayuda con alquiler", "no puedo pagar alquiler", "siendo desalojado", "refugio para personas sin hogar", "asistencia de vivienda", "vivienda asequible"],
       weight: 1.3
     },
     "Mental Health": {
-      keywords: ["mental", "terapia", "consejería", "depresión", "ansiedad", "psiquiátrico", "psicológico", "terapeuta", "consejero", "estrés", "trauma", "bipolar", "tept"],
-      phrases: ["salud mental", "ayuda de salud mental", "necesito salud mental", "apoyo de salud mental", "sintiéndome deprimido", "necesito terapia", "servicios de consejería", "ayuda psicológica", "apoyo emocional"],
+      keywords: ["mental", "terapia", "consejería", "depresión", "ansiedad", "psiquiátrico", "psicológico", "terapeuta", "consejero", "estrés", "trauma", "bipolar", "tept", "ayuda"],
+      phrases: ["salud mental", "ayuda de salud mental", "ayuda con salud mental", "necesito salud mental", "apoyo de salud mental", "sintiéndome deprimido", "necesito terapia", "servicios de consejería", "ayuda psicológica", "apoyo emocional"],
       weight: 1.5
     },
     "Healthcare": {
-      keywords: ["médico", "clínica", "doctor", "hospital", "médico", "enfermera", "receta", "medicamento", "seguro", "chequeo", "enfermo", "enfermedad", "tratamiento"],
-      phrases: ["atención primaria", "clínica médica", "clínica gratuita", "atención médica", "visita al doctor", "seguro médico", "ayuda médica", "atención dental", "atención de la vista"],
+      keywords: ["médico", "clínica", "doctor", "hospital", "enfermera", "receta", "medicamento", "seguro", "chequeo", "enfermo", "enfermedad", "tratamiento", "salud", "ayuda"],
+      phrases: ["atención primaria", "clínica médica", "clínica gratuita", "atención médica", "ayuda con salud", "ayuda médica", "visita al doctor", "seguro médico", "atención dental", "atención de la vista"],
       weight: 1.0
     },
     "Substance Use": {
-      keywords: ["drogas", "alcohol", "adicción", "recuperación", "rehabilitación", "sustancia", "desintoxicación", "sobrio", "sobriedad", "abstinencia", "sobredosis", "limpio"],
-      phrases: ["abuso de sustancias", "adicción a las drogas", "problema de alcohol", "necesito rehabilitación", "tratamiento de drogas", "recuperación de adicciones", "programa de desintoxicación", "volverse sobrio"],
+      keywords: ["drogas", "alcohol", "adicción", "recuperación", "rehabilitación", "sustancia", "desintoxicación", "sobrio", "sobriedad", "abstinencia", "sobredosis", "limpio", "ayuda"],
+      phrases: ["abuso de sustancias", "adicción a las drogas", "problema de alcohol", "ayuda con drogas", "ayuda con alcohol", "necesito rehabilitación", "tratamiento de drogas", "recuperación de adicciones", "programa de desintoxicación", "volverse sobrio"],
       weight: 1.0
     },
     "Crisis": {
@@ -627,8 +627,8 @@ const INTENT_PATTERNS = {
       weight: 1.2
     },
     "Employment": {
-      keywords: ["trabajo", "empleo", "carrera", "currículum", "entrevista", "desempleado", "capacitación", "habilidades", "contratación"],
-      phrases: ["necesito trabajo", "capacitación laboral", "ayuda con currículum", "servicios de carrera", "asistencia de empleo", "búsqueda de trabajo", "capacitación laboral"],
+      keywords: ["trabajo", "empleo", "carrera", "currículum", "entrevista", "desempleado", "capacitación", "habilidades", "contratación", "ayuda"],
+      phrases: ["necesito trabajo", "capacitación laboral", "ayuda con currículum", "ayuda con trabajo", "ayuda con empleo", "servicios de carrera", "asistencia de empleo", "búsqueda de trabajo", "busco trabajo", "quiero trabajo"],
       weight: 1.0
     },
     "Veterans": {
@@ -690,9 +690,25 @@ function detectIntent(text) {
 function generateResponse(intent, userText) {
   // Check if we're waiting for clarification from previous question
   if (conversationState.awaitingClarification) {
-    // Look for positive confirmation words or specific resource mentions
-    const confirmationWords = ['yes', 'yeah', 'yep', 'sure', 'okay', 'ok', 'correct', 'right', 'exactly', 'please', 'show me'];
-    const resourceMentions = ['food pantries', 'soup kitchens', 'meal programs', 'emergency shelter', 'housing assistance', 'rental help', 'va benefits', 'veteran housing', 'veteran healthcare', 'medical care', 'dental services', 'counseling', 'therapy', 'detox services', 'recovery programs', 'job training', 'resume help'];
+    // Look for positive confirmation words (multilingual) or specific resource mentions
+    const confirmationWords = [
+      // English
+      'yes', 'yeah', 'yep', 'sure', 'okay', 'ok', 'correct', 'right', 'exactly', 'please', 'show me',
+      // Spanish  
+      'sí', 'si', 'claro', 'correcto', 'exacto', 'por favor', 'muéstrame', 'vale', 'bueno', 'está bien',
+      // Arabic
+      'نعم', 'أجل', 'صحيح', 'بالتأكيد', 'من فضلك',
+      // Hindi
+      'हाँ', 'जी हाँ', 'ठीक है', 'सही', 'कृपया',
+      // Somali
+      'haa', 'maya', 'saxda', 'fadlan'
+    ];
+    const resourceMentions = [
+      // English
+      'food pantries', 'soup kitchens', 'meal programs', 'emergency shelter', 'housing assistance', 'rental help', 'va benefits', 'veteran housing', 'veteran healthcare', 'medical care', 'dental services', 'counseling', 'therapy', 'detox services', 'recovery programs', 'job training', 'resume help',
+      // Spanish
+      'despensa de alimentos', 'comedores populares', 'programas de comida', 'refugio de emergencia', 'asistencia de vivienda', 'ayuda con alquiler', 'beneficios va', 'vivienda para veteranos', 'atención médica para veteranos', 'atención médica', 'servicios dentales', 'consejería', 'terapia', 'servicios de desintoxicación', 'programas de recuperación', 'capacitación laboral', 'ayuda con currículum'
+    ];
     
     const isConfirmation = confirmationWords.some(word => userText.toLowerCase().includes(word)) ||
                           resourceMentions.some(phrase => userText.toLowerCase().includes(phrase));
