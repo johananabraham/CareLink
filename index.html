@@ -1,27 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <title>Carelink+</title>
+  <title data-i18n="pageTitle">Carelink+ - Community Resource Finder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    /* RTL Support */
+    [dir="rtl"] {
+      text-align: right;
+    }
+    [dir="rtl"] .flex {
+      flex-direction: row-reverse;
+    }
+    [dir="rtl"] #userInput {
+      text-align: right;
+    }
+    [dir="rtl"] .text-right {
+      text-align: left;
+    }
+    [dir="rtl"] .text-left {
+      text-align: right;
+    }
+    
+    /* Language modal styles */
+    .language-modal {
+      backdrop-filter: blur(4px);
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .language-option {
+      transition: all 0.2s ease;
+    }
+    
+    .language-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
-  <h1 class="text-3xl font-bold mb-4">Carelink+</h1>
-
-  <div id="chatbox" class="bg-white p-4 rounded-2xl shadow-md w-full max-w-lg">
-    <div id="messages" class="h-96 overflow-y-auto mb-4"></div>
-    <div class="flex gap-2">
-      <input id="userInput" type="text" placeholder="Type your message..."
-             class="flex-1 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-      <button id="sendBtn" class="bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600">Send</button>
+  <!-- Language Selection Modal -->
+  <div id="languageModal" class="language-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+      <h2 class="text-2xl font-bold text-center mb-2" data-i18n="languageModal.title">Welcome to Carelink+</h2>
+      <p class="text-gray-600 text-center mb-6" data-i18n="languageModal.subtitle">Please select your preferred language</p>
+      
+      <div id="languageOptions" class="space-y-3">
+        <!-- Language options will be populated by JavaScript -->
+      </div>
     </div>
   </div>
 
-  <div id="map" class="mt-8 w-full max-w-4xl h-96 rounded-2xl"></div>
+  <!-- Main App Content -->
+  <div class="w-full max-w-4xl">
+    <!-- Header with Language Switcher -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold" data-i18n="appTitle">Carelink+</h1>
+      
+      <!-- Language Switcher Button -->
+      <button id="languageSwitcher" class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow hover:shadow-md transition-shadow">
+        <span id="currentLanguageFlag">🇺🇸</span>
+        <span id="currentLanguageName">English</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+    </div>
 
+    <!-- Chat Interface -->
+    <div id="chatbox" class="bg-white p-4 rounded-2xl shadow-md w-full max-w-lg mx-auto">
+      <div id="messages" class="h-96 overflow-y-auto mb-4"></div>
+      <div class="flex gap-2">
+        <input id="userInput" type="text" data-i18n-placeholder="ui.chatPlaceholder" placeholder="Type your message..."
+               class="flex-1 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <button id="sendBtn" class="bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600" data-i18n="ui.sendButton">Send</button>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map" class="mt-8 w-full h-96 rounded-2xl shadow-md"></div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <script src="config.js"></script>
+  <script src="translations.js"></script>
+  <script src="i18n.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

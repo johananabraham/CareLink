@@ -1,3 +1,102 @@
+// Internationalization setup
+function initializeI18n() {
+  // Show language modal on first visit
+  if (window.i18n.shouldShowLanguageModal()) {
+    showLanguageModal();
+  } else {
+    // Apply saved language immediately
+    updateUILanguage();
+  }
+  
+  // Listen for language changes
+  window.i18n.addListener((newLanguage) => {
+    updateUILanguage();
+  });
+}
+
+// Show language selection modal
+function showLanguageModal() {
+  const modal = document.getElementById('languageModal');
+  const optionsContainer = document.getElementById('languageOptions');
+  
+  // Clear existing options
+  optionsContainer.innerHTML = '';
+  
+  // Create language options
+  const languages = window.i18n.getAvailableLanguages();
+  languages.forEach(lang => {
+    const option = document.createElement('button');
+    option.className = 'language-option w-full p-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors flex items-center justify-between';
+    option.innerHTML = `
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">${lang.flag}</span>
+        <div class="text-left" dir="${lang.dir}">
+          <div class="font-medium">${lang.nativeName}</div>
+          <div class="text-sm text-gray-500">${lang.name}</div>
+        </div>
+      </div>
+      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    `;
+    
+    option.onclick = () => selectLanguage(lang.code);
+    optionsContainer.appendChild(option);
+  });
+  
+  modal.classList.remove('hidden');
+}
+
+// Select language and close modal
+function selectLanguage(langCode) {
+  window.i18n.setLanguage(langCode);
+  document.getElementById('languageModal').classList.add('hidden');
+  updateUILanguage();
+  
+  // Show welcome message in selected language
+  addMessage(window.i18n.t('bot.welcome'), "bot");
+}
+
+// Update all UI elements with current language
+function updateUILanguage() {
+  const currentLang = window.i18n.getCurrentLanguage();
+  const langInfo = window.LANGUAGE_INFO[currentLang];
+  
+  // Update document properties
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = window.i18n.getLanguageDirection();
+  
+  // Update page title
+  document.title = window.i18n.t('pageTitle');
+  
+  // Update language switcher
+  document.getElementById('currentLanguageFlag').textContent = langInfo.flag;
+  document.getElementById('currentLanguageName').textContent = langInfo.nativeName;
+  
+  // Update all elements with data-i18n attributes
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.getAttribute('data-i18n');
+    element.textContent = window.i18n.t(key);
+  });
+  
+  // Update placeholder texts
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    const key = element.getAttribute('data-i18n-placeholder');
+    element.placeholder = window.i18n.t(key);
+  });
+}
+
+// Setup language switcher
+function setupLanguageSwitcher() {
+  document.getElementById('languageSwitcher').onclick = showLanguageModal;
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  initializeI18n();
+  setupLanguageSwitcher();
+});
+
 // Google Sheets API configuration - loaded from secure config.js
 function getSheetAPIUrl() {
   if (!window.CONFIG || !CONFIG.GOOGLE_SHEETS_API_KEY || CONFIG.GOOGLE_SHEETS_API_KEY.includes('REPLACE_WITH')) {
@@ -314,13 +413,9 @@ async function showResources(category) {
     console.log('Available categories:', [...new Set(resources.map(r => r.category))]);
     
     // Add user-facing message when no resources are found
-    addMessage(`I'm sorry, I couldn't find any mappable ${category.toLowerCase()} resources in your area right now. This might be because:
-    
-• The resources don't have location coordinates yet
-• They may be listed under a different category name
-• The data is still being updated
-
-You can try asking for a different type of assistance, or check back later.`, "bot");
+    addMessage(window.i18n.t('bot.noResourcesFound', { 
+      category: window.i18n.t(`categories.${category}`) 
+    }), "bot");
     return; // Exit early when no resources found
   }
   
@@ -348,7 +443,12 @@ You can try asking for a different type of assistance, or check back later.`, "b
   
   // Success message to user
   if (matchedResources.length > 0) {
-    addMessage(`Found ${matchedResources.length} ${category.toLowerCase()} resource${matchedResources.length > 1 ? 's' : ''} near you! Check the map above to see their locations. Click on any marker for more details.`, "bot");
+    const plural = window.i18n.formatPlural(matchedResources.length, category);
+    addMessage(window.i18n.t('bot.resourcesFound', { 
+      count: matchedResources.length,
+      category: window.i18n.t(`categories.${category}`),
+      plural: plural
+    }), "bot");
   }
 }
 
@@ -375,8 +475,9 @@ function addMessage(text, sender) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// Enhanced Intent Detection System
+// Enhanced Multilingual Intent Detection System
 const INTENT_PATTERNS = {
+  en: {
   "Food": {
     keywords: ["food", "hungry", "eat", "meal", "kitchen", "pantry", "nutrition", "groceries", "feeding", "starving", "appetite", "dining", "nourishment", "sustenance"],
     phrases: ["food bank", "soup kitchen", "food pantry", "free meals", "food assistance", "can't afford food", "need food", "food stamps", "snap benefits"],
@@ -417,13 +518,61 @@ const INTENT_PATTERNS = {
     phrases: ["veteran services", "veteran resources", "va benefits", "military help", "military assistance", "veteran housing", "veteran healthcare"],
     weight: 1.6
   }
+  },
+  
+  es: {
+    "Food": {
+      keywords: ["comida", "hambre", "comer", "alimento", "cocina", "despensa", "nutrición", "víveres", "alimentación", "muerto de hambre", "apetito", "cenar", "alimentar"],
+      phrases: ["banco de alimentos", "comedor popular", "despensa de alimentos", "comidas gratis", "asistencia alimentaria", "no puedo pagar comida", "necesito comida", "cupones de comida", "beneficios snap"],
+      weight: 1.0
+    },
+    "Housing": {
+      keywords: ["refugio", "vivienda", "sin hogar", "alquiler", "apartamento", "casa", "desalojo", "ejecución hipotecaria", "compañero de cuarto", "arrendamiento", "propietario", "servicios públicos"],
+      phrases: ["necesito refugio", "no puedo pagar alquiler", "siendo desalojado", "refugio para personas sin hogar", "asistencia de vivienda", "vivienda asequible", "ayuda con alquiler", "asistencia con servicios públicos"],
+      weight: 1.3
+    },
+    "Mental Health": {
+      keywords: ["mental", "terapia", "consejería", "depresión", "ansiedad", "psiquiátrico", "psicológico", "terapeuta", "consejero", "estrés", "trauma", "bipolar", "tept"],
+      phrases: ["salud mental", "ayuda de salud mental", "necesito salud mental", "apoyo de salud mental", "sintiéndome deprimido", "necesito terapia", "servicios de consejería", "ayuda psicológica", "apoyo emocional"],
+      weight: 1.5
+    },
+    "Healthcare": {
+      keywords: ["médico", "clínica", "doctor", "hospital", "médico", "enfermera", "receta", "medicamento", "seguro", "chequeo", "enfermo", "enfermedad", "tratamiento"],
+      phrases: ["atención primaria", "clínica médica", "clínica gratuita", "atención médica", "visita al doctor", "seguro médico", "ayuda médica", "atención dental", "atención de la vista"],
+      weight: 1.0
+    },
+    "Substance Use": {
+      keywords: ["drogas", "alcohol", "adicción", "recuperación", "rehabilitación", "sustancia", "desintoxicación", "sobrio", "sobriedad", "abstinencia", "sobredosis", "limpio"],
+      phrases: ["abuso de sustancias", "adicción a las drogas", "problema de alcohol", "necesito rehabilitación", "tratamiento de drogas", "recuperación de adicciones", "programa de desintoxicación", "volverse sobrio"],
+      weight: 1.0
+    },
+    "Crisis": {
+      keywords: ["crisis", "emergencia", "urgente", "inmediato", "suicidio", "suicida", "daño", "peligro", "angustia", "desesperado", "sin esperanza"],
+      phrases: ["línea de suicidio", "línea de crisis", "ayuda de emergencia", "necesito ayuda ahora", "sintiéndome suicida", "apoyo de crisis", "asistencia inmediata"],
+      weight: 1.2
+    },
+    "Employment": {
+      keywords: ["trabajo", "empleo", "carrera", "currículum", "entrevista", "desempleado", "capacitación", "habilidades", "contratación"],
+      phrases: ["necesito trabajo", "capacitación laboral", "ayuda con currículum", "servicios de carrera", "asistencia de empleo", "búsqueda de trabajo", "capacitación laboral"],
+      weight: 1.0
+    },
+    "Veterans": {
+      keywords: ["veterano", "militar", "va", "ejército", "marina", "marines", "fuerza aérea", "combate", "despliegue", "servicio"],
+      phrases: ["servicios para veteranos", "recursos para veteranos", "beneficios va", "ayuda militar", "asistencia militar", "vivienda para veteranos", "atención médica para veteranos"],
+      weight: 1.6
+    }
+  }
 };
 
 function detectIntent(text) {
   const normalizedText = text.toLowerCase();
   const results = [];
+  
+  // Get patterns for current language, fallback to English
+  const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
+  const languagePatterns = INTENT_PATTERNS[currentLang] || INTENT_PATTERNS.en;
 
-  for (const [category, patterns] of Object.entries(INTENT_PATTERNS)) {
+  for (const [category, patterns] of Object.entries(languagePatterns)) {
     let score = 0;
     let matches = [];
 
@@ -481,7 +630,9 @@ function generateResponse(intent, userText) {
       conversationState.lastQuestion = null;
       
       return {
-        text: `Great! Looking for ${category.toLowerCase()} resources in your area...`,
+        text: window.i18n.t('bot.clarificationPrefix', { 
+          category: window.i18n.t(`categories.${category}`) 
+        }),
         category
       };
     } else {
@@ -491,7 +642,7 @@ function generateResponse(intent, userText) {
       conversationState.lastQuestion = null;
       
       return {
-        text: "I want to make sure I understand what you need. Could you tell me more specifically what kind of help you're looking for?",
+        text: window.i18n.t('bot.needMoreInfo'),
         category: null
       };
     }
@@ -499,7 +650,7 @@ function generateResponse(intent, userText) {
 
   if (!intent) {
     return {
-      text: "I can help you find resources for food, housing, healthcare, mental health, substance use treatment, employment, veteran services, or crisis support. What do you need help with?",
+      text: window.i18n.t('bot.welcome'),
       category: null
     };
   }
@@ -514,28 +665,19 @@ function generateResponse(intent, userText) {
     conversationState.lastQuestion = null;
     
     return {
-      text: `Looking for ${category.toLowerCase()} resources in your area...`,
+      text: window.i18n.t('bot.searchingResources', { 
+        category: window.i18n.t(`categories.${category}`) 
+      }),
       category
     };
   }
 
   // Medium confidence - ask for clarification
   if (confidence >= 0.4) {
-    const clarifications = {
-      "Food": "It sounds like you might need food assistance. Would you like to see food pantries, soup kitchens, or meal programs?",
-      "Housing": "Are you looking for emergency shelter, housing assistance, or help with rent?",
-      "Healthcare": "Do you need medical care, dental services, or help finding health insurance?",
-      "Mental Health": "Are you interested in counseling, therapy, or mental health support services?",
-      "Substance Use": "Are you looking for detox services, recovery programs, or ongoing addiction support?",
-      "Employment": "Would you like job training, resume help, or employment placement services?",
-      "Veterans": "Are you looking for VA benefits, veteran housing, or veteran healthcare services?",
-      "Crisis": "Do you need immediate crisis support, a suicide hotline, or emergency assistance?"
-    };
-    
     // Set up conversation state for clarification
     conversationState.awaitingClarification = true;
     conversationState.pendingCategory = category;
-    conversationState.lastQuestion = clarifications[category] || `Are you looking for ${category.toLowerCase()} resources?`;
+    conversationState.lastQuestion = window.i18n.t(`clarifications.${category}`);
     
     return {
       text: conversationState.lastQuestion,
