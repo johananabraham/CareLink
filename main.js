@@ -356,7 +356,7 @@ const messagesDiv = document.getElementById("messages");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
-// Conversational memory system
+// Conversational memory system for enhanced user experience
 let conversationState = {
   awaitingClarification: false,
   pendingCategory: null,
@@ -414,8 +414,8 @@ const INTENT_PATTERNS = {
   },
   "Veterans": {
     keywords: ["veteran", "military", "va", "army", "navy", "marines", "air force", "combat", "deployment", "service"],
-    phrases: ["veteran services", "va benefits", "military help", "military assistance", "veteran housing", "veteran healthcare"],
-    weight: 1.3
+    phrases: ["veteran services", "veteran resources", "va benefits", "military help", "military assistance", "veteran housing", "veteran healthcare"],
+    weight: 1.6
   }
 };
 
@@ -466,9 +466,12 @@ function detectIntent(text) {
 function generateResponse(intent, userText) {
   // Check if we're waiting for clarification from previous question
   if (conversationState.awaitingClarification) {
-    // Look for positive confirmation words
+    // Look for positive confirmation words or specific resource mentions
     const confirmationWords = ['yes', 'yeah', 'yep', 'sure', 'okay', 'ok', 'correct', 'right', 'exactly', 'please', 'show me'];
-    const isConfirmation = confirmationWords.some(word => userText.toLowerCase().includes(word));
+    const resourceMentions = ['food pantries', 'soup kitchens', 'meal programs', 'emergency shelter', 'housing assistance', 'rental help', 'va benefits', 'veteran housing', 'veteran healthcare', 'medical care', 'dental services', 'counseling', 'therapy', 'detox services', 'recovery programs', 'job training', 'resume help'];
+    
+    const isConfirmation = confirmationWords.some(word => userText.toLowerCase().includes(word)) ||
+                          resourceMentions.some(phrase => userText.toLowerCase().includes(phrase));
     
     if (isConfirmation) {
       // Reset conversation state and show resources
