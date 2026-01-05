@@ -4,8 +4,11 @@ function initializeI18n() {
   if (window.i18n.shouldShowLanguageModal()) {
     showLanguageModal();
   } else {
-    // Apply saved language immediately
+    // Apply saved language immediately and initialize map
     updateUILanguage();
+    initializeMap();
+    // Show welcome message for returning users
+    addMessage(window.i18n.t('bot.welcome'), "bot");
   }
   
   // Listen for language changes
@@ -18,6 +21,9 @@ function initializeI18n() {
 function showLanguageModal() {
   const modal = document.getElementById('languageModal');
   const optionsContainer = document.getElementById('languageOptions');
+  
+  // Add body class to hide map and other content
+  document.body.classList.add('language-modal-open');
   
   // Clear existing options
   optionsContainer.innerHTML = '';
@@ -50,8 +56,15 @@ function showLanguageModal() {
 // Select language and close modal
 function selectLanguage(langCode) {
   window.i18n.setLanguage(langCode);
+  
+  // Hide modal and remove body class
   document.getElementById('languageModal').classList.add('hidden');
+  document.body.classList.remove('language-modal-open');
+  
   updateUILanguage();
+  
+  // Initialize map now that language is selected
+  initializeMap();
   
   // Show welcome message in selected language
   addMessage(window.i18n.t('bot.welcome'), "bot");
@@ -337,8 +350,16 @@ async function loadResources() {
   }
 }
 
-let map = L.map('map').setView([39.9612, -82.9988], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+let map = null; // Will be initialized after language selection
+
+// Initialize map (called after language selection)
+function initializeMap() {
+  // Only initialize if not already initialized
+  if (map === null) {
+    map = L.map('map').setView([39.9612, -82.9988], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  }
+}
 
 async function showResources(category) {
   console.log('🔍 Searching for category:', category);
@@ -349,8 +370,10 @@ async function showResources(category) {
     console.log('🏷️ Sample resource categories:', resources.slice(0, 5).map(r => r.category));
   }
   
-  // Clear existing markers
-  map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
+  // Clear existing markers (ensure map is initialized first)
+  if (map) {
+    map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
+  }
   
   // Enhanced category matching with flexible patterns  
   const matchedResources = resources.filter(r => {
@@ -431,11 +454,15 @@ async function showResources(category) {
       }
       
       console.log(`✅ Creating marker for ${r.name} at coordinates [${r.lat}, ${r.lng}]`);
-      const marker = L.marker([r.lat, r.lng])
-        .addTo(map)
-        .bindPopup(`<b>${r.name}</b><br>${r.description || r.purpose}`);
-      
-      console.log(`✅ Marker successfully added to map`);
+      if (map) {
+        const marker = L.marker([r.lat, r.lng])
+          .addTo(map)
+          .bindPopup(`<b>${r.name}</b><br>${r.description || r.purpose}`);
+        
+        console.log(`✅ Marker successfully added to map`);
+      } else {
+        console.warn('⚠️ Map not initialized, skipping marker creation');
+      }
     } catch (error) {
       console.error(`❌ Error creating marker for ${r.name}:`, error);
     }
