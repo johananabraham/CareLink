@@ -356,6 +356,13 @@ const messagesDiv = document.getElementById("messages");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
+// Conversational memory system
+let conversationState = {
+  awaitingClarification: false,
+  pendingCategory: null,
+  lastQuestion: null
+};
+
 sendBtn.onclick = handleUserInput;
 
 function addMessage(text, sender) {
@@ -378,7 +385,7 @@ const INTENT_PATTERNS = {
   "Housing": {
     keywords: ["shelter", "housing", "homeless", "rent", "apartment", "home", "eviction", "foreclosure", "roommate", "lease", "landlord", "utilities"],
     phrases: ["need shelter", "can't pay rent", "being evicted", "homeless shelter", "housing assistance", "affordable housing", "rental help", "utility assistance"],
-    weight: 1.0
+    weight: 1.3
   },
   "Mental Health": {
     keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd"],
@@ -408,7 +415,7 @@ const INTENT_PATTERNS = {
   "Veterans": {
     keywords: ["veteran", "military", "va", "army", "navy", "marines", "air force", "combat", "deployment", "service"],
     phrases: ["veteran services", "va benefits", "military help", "veteran housing", "veteran healthcare"],
-    weight: 1.0
+    weight: 1.3
   }
 };
 
@@ -457,6 +464,36 @@ function detectIntent(text) {
 }
 
 function generateResponse(intent, userText) {
+  // Check if we're waiting for clarification from previous question
+  if (conversationState.awaitingClarification) {
+    // Look for positive confirmation words
+    const confirmationWords = ['yes', 'yeah', 'yep', 'sure', 'okay', 'ok', 'correct', 'right', 'exactly', 'please', 'show me'];
+    const isConfirmation = confirmationWords.some(word => userText.toLowerCase().includes(word));
+    
+    if (isConfirmation) {
+      // Reset conversation state and show resources
+      const category = conversationState.pendingCategory;
+      conversationState.awaitingClarification = false;
+      conversationState.pendingCategory = null;
+      conversationState.lastQuestion = null;
+      
+      return {
+        text: `Great! Looking for ${category.toLowerCase()} resources in your area...`,
+        category
+      };
+    } else {
+      // User didn't confirm, ask what they need
+      conversationState.awaitingClarification = false;
+      conversationState.pendingCategory = null;
+      conversationState.lastQuestion = null;
+      
+      return {
+        text: "I want to make sure I understand what you need. Could you tell me more specifically what kind of help you're looking for?",
+        category: null
+      };
+    }
+  }
+
   if (!intent) {
     return {
       text: "I can help you find resources for food, housing, healthcare, mental health, substance use treatment, employment, veteran services, or crisis support. What do you need help with?",
@@ -482,11 +519,18 @@ function generateResponse(intent, userText) {
       "Healthcare": "Do you need medical care, dental services, or help finding health insurance?",
       "Mental Health": "Are you interested in counseling, therapy, or mental health support services?",
       "Substance Use": "Are you looking for detox services, recovery programs, or ongoing addiction support?",
-      "Employment": "Would you like job training, resume help, or employment placement services?"
+      "Employment": "Would you like job training, resume help, or employment placement services?",
+      "Veterans": "Are you looking for VA benefits, veteran housing, or veteran healthcare services?",
+      "Crisis": "Do you need immediate crisis support, a suicide hotline, or emergency assistance?"
     };
     
+    // Set up conversation state for clarification
+    conversationState.awaitingClarification = true;
+    conversationState.pendingCategory = category;
+    conversationState.lastQuestion = clarifications[category] || `Are you looking for ${category.toLowerCase()} resources?`;
+    
     return {
-      text: clarifications[category] || `Are you looking for ${category.toLowerCase()} resources?`,
+      text: conversationState.lastQuestion,
       category: null // Don't show resources yet, wait for clarification
     };
   }
