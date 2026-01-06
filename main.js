@@ -282,24 +282,8 @@ async function loadResources() {
     console.log('📄 Serverless function not available, using sample data...', error.message);
   }
 
-  // Fallback to sample data for development
-  if (true) { // Using local data for development
-    console.log('🔄 Using sample data for testing...');
-    return [
-      { name: "Central Ohio Food Bank", category: "Food", lat: 39.8814, lng: -83.0924, description: "Emergency food assistance" },
-      { name: "Mid-Ohio Foodbank", category: "Food", lat: 39.9912, lng: -83.0451, description: "Food pantry serving west Columbus area" },
-      { name: "Victory Ministries Pantry", category: "Food", lat: 39.9569, lng: -82.8955, description: "Food pantry and meal support" },
-      { name: "YMCA Family Center", category: "Housing", lat: 39.9912, lng: -82.9988, description: "Emergency shelter services" },
-      { name: "Friends of the Homeless", category: "Housing", lat: 39.9851, lng: -82.9944, description: "Comprehensive homeless services" },
-      { name: "Directions Mental Health", category: "Mental Health", lat: 39.9612, lng: -82.9400, description: "Mental health counseling" },
-      { name: "Southeast Peer Support", category: "Mental Health", lat: 39.9504, lng: -83.0321, description: "Peer recovery and support" },
-      { name: "Maryhaven Detox", category: "Substance Use", lat: 39.9546, lng: -82.9547, description: "24/7 detox and recovery center" },
-      { name: "CompDrug Medication-assisted Treatment", category: "Substance Use", lat: 39.9907, lng: -82.8961, description: "Addiction treatment and counseling" },
-      { name: "Nationwide Children's Hospital", category: "Healthcare", lat: 39.9493, lng: -83.0196, description: "Comprehensive pediatric healthcare" },
-      { name: "Columbus State Job Training", category: "Employment", lat: 39.9634, lng: -82.9951, description: "Career training and employment assistance" },
-      { name: "VA Healthcare", category: "Veterans", lat: 39.9706, lng: -82.9218, description: "Healthcare for homeless veterans" }
-    ];
-  }
+  // Only use sample data if we're in local development and all other methods fail
+  console.log('⚠️ All data loading methods failed, using sample data as last resort...');
   
   // Try Google Sheets API first, fallback to CSV if needed
   const SHEET_API_URL = getSheetAPIUrl();
