@@ -29,7 +29,13 @@ const TRANSLATIONS = {
       resourcesFound: "Found {count} {category} resource{plural} near you! Check the map above to see their locations. Click on any marker for more details.",
       noResourcesFound: "I'm sorry, I couldn't find any mappable {category} resources in your area right now. This might be because:\n\n• The resources don't have location coordinates yet\n• They may be listed under a different category name\n• The data is still being updated\n\nYou can try asking for a different type of assistance, or check back later.",
       clarificationPrefix: "Great! Looking for {category} resources in your area...",
-      needMoreInfo: "I want to make sure I understand what you need. Could you tell me more specifically what kind of help you're looking for?"
+      needMoreInfo: "I want to make sure I understand what you need. Could you tell me more specifically what kind of help you're looking for?",
+      feedbackPrompt: "Was this helpful? Did you find what you were looking for?",
+      feedbackYes: "Yes, this helped!",
+      feedbackNo: "I need more assistance",
+      feedbackThankYou: "Great! We're glad we could help.",
+      offerPersonalHelp: "Let us connect you with someone who can provide personal assistance.",
+      noResourcesOffer: "Since we couldn't find the right resources, would you like us to connect you with someone who can help personally?"
     },
     
     // Clarification questions
@@ -96,7 +102,13 @@ const TRANSLATIONS = {
       resourcesFound: "¡Encontré {count} recurso{plural} de {category} cerca de ti! Revisa el mapa arriba para ver sus ubicaciones. Haz clic en cualquier marcador para más detalles.",
       noResourcesFound: "Lo siento, no pude encontrar recursos de {category} mapeables en tu área ahora mismo. Esto puede ser porque:\n\n• Los recursos aún no tienen coordenadas de ubicación\n• Pueden estar listados bajo un nombre de categoría diferente\n• Los datos aún se están actualizando\n\nPuedes intentar preguntar por un tipo diferente de asistencia, o volver a intentar más tarde.",
       clarificationPrefix: "¡Perfecto! Buscando recursos de {category} en tu área...",
-      needMoreInfo: "Quiero asegurarme de entender lo que necesitas. ¿Podrías decirme más específicamente qué tipo de ayuda buscas?"
+      needMoreInfo: "Quiero asegurarme de entender lo que necesitas. ¿Podrías decirme más específicamente qué tipo de ayuda buscas?",
+      feedbackPrompt: "¿Esto te ayudó? ¿Encontraste lo que estabas buscando?",
+      feedbackYes: "¡Sí, esto me ayudó!",
+      feedbackNo: "Necesito más asistencia",
+      feedbackThankYou: "¡Excelente! Nos alegra haber podido ayudarte.",
+      offerPersonalHelp: "Permítenos conectarte con alguien que pueda brindarte asistencia personal.",
+      noResourcesOffer: "Como no pudimos encontrar los recursos adecuados, ¿te gustaría que te conectemos con alguien que pueda ayudarte personalmente?"
     },
     
     // Clarification questions
@@ -163,7 +175,13 @@ const TRANSLATIONS = {
       resourcesFound: "Waxaan helay {count} agab {category} oo ku dhow! Fiiri khariidadda kor ku taal si aad u aragto meelaha ay ku yaalliin. Gujii calaamad kasta si aad faahfaahin u hesho.",
       noResourcesFound: "Waan ka xunnahay, ma heli karo agab {category} oo khariidadda lagu saari karo oo agagaaga ah hadda. Taani waxay noqon kartaa sababtoo ah:\n\n• Agabku wali ma haysto tirtiro goob\n• Waxay u badan tahay inay ku qoran yihiin magac kale\n• Xogta wali waa la cusboneysiiinayaa\n\nWaxaad tijaabi kartaa inaad weydiiso caawimo kale, ama dib ugu soo noqo mar dambe.",
       clarificationPrefix: "Fiican! Waan raadiyaa agabka {category} ee agagaaga ku yaal...",
-      needMoreInfo: "Waxaan doonayaa inaan hubsado waxa aad u baahan tahay. Miyaad ii sheegi kartaa si tafatiran waxa aad raadinayso?"
+      needMoreInfo: "Waxaan doonayaa inaan hubsado waxa aad u baahan tahay. Miyaad ii sheegi kartaa si tafatiran waxa aad raadinayso?",
+      feedbackPrompt: "Tani miyey kaa caawinay? Miyaad heeshay waxa aad raadinaysay?",
+      feedbackYes: "Haa, tani wey i caawinay!",
+      feedbackNo: "Waxaan u baahanahay caawimo dheeraad ah",
+      feedbackThankYou: "Fiican! Waan ku faraxsan nahay inaan ku caawin karney.",
+      offerPersonalHelp: "Waxaan kuu ogolaaneyn in aan ku xidhno qof ku siinaya caawimo shakhsi ah.",
+      noResourcesOffer: "Maadaama aanan ka helin agabkii saxda ahaa, miyaad jeclaanahayd inaan ku xidhno qof ku caawin kara si shakhsi ah?"
     },
     
     // Clarification questions
@@ -230,7 +248,13 @@ const TRANSLATIONS = {
       resourcesFound: "تم العثور على {count} مورد {category} بالقرب منك! تحقق من الخريطة أعلاه لرؤية مواقعها. انقر على أي علامة للحصول على تفاصيل أكثر.",
       noResourcesFound: "أعتذر، لا يمكنني العثور على أي موارد {category} قابلة للرسم على الخريطة في منطقتك الآن. قد يكون هذا بسبب:\n\n• الموارد ليس لديها إحداثيات الموقع بعد\n• قد تكون مدرجة تحت اسم فئة مختلف\n• البيانات ما زالت يجري تحديثها\n\nيمكنك محاولة السؤال عن نوع مختلف من المساعدة، أو العودة لاحقاً.",
       clarificationPrefix: "ممتاز! البحث عن موارد {category} في منطقتك...",
-      needMoreInfo: "أريد التأكد من فهم ما تحتاجه. هل يمكنك إخباري بشكل أكثر تحديداً عن نوع المساعدة التي تبحث عنها؟"
+      needMoreInfo: "أريد التأكد من فهم ما تحتاجه. هل يمكنك إخباري بشكل أكثر تحديداً عن نوع المساعدة التي تبحث عنها؟",
+      feedbackPrompt: "هل كان هذا مفيداً؟ هل وجدت ما كنت تبحث عنه؟",
+      feedbackYes: "نعم، هذا ساعدني!",
+      feedbackNo: "أحتاج مساعدة أكثر",
+      feedbackThankYou: "ممتاز! يسرنا أن نكون قد تمكنا من مساعدتك.",
+      offerPersonalHelp: "دعنا نربطك بشخص يمكنه تقديم المساعدة الشخصية.",
+      noResourcesOffer: "بما أننا لم نتمكن من العثور على الموارد المناسبة، هل تريد أن نربطك بشخص يمكنه مساعدتك شخصياً؟"
     },
     
     // Clarification questions
@@ -297,7 +321,13 @@ const TRANSLATIONS = {
       resourcesFound: "आपके पास {count} {category} संसाधन मिले! उनके स्थानों को देखने के लिए ऊपर का नक्शा देखें। अधिक विवरण के लिए किसी भी मार्कर पर क्लिक करें।",
       noResourcesFound: "मुझे खुशी है, मैं आपके क्षेत्र में अभी कोई मानचित्र योग्य {category} संसाधन नहीं ढूंढ सका। यह इसलिए हो सकता है:\n\n• संसाधनों के पास अभी तक स्थान निर्देशांक नहीं हैं\n• वे एक अलग श्रेणी नाम के तहत सूचीबद्ध हो सकते हैं\n• डेटा अभी भी अपडेट हो रहा है\n\nआप एक अलग प्रकार की सहायता मांगने की कोशिश कर सकते हैं, या बाद में वापस आ सकते हैं।",
       clarificationPrefix: "बहुत बढ़िया! आपके क्षेत्र में {category} संसाधन खोज रहे हैं...",
-      needMoreInfo: "मैं यह सुनिश्चित करना चाहता हूं कि मैं समझ गया हूं कि आपको क्या चाहिए। क्या आप मुझे और विशेष रूप से बता सकते हैं कि आप किस प्रकार की मदद की तलाश कर रहे हैं?"
+      needMoreInfo: "मैं यह सुनिश्चित करना चाहता हूं कि मैं समझ गया हूं कि आपको क्या चाहिए। क्या आप मुझे और विशेष रूप से बता सकते हैं कि आप किस प्रकार की मदद की तलाश कर रहे हैं?",
+      feedbackPrompt: "क्या यह सहायक था? क्या आपको वह मिला जिसकी आप तलाश कर रहे थे?",
+      feedbackYes: "हां, इससे मदद मिली!",
+      feedbackNo: "मुझे और सहायता चाहिए",
+      feedbackThankYou: "बहुत बढ़िया! हमें खुशी है कि हम आपकी मदद कर सके।",
+      offerPersonalHelp: "आइए हम आपको किसी ऐसे व्यक्ति से जोड़ते हैं जो व्यक्तिगत सहायता प्रदान कर सकता है।",
+      noResourcesOffer: "चूंकि हम सही संसाधन नहीं ढूंढ सके, क्या आप चाहेंगे कि हम आपको किसी ऐसे व्यक्ति से जोड़ें जो व्यक्तिगत रूप से आपकी सहायता कर सकता है?"
     },
     
     // Clarification questions

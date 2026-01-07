@@ -600,6 +600,12 @@ async function showResources(category) {
     addMessage(window.i18n.t('bot.noResourcesFound', { 
       category: window.i18n.t(`categories.${category}`) 
     }), "bot");
+    
+    // Offer personal assistance directly when no resources found
+    addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
+    
+    // Trigger Tier 2 intake directly
+    startTier2Intake(category);
     return; // Exit early when no resources found
   }
   
@@ -643,6 +649,9 @@ async function showResources(category) {
       category: window.i18n.t(`categories.${category}`),
       plural: plural
     }), "bot");
+    
+    // Show feedback prompt after successful resource display
+    showFeedbackPrompt(category);
   }
 }
 
@@ -654,8 +663,78 @@ const sendBtn = document.getElementById("sendBtn");
 let conversationState = {
   awaitingClarification: false,
   pendingCategory: null,
-  lastQuestion: null
+  lastQuestion: null,
+  awaitingFeedback: false,
+  awaitingNameForAnalytics: false,
+  awaitingIntakeForm: false,
+  lastSearchCategory: null
 };
+
+// Feedback System Functions
+function showFeedbackPrompt(category) {
+  conversationState.awaitingFeedback = true;
+  conversationState.lastSearchCategory = category;
+  
+  // Show feedback prompt message
+  addMessage(window.i18n.t('bot.feedbackPrompt'), "bot");
+  
+  // Create interactive feedback buttons
+  const feedbackDiv = document.createElement("div");
+  feedbackDiv.className = "feedback-buttons flex gap-2 mt-2 mb-4 justify-center";
+  
+  // Yes button (leads to Tier 1 - basic analytics)
+  const yesButton = document.createElement("button");
+  yesButton.className = "bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors";
+  yesButton.textContent = window.i18n.t('bot.feedbackYes');
+  yesButton.onclick = () => handleFeedbackResponse(true, category);
+  
+  // No button (leads to Tier 2 - full intake)
+  const noButton = document.createElement("button");
+  noButton.className = "bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors";
+  noButton.textContent = window.i18n.t('bot.feedbackNo');
+  noButton.onclick = () => handleFeedbackResponse(false, category);
+  
+  feedbackDiv.appendChild(yesButton);
+  feedbackDiv.appendChild(noButton);
+  
+  // Add to messages container
+  messagesDiv.appendChild(feedbackDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function handleFeedbackResponse(wasHelpful, category) {
+  // Remove feedback buttons
+  const feedbackButtons = document.querySelector('.feedback-buttons');
+  if (feedbackButtons) {
+    feedbackButtons.remove();
+  }
+  
+  if (wasHelpful) {
+    // Tier 1: Basic analytics collection
+    addMessage(window.i18n.t('bot.feedbackThankYou'), "bot");
+    startTier1Analytics(category);
+  } else {
+    // Tier 2: Full intake form
+    addMessage(window.i18n.t('bot.offerPersonalHelp'), "bot");
+    startTier2Intake(category);
+  }
+  
+  conversationState.awaitingFeedback = false;
+}
+
+function startTier1Analytics(category) {
+  conversationState.awaitingNameForAnalytics = true;
+  conversationState.lastSearchCategory = category;
+  
+  addMessage("Could you share your first name so we can keep track of how we're helping people in the community? (This is just for our records)", "bot");
+}
+
+function startTier2Intake(category) {
+  conversationState.awaitingIntakeForm = true;
+  conversationState.lastSearchCategory = category;
+  
+  addMessage("I'd like to connect you with someone who can provide personalized assistance. Could you please share your name and contact information?", "bot");
+}
 
 sendBtn.onclick = handleUserInput;
 
@@ -1043,6 +1122,17 @@ async function handleUserInput() {
   addMessage(text, "user");
   input.value = "";
 
+  // Handle feedback and form states first
+  if (conversationState.awaitingNameForAnalytics) {
+    handleTier1NameCollection(text);
+    return;
+  }
+  
+  if (conversationState.awaitingIntakeForm) {
+    handleTier2IntakeResponse(text);
+    return;
+  }
+
   // Detect user intent
   const intent = detectIntent(text);
   console.log("Detected intent:", intent); // For debugging
@@ -1055,4 +1145,110 @@ async function handleUserInput() {
   if (response.category) {
     showResources(response.category);
   }
+}
+
+// Tier 1 Analytics Handler - Simple name collection
+async function handleTier1NameCollection(name) {
+  conversationState.awaitingNameForAnalytics = false;
+  
+  // Basic validation
+  if (name.length < 1) {
+    addMessage("Could you please share your first name?", "bot");
+    conversationState.awaitingNameForAnalytics = true;
+    return;
+  }
+  
+  // Store basic analytics data
+  const analyticsData = {
+    firstName: name,
+    searchCategory: conversationState.lastSearchCategory,
+    language: window.i18n.getCurrentLanguage(),
+    timestamp: new Date().toISOString(),
+    sessionId: generateSessionId()
+  };
+  
+  console.log('Tier 1 Analytics Data:', analyticsData);
+  
+  try {
+    // Send to Airtable backend
+    const response = await fetch('/api/user-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'analytics',
+        data: analyticsData
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      addMessage(`Thank you, ${name}! We're glad we could help you find ${conversationState.lastSearchCategory} resources.`, "bot");
+    } else {
+      console.error('Failed to submit analytics:', result.error);
+      addMessage(`Thank you, ${name}! We're glad we could help you find ${conversationState.lastSearchCategory} resources.`, "bot");
+    }
+  } catch (error) {
+    console.error('Error submitting analytics:', error);
+    // Still show success message to user even if logging fails
+    addMessage(`Thank you, ${name}! We're glad we could help you find ${conversationState.lastSearchCategory} resources.`, "bot");
+  }
+  
+  // Reset state
+  conversationState.lastSearchCategory = null;
+}
+
+// Tier 2 Intake Handler - Full form collection  
+async function handleTier2IntakeResponse(response) {
+  // This is a simplified version - in practice you'd collect info step by step
+  conversationState.awaitingIntakeForm = false;
+  
+  // For now, collect basic contact info
+  const intakeData = {
+    response: response,
+    searchCategory: conversationState.lastSearchCategory,
+    language: window.i18n.getCurrentLanguage(),
+    timestamp: new Date().toISOString(),
+    sessionId: generateSessionId(),
+    needsPersonalAssistance: true
+  };
+  
+  console.log('Tier 2 Intake Data:', intakeData);
+  
+  try {
+    // Send to Airtable backend
+    const apiResponse = await fetch('/api/user-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'help_request',
+        data: intakeData
+      })
+    });
+    
+    const result = await apiResponse.json();
+    
+    if (result.success) {
+      addMessage("Thank you! We've recorded your information and someone from our team will reach out to you within 24 hours to provide personalized assistance.", "bot");
+    } else {
+      console.error('Failed to submit help request:', result.error);
+      addMessage("Thank you! We've recorded your request. If there are any issues, please try contacting us directly.", "bot");
+    }
+  } catch (error) {
+    console.error('Error submitting help request:', error);
+    // Still show confirmation to user even if logging fails
+    addMessage("Thank you! We've recorded your request. If there are any issues, please try contacting us directly.", "bot");
+  }
+  
+  // Reset state
+  conversationState.lastSearchCategory = null;
+}
+
+// Helper function to generate session ID
+function generateSessionId() {
+  return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
