@@ -28,7 +28,12 @@ const TRANSLATIONS = {
       enableNearMe: "Enable \"Near Me\"",
       nearMeActive: "✓ \"Near Me\" Active",
       yourLocation: "Your Location",
-      accuracy: "Accuracy"
+      accuracy: "Accuracy",
+      zipCodePrompt: "Please enter your ZIP code to find resources near you:",
+      zipCodeSuccess: "Found location for ZIP code {zipCode}! I can now show you nearby resources.",
+      zipCodeError: "I couldn't find that ZIP code ({zipCode}). Please try a different ZIP code or browse all available resources.",
+      zipCodeInvalid: "That doesn't look like a valid ZIP code. Please enter a 5-digit ZIP code (e.g., 12345) or ZIP+4 format (e.g., 12345-6789).",
+      zipCodeFallback: "I can still help you find resources! You can search by ZIP code or browse all available options."
     },
     
     // Forms
@@ -153,7 +158,12 @@ const TRANSLATIONS = {
       enableNearMe: "Activar \"Cerca de Mí\"",
       nearMeActive: "✓ \"Cerca de Mí\" Activo",
       yourLocation: "Tu Ubicación",
-      accuracy: "Precisión"
+      accuracy: "Precisión",
+      zipCodePrompt: "Por favor ingresa tu código postal para encontrar recursos cerca de ti:",
+      zipCodeSuccess: "¡Encontré la ubicación para el código postal {zipCode}! Ahora puedo mostrarte recursos cercanos.",
+      zipCodeError: "No pude encontrar ese código postal ({zipCode}). Por favor intenta un código postal diferente o explora todos los recursos disponibles.",
+      zipCodeInvalid: "Ese no parece ser un código postal válido. Por favor ingresa un código postal de 5 dígitos (ej. 12345) o formato ZIP+4 (ej. 12345-6789).",
+      zipCodeFallback: "¡Aún puedo ayudarte a encontrar recursos! Puedes buscar por código postal o explorar todas las opciones disponibles."
     },
     
     // Forms

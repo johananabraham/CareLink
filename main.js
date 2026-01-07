@@ -302,7 +302,70 @@ const LocationService = {
   
   // Show fallback options when location is denied
   showLocationFallback() {
-    addMessage("📍 I can still help you find resources! You can search by ZIP code or browse all available options.", "bot");
+    addMessage(window.i18n.t('location.zipCodeFallback'), "bot");
+    // Set flag to handle ZIP code input
+    conversationState.awaitingZipCode = true;
+    addMessage(window.i18n.t('location.zipCodePrompt'), "bot");
+  },
+  
+  // Geocode ZIP code to get coordinates
+  async geocodeZipCode(zipCode) {
+    try {
+      console.log(`📍 Geocoding ZIP code: ${zipCode}`);
+      
+      // Use OpenStreetMap Nominatim API (free and reliable)
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&postalcode=${encodeURIComponent(zipCode)}&limit=1`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Geocoding API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const location = {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon),
+          accuracy: 5000, // ZIP code accuracy is ~5km
+          source: 'zipcode',
+          zipCode: zipCode
+        };
+        
+        console.log('✅ ZIP code geocoded:', location);
+        this.userLocation = location;
+        this.showZipCodeSuccess(zipCode);
+        this.addUserMarkerToMap();
+        return location;
+      } else {
+        throw new Error('ZIP code not found');
+      }
+      
+    } catch (error) {
+      console.error('❌ ZIP code geocoding failed:', error);
+      this.showZipCodeError(zipCode);
+      return null;
+    }
+  },
+  
+  // Show success message for ZIP code
+  showZipCodeSuccess(zipCode) {
+    const message = window.i18n.t('location.zipCodeSuccess').replace('{zipCode}', zipCode);
+    addMessage(`✅ ${message}`, "bot");
+  },
+  
+  // Show error message for invalid ZIP code
+  showZipCodeError(zipCode) {
+    const message = window.i18n.t('location.zipCodeError').replace('{zipCode}', zipCode);
+    addMessage(`❌ ${message}`, "bot");
+  },
+  
+  // Validate ZIP code format (US ZIP codes)
+  isValidZipCode(zipCode) {
+    // Accept 5-digit ZIP or ZIP+4 format (12345 or 12345-6789)
+    const zipRegex = /^\d{5}(-\d{4})?$/;
+    return zipRegex.test(zipCode.trim());
   },
   
   // Add user location marker to map
@@ -411,6 +474,24 @@ function disableNearMeMode() {
   text.setAttribute('data-i18n', 'location.enableNearMe');
   
   addMessage("📍 I'll now show you all available resources.", "bot");
+}
+
+// Update Near Me button state without messaging (used by ZIP code handler)
+function updateNearMeButton(isEnabled) {
+  const toggle = document.getElementById('nearMeToggle');
+  const text = document.getElementById('nearMeText');
+  
+  if (isEnabled) {
+    nearMeMode = true;
+    toggle.className = 'px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400';
+    text.textContent = window.i18n.t('location.nearMeActive');
+    text.setAttribute('data-i18n', 'location.nearMeActive');
+  } else {
+    nearMeMode = false;
+    toggle.className = 'px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400';
+    text.textContent = window.i18n.t('location.enableNearMe');
+    text.setAttribute('data-i18n', 'location.enableNearMe');
+  }
 }
 
 // Initialize everything when DOM is loaded
@@ -955,6 +1036,7 @@ let conversationState = {
   awaitingFeedback: false,
   awaitingNameForAnalytics: false,
   awaitingIntakeForm: false,
+  awaitingZipCode: false,
   lastSearchCategory: null
 };
 
@@ -1418,6 +1500,12 @@ async function handleUserInput() {
     handleTier2IntakeResponse(text);
     return;
   }
+  
+  // Handle ZIP code input
+  if (conversationState.awaitingZipCode) {
+    handleZipCodeInput(text);
+    return;
+  }
 
   // Detect user intent with AI (fallback to keyword matching)
   const intent = await detectIntentWithAI(text);
@@ -1555,6 +1643,36 @@ async function handleTier2IntakeResponse(response) {
 // Helper function to generate session ID
 function generateSessionId() {
   return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// ZIP Code Input Handler - Fallback for when GPS location fails
+async function handleZipCodeInput(text) {
+  conversationState.awaitingZipCode = false;
+  
+  const zipCode = text.trim();
+  
+  // Validate ZIP code format
+  if (!LocationService.isValidZipCode(zipCode)) {
+    addMessage(`❌ ${window.i18n.t('location.zipCodeInvalid')}`, "bot");
+    conversationState.awaitingZipCode = true;
+    return;
+  }
+  
+  // Try to geocode the ZIP code
+  const location = await LocationService.geocodeZipCode(zipCode);
+  
+  if (location) {
+    // Successfully got location from ZIP code
+    // Update the Near Me button to show it's active
+    updateNearMeButton(true);
+    
+    // Offer to show nearby resources
+    addMessage("Would you like me to show you resources near this location? Just tell me what kind of help you need (food, housing, healthcare, etc.)", "bot");
+  } else {
+    // ZIP code geocoding failed
+    conversationState.awaitingZipCode = true;
+    addMessage("Please try another ZIP code, or you can browse all available resources by telling me what you need.", "bot");
+  }
 }
 
 // AI-Powered Intent Detection with Fallback
