@@ -1507,6 +1507,28 @@ async function handleUserInput() {
     return;
   }
 
+  // Check for explicit help requests that should trigger the progressive form
+  const helpRequestPatterns = [
+    /i need (more|additional|personal|extra) help/i,
+    /i want (more|personal|extra) help/i,
+    /can you help me/i,
+    /i need someone to help/i,
+    /connect me with someone/i,
+    /i need assistance/i,
+    /more assistance/i,
+    /personal assistance/i,
+    /talk to someone/i,
+    /speak to someone/i
+  ];
+
+  const lowercaseText = text.toLowerCase();
+  if (helpRequestPatterns.some(pattern => pattern.test(lowercaseText))) {
+    console.log('🎯 Direct help request detected, showing progressive form');
+    addMessage(window.i18n.t('bot.offerPersonalHelp'), "bot");
+    startTier2Intake(null);
+    return;
+  }
+
   // Detect user intent with AI (fallback to keyword matching)
   const intent = await detectIntentWithAI(text);
   console.log("Detected intent:", intent); // For debugging
@@ -1514,6 +1536,24 @@ async function handleUserInput() {
   // Handle different intent types
   if (intent && intent.isNonsensical) {
     // Handle nonsensical input by offering help
+    addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
+    startTier2Intake(null);
+    return;
+  }
+  
+  // Additional check for clearly nonsensical requests if AI didn't catch them
+  const nonsensicalPatterns = [
+    /unicorn training/i,
+    /dragon help/i,
+    /fairy assistance/i,
+    /wizard support/i,
+    /magic help/i,
+    /superhero training/i,
+    /alien support/i
+  ];
+  
+  if (nonsensicalPatterns.some(pattern => pattern.test(lowercaseText))) {
+    console.log('🦄 Nonsensical request detected, offering personal help');
     addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
     startTier2Intake(null);
     return;
