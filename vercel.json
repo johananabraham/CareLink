@@ -2,6 +2,12 @@
   "functions": {
     "api/sheets.js": {
       "maxDuration": 10
+    },
+    "api/ai-intent.js": {
+      "maxDuration": 10
+    },
+    "api/user-data.js": {
+      "maxDuration": 10
     }
   }
 }

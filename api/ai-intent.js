@@ -1,7 +1,9 @@
 // Serverless function for OpenAI-powered intent detection
 // Replaces simplistic keyword matching with intelligent conversation understanding
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
+  console.log('🚀 AI Intent function called!', req.method);
+  
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
