@@ -1018,10 +1018,8 @@ function startTier1Analytics(category) {
 }
 
 function startTier2Intake(category) {
-  conversationState.awaitingIntakeForm = true;
-  conversationState.lastSearchCategory = category;
-  
-  addMessage("I'd like to connect you with someone who can provide personalized assistance. Could you please share your name and contact information?", "bot");
+  // Show the progressive form instead of chat-based intake
+  showProgressiveForm(category);
 }
 
 sendBtn.onclick = handleUserInput;
@@ -1644,3 +1642,319 @@ function generateSmartResponse(intent, text) {
     category: null
   };
 }
+
+// Progressive Form System
+let currentFormStep = 1;
+let formData = {};
+
+function showProgressiveForm(category = null) {
+  // Pre-populate category if provided
+  if (category) {
+    formData.helpCategory = category;
+  }
+  
+  // Reset form state
+  currentFormStep = 1;
+  updateFormStep();
+  
+  // Show modal
+  document.getElementById('formModal').classList.remove('hidden');
+  
+  // Focus first input
+  setTimeout(() => {
+    document.getElementById('userName').focus();
+  }, 100);
+  
+  console.log('📋 Progressive form opened', { category });
+}
+
+function hideProgressiveForm() {
+  document.getElementById('formModal').classList.add('hidden');
+  resetFormData();
+}
+
+function resetFormData() {
+  currentFormStep = 1;
+  formData = {};
+  
+  // Clear all form fields
+  document.querySelectorAll('#formModal input, #formModal select, #formModal textarea').forEach(field => {
+    field.value = '';
+    hideFieldError(field.id);
+  });
+  
+  updateFormStep();
+}
+
+function updateFormStep() {
+  // Hide all steps
+  document.querySelectorAll('[id^="formStep"]').forEach(step => {
+    step.classList.add('hidden');
+  });
+  
+  // Show current step
+  document.getElementById(`formStep${currentFormStep}`).classList.remove('hidden');
+  
+  // Update progress indicators
+  document.getElementById('currentStep').textContent = currentFormStep;
+  
+  // Update step indicators
+  for (let i = 1; i <= 3; i++) {
+    const indicator = document.getElementById(`step${i}Indicator`);
+    if (i <= currentFormStep) {
+      indicator.classList.remove('bg-gray-300');
+      indicator.classList.add('bg-blue-600');
+    } else {
+      indicator.classList.remove('bg-blue-600');
+      indicator.classList.add('bg-gray-300');
+    }
+  }
+  
+  // Update progress bar
+  const progress = (currentFormStep / 3) * 100;
+  document.getElementById('progressBar').style.width = `${progress}%`;
+  
+  // Update button visibility
+  const backBtn = document.getElementById('formBackBtn');
+  const nextBtn = document.getElementById('formNextBtn');
+  const submitBtn = document.getElementById('formSubmitBtn');
+  
+  if (currentFormStep === 1) {
+    backBtn.classList.add('hidden');
+  } else {
+    backBtn.classList.remove('hidden');
+  }
+  
+  if (currentFormStep === 3) {
+    nextBtn.classList.add('hidden');
+    submitBtn.classList.remove('hidden');
+  } else {
+    nextBtn.classList.remove('hidden');
+    submitBtn.classList.add('hidden');
+  }
+  
+  // Pre-populate fields if we have data
+  if (formData.helpCategory && currentFormStep === 2) {
+    document.getElementById('helpCategory').value = formData.helpCategory;
+  }
+}
+
+function validateCurrentStep() {
+  let isValid = true;
+  const currentStepElement = document.getElementById(`formStep${currentFormStep}`);
+  const requiredFields = currentStepElement.querySelectorAll('[required]');
+  
+  requiredFields.forEach(field => {
+    const value = field.value.trim();
+    
+    if (!value) {
+      showFieldError(field.id, window.i18n.t('forms.validationRequired'));
+      isValid = false;
+    } else {
+      // Additional validation
+      if (field.type === 'email' && value && !isValidEmail(value)) {
+        showFieldError(field.id, window.i18n.t('forms.validationEmail'));
+        isValid = false;
+      } else if (field.type === 'tel' && !isValidPhone(value)) {
+        showFieldError(field.id, window.i18n.t('forms.validationPhone'));
+        isValid = false;
+      } else {
+        hideFieldError(field.id);
+      }
+    }
+  });
+  
+  return isValid;
+}
+
+function showFieldError(fieldId, message) {
+  const errorElement = document.getElementById(`${fieldId}Error`);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+  
+  // Add error styling to field
+  const field = document.getElementById(fieldId);
+  field.classList.add('border-red-500');
+  field.classList.remove('border-gray-300');
+}
+
+function hideFieldError(fieldId) {
+  const errorElement = document.getElementById(`${fieldId}Error`);
+  if (errorElement) {
+    errorElement.classList.add('hidden');
+  }
+  
+  // Remove error styling from field
+  const field = document.getElementById(fieldId);
+  field.classList.remove('border-red-500');
+  field.classList.add('border-gray-300');
+}
+
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+function isValidPhone(phone) {
+  // Accept various phone formats
+  const phoneRegex = /^[\+]?[(]?[\d\s\-\(\)]{10,}$/;
+  return phoneRegex.test(phone);
+}
+
+function collectCurrentStepData() {
+  const currentStepElement = document.getElementById(`formStep${currentFormStep}`);
+  const fields = currentStepElement.querySelectorAll('input, select, textarea');
+  
+  fields.forEach(field => {
+    if (field.value.trim()) {
+      formData[field.id] = field.value.trim();
+    }
+  });
+}
+
+async function submitForm() {
+  // Collect final step data
+  collectCurrentStepData();
+  
+  // Show loading state
+  const submitBtn = document.getElementById('formSubmitBtn');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Submitting...';
+  submitBtn.disabled = true;
+  
+  try {
+    // Prepare final data
+    const finalData = {
+      ...formData,
+      language: window.i18n.getCurrentLanguage(),
+      timestamp: new Date().toISOString(),
+      sessionId: generateSessionId(),
+      needsPersonalAssistance: true,
+      userLocation: LocationService.userLocation // Include location if available
+    };
+    
+    console.log('📤 Submitting form data:', finalData);
+    
+    // Send to backend
+    const response = await fetch('/api/user-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'help_request',
+        data: finalData
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Show success message
+      hideProgressiveForm();
+      addMessage("✅ Thank you! We've received your request and someone from our team will contact you within 24 hours to provide personalized assistance.", "bot");
+      
+      // Add follow-up information
+      addMessage("📧 You should receive a confirmation email shortly. If you don't see it, please check your spam folder or try contacting us directly.", "bot");
+      
+    } else {
+      throw new Error(result.error || 'Submission failed');
+    }
+    
+  } catch (error) {
+    console.error('❌ Form submission error:', error);
+    
+    // Show error message
+    addMessage("⚠️ There was an issue submitting your request. Please try again, or contact us directly for immediate assistance.", "bot");
+  }
+  
+  // Reset button
+  submitBtn.textContent = originalText;
+  submitBtn.disabled = false;
+}
+
+function generateSessionId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+// Form Event Handlers
+document.addEventListener('DOMContentLoaded', () => {
+  // Form navigation
+  document.getElementById('formNextBtn').addEventListener('click', () => {
+    if (validateCurrentStep()) {
+      collectCurrentStepData();
+      if (currentFormStep < 3) {
+        currentFormStep++;
+        updateFormStep();
+        
+        // Focus first input of new step
+        setTimeout(() => {
+          const newStepElement = document.getElementById(`formStep${currentFormStep}`);
+          const firstInput = newStepElement.querySelector('input, select, textarea');
+          if (firstInput) firstInput.focus();
+        }, 100);
+      }
+    }
+  });
+  
+  document.getElementById('formBackBtn').addEventListener('click', () => {
+    if (currentFormStep > 1) {
+      collectCurrentStepData();
+      currentFormStep--;
+      updateFormStep();
+    }
+  });
+  
+  document.getElementById('formSubmitBtn').addEventListener('click', () => {
+    if (validateCurrentStep()) {
+      submitForm();
+    }
+  });
+  
+  document.getElementById('formCancelBtn').addEventListener('click', () => {
+    hideProgressiveForm();
+    addMessage("Form cancelled. Feel free to ask me anything else!", "bot");
+  });
+  
+  // Close modal when clicking outside
+  document.getElementById('formModal').addEventListener('click', (e) => {
+    if (e.target.id === 'formModal') {
+      hideProgressiveForm();
+      addMessage("Form closed. Feel free to ask me anything else!", "bot");
+    }
+  });
+  
+  // Real-time validation
+  document.querySelectorAll('#formModal input, #formModal select, #formModal textarea').forEach(field => {
+    field.addEventListener('blur', () => {
+      if (field.hasAttribute('required')) {
+        const value = field.value.trim();
+        if (value) {
+          if (field.type === 'email' && !isValidEmail(value)) {
+            showFieldError(field.id, window.i18n.t('forms.validationEmail'));
+          } else if (field.type === 'tel' && !isValidPhone(value)) {
+            showFieldError(field.id, window.i18n.t('forms.validationPhone'));
+          } else {
+            hideFieldError(field.id);
+          }
+        }
+      }
+    });
+  });
+  
+  // Enter key navigation
+  document.querySelectorAll('#formModal input').forEach(input => {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentFormStep < 3) {
+          document.getElementById('formNextBtn').click();
+        } else {
+          document.getElementById('formSubmitBtn').click();
+        }
+      }
+    });
+  });
+});
