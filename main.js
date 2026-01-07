@@ -1136,14 +1136,75 @@ function startTier2Intake(category) {
 
 sendBtn.onclick = handleUserInput;
 
-function addMessage(text, sender) {
-  const msg = document.createElement("div");
-  msg.className = sender === "user" ? "text-right mb-2" : "text-left mb-2";
-  msg.innerHTML = `<span class="inline-block px-3 py-2 rounded-lg ${
-    sender === "user" ? 'bg-blue-500 text-white' : 'bg-gray-200'
-  }">${text}</span>`;
-  messagesDiv.appendChild(msg);
+// Enhanced message system with typing indicators and smoother animations
+function addMessage(text, sender, delay = 0) {
+  // Add typing indicator for bot messages if there's a delay
+  if (sender === "bot" && delay > 0) {
+    showTypingIndicator();
+  }
+
+  const showMessage = () => {
+    // Remove typing indicator
+    hideTypingIndicator();
+
+    const msg = document.createElement("div");
+    msg.className = sender === "user" ? "text-right mb-2" : "text-left mb-2";
+    msg.innerHTML = `<span class="inline-block px-3 py-2 rounded-lg ${
+      sender === "user" ? 'bg-blue-500 text-white' : 'bg-gray-200'
+    }">${text}</span>`;
+    
+    // Add subtle animation
+    msg.style.opacity = '0';
+    msg.style.transform = 'translateY(10px)';
+    
+    messagesDiv.appendChild(msg);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Animate in
+    setTimeout(() => {
+      msg.style.transition = 'all 0.3s ease';
+      msg.style.opacity = '1';
+      msg.style.transform = 'translateY(0)';
+    }, 10);
+  };
+
+  if (delay > 0) {
+    setTimeout(showMessage, delay);
+  } else {
+    showMessage();
+  }
+}
+
+function showTypingIndicator() {
+  // Remove any existing typing indicator
+  hideTypingIndicator();
+
+  const typingDiv = document.createElement("div");
+  typingDiv.id = "typingIndicator";
+  typingDiv.className = "text-left mb-2";
+  
+  typingDiv.innerHTML = `
+    <span class="inline-block px-3 py-2 rounded-lg bg-gray-200">
+      <div class="flex items-center space-x-1">
+        <div class="flex space-x-1">
+          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
+          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms;"></div>
+          <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms;"></div>
+        </div>
+        <span class="text-sm text-gray-500 ml-2">typing...</span>
+      </div>
+    </span>
+  `;
+  
+  messagesDiv.appendChild(typingDiv);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function hideTypingIndicator() {
+  const existingTyping = document.getElementById("typingIndicator");
+  if (existingTyping) {
+    existingTyping.remove();
+  }
 }
 
 // Enhanced Multilingual Intent Detection System
@@ -1543,6 +1604,31 @@ async function handleUserInput() {
     return;
   }
 
+  // Check for natural language escape phrases first
+  const lowercaseText = text.toLowerCase();
+  const escapePatterns = [
+    /start over/i,
+    /never mind/i,
+    /go back/i,
+    /cancel/i,
+    /stop/i,
+    /quit/i,
+    /exit/i,
+    /restart/i,
+    /reset/i,
+    /clear/i,
+    /new conversation/i,
+    /help me/i,
+    /i'm confused/i,
+    /what can you do/i
+  ];
+
+  if (escapePatterns.some(pattern => pattern.test(lowercaseText))) {
+    console.log('🔄 Escape phrase detected');
+    handleEscapePhrase(text);
+    return;
+  }
+
   // Check for explicit help requests that should trigger the progressive form
   const helpRequestPatterns = [
     /i need (more|additional|personal|extra) help/i,
@@ -1556,17 +1642,15 @@ async function handleUserInput() {
     /talk to someone/i,
     /speak to someone/i
   ];
-
-  const lowercaseText = text.toLowerCase();
   if (helpRequestPatterns.some(pattern => pattern.test(lowercaseText))) {
     console.log('🎯 Direct help request detected, offering personal assistance');
-    addMessage(window.i18n.t('bot.offerPersonalHelp'), "bot");
+    addMessage(window.i18n.t('bot.offerPersonalHelp'), "bot", 800);
     
     // Set state to await confirmation
     conversationState.awaitingFormConfirmation = true;
     
-    // Show yes/no buttons for user to confirm
-    addMessage("Would you like me to connect you with someone for personalized help? Please type 'yes' to continue or 'no' if you'd prefer to browse resources on your own.", "bot");
+    // Show yes/no buttons for user to confirm with delay
+    addMessage("Would you like me to connect you with someone for personalized help? Please type 'yes' to continue or 'no' if you'd prefer to browse resources on your own.", "bot", 1600);
     return;
   }
 
@@ -2285,8 +2369,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   document.getElementById('formCancelBtn').addEventListener('click', () => {
-    hideProgressiveForm();
-    addMessage("Form cancelled. Feel free to ask me anything else!", "bot");
+    // Enhanced cancel experience
+    if (currentFormStep > 1 || Object.keys(formData).length > 0) {
+      // User has made some progress
+      if (confirm('Are you sure you want to cancel? Your progress will be lost.\n\nClick "OK" to cancel anyway, or "Cancel" to continue filling out the form.')) {
+        hideProgressiveForm();
+        addMessage("No problem! Your form has been cancelled. I'm here if you need any other help finding resources.", "bot");
+        addMessage("You can always ask me to connect you with someone again anytime.", "bot");
+      }
+      // If they click "Cancel" on the confirm dialog, form stays open
+    } else {
+      // No progress made, just close
+      hideProgressiveForm();
+      addMessage("Form closed. Feel free to ask me anything else!", "bot");
+    }
   });
   
   // Close modal when clicking outside
@@ -2342,4 +2438,130 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+});
+
+// Session Control Functions
+function initializeSessionControl() {
+  const sessionMenuToggle = document.getElementById('sessionMenuToggle');
+  const sessionMenu = document.getElementById('sessionMenu');
+
+  // Toggle session menu
+  sessionMenuToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sessionMenu.classList.toggle('hidden');
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!sessionMenuToggle.contains(e.target) && !sessionMenu.contains(e.target)) {
+      sessionMenu.classList.add('hidden');
+    }
+  });
+
+  // Session control actions
+  document.getElementById('startOverBtn').addEventListener('click', () => {
+    sessionMenu.classList.add('hidden');
+    startNewSession();
+  });
+
+  document.getElementById('clearChatBtn').addEventListener('click', () => {
+    sessionMenu.classList.add('hidden');
+    clearChatHistory();
+  });
+
+  document.getElementById('helpTipsBtn').addEventListener('click', () => {
+    sessionMenu.classList.add('hidden');
+    showHelpTips();
+  });
+
+  document.getElementById('endSessionBtn').addEventListener('click', () => {
+    sessionMenu.classList.add('hidden');
+    endSession();
+  });
+}
+
+function startNewSession() {
+  // Reset all conversation states
+  conversationState = {
+    awaitingClarification: false,
+    pendingCategory: null,
+    lastQuestion: null,
+    awaitingFeedback: false,
+    awaitingNameForAnalytics: false,
+    awaitingIntakeForm: false,
+    awaitingZipCode: false,
+    awaitingFormConfirmation: false,
+    lastSearchCategory: null
+  };
+
+  // Close any open modals
+  hideProgressiveForm();
+  removeFeedbackButtons();
+
+  // Clear chat but keep welcome message
+  messagesDiv.innerHTML = '';
+  addMessage(window.i18n.t('bot.welcome'), "bot");
+  
+  console.log('🔄 New session started');
+}
+
+function clearChatHistory() {
+  messagesDiv.innerHTML = '';
+  removeFeedbackButtons();
+  addMessage("Chat history cleared. How can I help you today?", "bot");
+  console.log('🧹 Chat history cleared');
+}
+
+function showHelpTips() {
+  addMessage("💡 **Here's how I can help you:**", "bot");
+  addMessage("🔍 **Search for resources:** Just tell me what you need like 'food', 'housing', 'healthcare', etc.", "bot");
+  addMessage("📍 **Find nearby resources:** Click 'Enable Near Me' or provide your ZIP code", "bot");
+  addMessage("📋 **Get personal help:** Say 'I need more help' to connect with someone directly", "bot");
+  addMessage("🌍 **Multiple languages:** Use the language switcher (flag icon) to change languages", "bot");
+  addMessage("🔄 **Start over:** Use the Session menu (bottom-right) anytime to reset or get help", "bot");
+}
+
+function endSession() {
+  if (confirm('Are you sure you want to end your session? Any unsaved progress will be lost.')) {
+    // Save any analytics if in progress
+    if (conversationState.awaitingNameForAnalytics && conversationState.lastSearchCategory) {
+      // Quick anonymous analytics
+      console.log('📊 Session ended - anonymous success recorded for:', conversationState.lastSearchCategory);
+    }
+    
+    // Reset everything
+    startNewSession();
+    addMessage("👋 Thank you for using Carelink+! Your session has ended. Feel free to start a new conversation anytime.", "bot");
+    
+    // Optionally could redirect or close tab
+    // window.close(); // Only works in certain contexts
+  }
+}
+
+function handleEscapePhrase(text) {
+  // Reset any active states
+  conversationState.awaitingZipCode = false;
+  conversationState.awaitingFormConfirmation = false;
+  conversationState.awaitingFeedback = false;
+  
+  // Close any open modals
+  hideProgressiveForm();
+  removeFeedbackButtons();
+  
+  if (text.toLowerCase().includes('help me') || text.toLowerCase().includes('confused') || text.toLowerCase().includes('what can you do')) {
+    showHelpTips();
+  } else if (text.toLowerCase().includes('start over') || text.toLowerCase().includes('restart') || text.toLowerCase().includes('reset')) {
+    startNewSession();
+  } else if (text.toLowerCase().includes('clear')) {
+    clearChatHistory();
+  } else {
+    addMessage("No problem! I've reset our conversation. What would you like help with?", "bot");
+    addMessage("You can ask me about food, housing, healthcare, or any other community resources.", "bot");
+  }
+}
+
+// Initialize session controls after DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Give other initializations a moment to complete
+  setTimeout(initializeSessionControl, 100);
 });

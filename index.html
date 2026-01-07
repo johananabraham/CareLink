@@ -302,9 +302,23 @@
                   data-i18n="forms.back">Back</button>
           
           <div class="flex space-x-3">
+            <!-- Enhanced Cancel Button -->
             <button id="formCancelBtn" type="button" 
-                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-                    data-i18n="forms.cancel">Cancel</button>
+                    class="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <span data-i18n="forms.cancel">Cancel</span>
+            </button>
+
+            <!-- Save Draft Button (when applicable) -->
+            <button id="formSaveDraftBtn" type="button" 
+                    class="px-4 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors hidden">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+              </svg>
+              Save Draft
+            </button>
             
             <button id="formNextBtn" type="button" 
                     class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -320,6 +334,63 @@
 
     <!-- Map Container -->
     <div id="map" class="mt-8 w-full h-96 rounded-2xl shadow-md"></div>
+  </div>
+
+  <!-- Floating Session Control Menu -->
+  <div id="sessionControl" class="fixed bottom-4 right-4 z-50">
+    <!-- Main Session Button -->
+    <button id="sessionMenuToggle" 
+            class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center group hover:w-auto hover:px-4">
+      <svg class="w-5 h-5 group-hover:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+      </svg>
+      <span class="hidden group-hover:inline text-sm font-medium">Session</span>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="sessionMenu" class="absolute bottom-14 right-0 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-48 hidden">
+      <button id="startOverBtn" class="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors">
+        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        <div>
+          <div class="font-medium text-sm">Start Over</div>
+          <div class="text-xs text-gray-500">Fresh conversation</div>
+        </div>
+      </button>
+
+      <button id="clearChatBtn" class="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors">
+        <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        <div>
+          <div class="font-medium text-sm">Clear Chat</div>
+          <div class="text-xs text-gray-500">Remove message history</div>
+        </div>
+      </button>
+
+      <button id="helpTipsBtn" class="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors">
+        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+          <div class="font-medium text-sm">Help & Tips</div>
+          <div class="text-xs text-gray-500">How to use Carelink+</div>
+        </div>
+      </button>
+
+      <div class="border-t border-gray-100 my-1"></div>
+
+      <button id="endSessionBtn" class="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center gap-3 transition-colors text-red-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        <div>
+          <div class="font-medium text-sm">End Session</div>
+          <div class="text-xs">Close Carelink+</div>
+        </div>
+      </button>
+    </div>
   </div>
 
   <!-- Scripts -->
