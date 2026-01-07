@@ -152,7 +152,8 @@ function analyzeIntentLocally(text, categories) {
     /^(hi|hello|hey|good morning|good afternoon|good evening)/,
     /^(thank you|thanks|bye|goodbye)/,
     /^(how are you|what.*up|how.*going)/,
-    /^(help|info|information|about)/,
+    /^(help)(?!\s+with)/,  // "help" but not "help with"
+    /^(info|information|about)/,
   ];
   
   for (const pattern of generalPatterns) {
