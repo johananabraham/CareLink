@@ -178,10 +178,161 @@ function setupLanguageSwitcher() {
   document.getElementById('languageSwitcher').onclick = showLanguageModal;
 }
 
+// Location service for geolocation and distance calculations
+const LocationService = {
+  userLocation: null,
+  permissionAsked: false,
+  
+  // Request user location with privacy-focused messaging
+  async requestLocation() {
+    if (this.permissionAsked) {
+      return this.userLocation;
+    }
+    
+    this.permissionAsked = true;
+    
+    // Check if geolocation is supported
+    if (!navigator.geolocation) {
+      console.log('📍 Geolocation not supported, falling back to ZIP code');
+      this.showLocationFallback();
+      return null;
+    }
+    
+    try {
+      console.log('📍 Requesting user location...');
+      
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          resolve,
+          reject,
+          { 
+            enableHighAccuracy: true, 
+            timeout: 10000, 
+            maximumAge: 300000 // 5 minutes cache
+          }
+        );
+      });
+      
+      this.userLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        accuracy: position.coords.accuracy
+      };
+      
+      console.log('✅ Location acquired:', this.userLocation);
+      this.showLocationSuccess();
+      return this.userLocation;
+      
+    } catch (error) {
+      console.log('❌ Location permission denied or failed:', error.message);
+      this.showLocationFallback();
+      return null;
+    }
+  },
+  
+  // Calculate distance between two points using Haversine formula
+  calculateDistance(lat1, lng1, lat2, lng2) {
+    const R = 3959; // Earth's radius in miles
+    const dLat = this.toRad(lat2 - lat1);
+    const dLng = this.toRad(lng2 - lng1);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) * 
+      Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distance in miles
+  },
+  
+  toRad(degrees) {
+    return degrees * (Math.PI/180);
+  },
+  
+  // Add distance to resources and sort by proximity
+  enhanceResourcesWithDistance(resources) {
+    if (!this.userLocation) {
+      return resources; // Return unchanged if no user location
+    }
+    
+    return resources.map(resource => ({
+      ...resource,
+      distance: this.calculateDistance(
+        this.userLocation.lat,
+        this.userLocation.lng,
+        parseFloat(resource.lat),
+        parseFloat(resource.lng)
+      )
+    })).sort((a, b) => a.distance - b.distance);
+  },
+  
+  // Show success message when location is acquired
+  showLocationSuccess() {
+    addMessage("📍 Great! I can now show you resources near your location.", "bot");
+  },
+  
+  // Show fallback options when location is denied
+  showLocationFallback() {
+    addMessage("📍 I can still help you find resources! You can search by ZIP code or browse all available options.", "bot");
+  }
+};
+
+// Near Me functionality
+let nearMeMode = false;
+
+function toggleNearMeMode() {
+  const toggle = document.getElementById('nearMeToggle');
+  const text = document.getElementById('nearMeText');
+  
+  if (!LocationService.userLocation) {
+    // Request location if not available
+    LocationService.requestLocation().then(location => {
+      if (location) {
+        enableNearMeMode();
+      } else {
+        // Show fallback options
+        addMessage("📍 To use 'Near Me', I need your location. You can also search by entering your ZIP code.", "bot");
+      }
+    });
+  } else {
+    // Toggle mode
+    if (nearMeMode) {
+      disableNearMeMode();
+    } else {
+      enableNearMeMode();
+    }
+  }
+}
+
+function enableNearMeMode() {
+  nearMeMode = true;
+  const toggle = document.getElementById('nearMeToggle');
+  const text = document.getElementById('nearMeText');
+  
+  toggle.className = 'px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400';
+  text.textContent = '✓ "Near Me" Active';
+  
+  addMessage("📍 Great! I'll now show you the closest resources first.", "bot");
+}
+
+function disableNearMeMode() {
+  nearMeMode = false;
+  const toggle = document.getElementById('nearMeToggle');
+  const text = document.getElementById('nearMeText');
+  
+  toggle.className = 'px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400';
+  text.textContent = 'Enable "Near Me"';
+  
+  addMessage("📍 I'll now show you all available resources.", "bot");
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   initializeI18n();
   setupLanguageSwitcher();
+  
+  // Request location permission early for better UX
+  setTimeout(() => {
+    LocationService.requestLocation();
+  }, 2000); // Wait 2 seconds after page load
 });
 
 // Google Sheets API configuration - loaded from secure config.js
@@ -426,6 +577,13 @@ function createPopupContent(resource) {
   // Name (always show, it's the organization name)
   popupContent += `<div style="font-weight: bold; margin-bottom: 8px; color: #1e40af;">${resource.name}</div>`;
   
+  // Distance (if user location is available and distance was calculated)
+  if (resource.distance !== undefined && LocationService.userLocation) {
+    popupContent += `<div style="margin-bottom: 8px; padding: 4px 8px; background: #f3f4f6; border-radius: 4px; font-size: 14px;">
+      <span style="color: #059669; font-weight: 500;">📍 ${resource.distance.toFixed(1)} miles away</span>
+    </div>`;
+  }
+  
   // Description/Purpose with translation attempt
   if (resource.description || resource.purpose) {
     const description = resource.description || resource.purpose;
@@ -592,7 +750,25 @@ async function showResources(category) {
   
   console.log(`📍 Found ${matchedResources.length} resources for "${category}"`);
   
-  if (matchedResources.length === 0) {
+  // Enhance resources with distance calculations and sort by proximity
+  let resourcesWithDistance = LocationService.enhanceResourcesWithDistance(matchedResources);
+  
+  // Filter by distance if "Near Me" mode is enabled
+  if (nearMeMode && LocationService.userLocation) {
+    const maxDistance = 25; // 25 miles radius
+    resourcesWithDistance = resourcesWithDistance.filter(r => r.distance <= maxDistance);
+    console.log(`📍 Near Me mode: Filtered to ${resourcesWithDistance.length} resources within ${maxDistance} miles`);
+  }
+  
+  // Log distance information if user location is available
+  if (LocationService.userLocation && resourcesWithDistance.length > 0) {
+    console.log('📏 Resources sorted by distance:');
+    resourcesWithDistance.slice(0, 5).forEach(r => 
+      console.log(`  ${r.name}: ${r.distance?.toFixed(1)} miles`)
+    );
+  }
+  
+  if (resourcesWithDistance.length === 0) {
     console.warn('⚠️ No resources found for category:', category);
     console.log('Available categories:', [...new Set(resources.map(r => r.category))]);
     
@@ -609,8 +785,8 @@ async function showResources(category) {
     return; // Exit early when no resources found
   }
   
-  // Add markers to map
-  matchedResources.forEach((r, index) => {
+  // Add markers to map (now sorted by distance)
+  resourcesWithDistance.forEach((r, index) => {
     console.log(`📌 Adding marker ${index + 1}:`, r.name, 'at', [r.lat, r.lng]);
     
     try {
@@ -641,14 +817,28 @@ async function showResources(category) {
     }
   });
   
-  // Success message to user
-  if (matchedResources.length > 0) {
-    const plural = window.i18n.formatPlural(matchedResources.length, category);
-    addMessage(window.i18n.t('bot.resourcesFound', { 
-      count: matchedResources.length,
+  // Success message to user with distance information
+  if (resourcesWithDistance.length > 0) {
+    const plural = window.i18n.formatPlural(resourcesWithDistance.length, category);
+    let message = window.i18n.t('bot.resourcesFound', { 
+      count: resourcesWithDistance.length,
       category: window.i18n.t(`categories.${category}`),
       plural: plural
-    }), "bot");
+    });
+    
+    // Add distance context if user location is available
+    if (LocationService.userLocation) {
+      const nearestDistance = resourcesWithDistance[0]?.distance?.toFixed(1);
+      if (nearestDistance) {
+        if (nearMeMode) {
+          message += ` The closest one is ${nearestDistance} miles away (showing resources within 25 miles).`;
+        } else {
+          message += ` The closest one is ${nearestDistance} miles away.`;
+        }
+      }
+    }
+    
+    addMessage(message, "bot");
     
     // Show feedback prompt after successful resource display
     showFeedbackPrompt(category);
