@@ -8,6 +8,9 @@
     },
     "api/user-data.js": {
       "maxDuration": 10
+    },
+    "api/ai-test.js": {
+      "maxDuration": 10
     }
   }
 }

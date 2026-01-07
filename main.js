@@ -1278,8 +1278,8 @@ async function detectIntentWithAI(text) {
   try {
     console.log('🤖 Attempting AI intent detection...');
     
-    // Call AI intent detection API
-    const response = await fetch('/api/ai-intent', {
+    // Call AI intent detection API (testing with simple function first)
+    const response = await fetch('/api/ai-test', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
