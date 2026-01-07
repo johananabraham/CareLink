@@ -1157,7 +1157,7 @@ async function handleUserInput() {
   addMessage(response.text, "bot");
 
   // Show resources if we have a confident category match
-  if (intent && intent.category && intent.confidence > 0.7) {
+  if (intent && intent.category && intent.confidence > 0.5) {
     showResources(intent.category);
   } else if (intent && intent.category) {
     // Lower confidence - ask for clarification
