@@ -30,22 +30,9 @@ export default async function handler(req, res) {
       return;
     }
 
-    // Validate environment variable
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    
-    console.log('🔑 Checking OpenAI API Key:', OPENAI_API_KEY ? 'Found' : 'Missing');
-    
-    if (!OPENAI_API_KEY) {
-      console.log('❌ OpenAI API key not found, falling back to keyword matching');
-      res.status(200).json({ 
-        success: false,
-        error: 'OpenAI not configured',
-        fallback: true
-      });
-      return;
-    }
+    console.log('🆓 Using free Hugging Face API - no API key required!');
 
-    const result = await detectIntentWithAI(message, language, OPENAI_API_KEY);
+    const result = await detectIntentWithAI(message, language);
     res.status(200).json(result);
 
   } catch (error) {
@@ -58,66 +45,57 @@ export default async function handler(req, res) {
   }
 }
 
-async function detectIntentWithAI(message, language, apiKey) {
+async function detectIntentWithAI(message, language) {
   const categories = ['Food', 'Housing', 'Healthcare', 'Mental Health', 'Substance Use', 'Employment', 'Veterans', 'Crisis'];
   
-  const prompt = `You are a community resource assistant. Analyze this user message and determine if they need help with any of these categories: ${categories.join(', ')}.
-
-User message: "${message}"
-Language: ${language}
-
-Instructions:
-1. If the message clearly relates to one of the categories, respond with just the category name (e.g., "Food")
-2. If the message relates to multiple categories, pick the most relevant one
-3. If the message is nonsensical, off-topic, or doesn't relate to community resources, respond with "NONE"
-4. If the message is a greeting or general question, respond with "GENERAL"
-5. Be very strict - only match if there's a clear need for that type of resource
-
-Examples:
-- "I need food" → "Food"  
-- "help with rent" → "Housing"
-- "feeling depressed" → "Mental Health"
-- "unicorn training" → "NONE"
-- "hello" → "GENERAL"
-- "thank you" → "GENERAL"
-
-Response (category name only):`;
-
-  console.log('🌐 Making OpenAI API call...');
+  console.log('🤖 Using Hugging Face free API for intent detection...');
   
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  // Use Hugging Face's zero-shot classification (completely free!)
+  const response = await fetch('https://api-inference.huggingface.co/models/facebook/bart-large-mnli', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a precise intent classifier for community resources. Respond with only the category name or NONE/GENERAL as instructed.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 20,
-      temperature: 0.1, // Low temperature for consistent classification
+      inputs: message,
+      parameters: {
+        candidate_labels: [
+          ...categories,
+          'Greeting or general conversation',
+          'Nonsensical or irrelevant request'
+        ]
+      }
     })
   });
 
-  console.log('📡 OpenAI API response status:', response.status);
+  console.log('📡 Hugging Face API response status:', response.status);
 
   if (!response.ok) {
     const error = await response.text();
-    console.log('❌ OpenAI API error details:', error);
-    throw new Error(`OpenAI API error: ${response.status} - ${error}`);
+    console.log('❌ Hugging Face API error details:', error);
+    throw new Error(`Hugging Face API error: ${response.status} - ${error}`);
   }
 
   const data = await response.json();
-  const aiResponse = data.choices[0]?.message?.content?.trim();
+  
+  // Hugging Face returns {labels: [...], scores: [...]}
+  const topLabel = data.labels[0];
+  const topScore = data.scores[0];
+  
+  console.log(`🎯 Hugging Face result: "${message}" → "${topLabel}" (confidence: ${(topScore * 100).toFixed(1)}%)`);
+  
+  // Map Hugging Face results to our expected format
+  let aiResponse;
+  if (topLabel === 'Nonsensical or irrelevant request') {
+    aiResponse = 'NONE';
+  } else if (topLabel === 'Greeting or general conversation') {
+    aiResponse = 'GENERAL';
+  } else if (categories.includes(topLabel)) {
+    aiResponse = topLabel;
+  } else {
+    // Low confidence or unclear result
+    aiResponse = topScore > 0.5 ? topLabel : 'GENERAL';
+  }
 
   console.log(`AI Intent Detection - Input: "${message}" → Output: "${aiResponse}"`);
 
