@@ -1955,37 +1955,42 @@ async function submitForm() {
     
     console.log('📤 Submitting form data:', finalData);
     
-    // Send to backend
-    const response = await fetch('/api/user-data', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        type: 'help_request',
-        data: finalData
-      })
-    });
-    
-    const result = await response.json();
+    // Submit with retry logic
+    const result = await submitFormDataWithRetry(finalData, 3);
     
     if (result.success) {
       // Show success message
       hideProgressiveForm();
       addMessage("✅ Thank you! We've received your request and someone from our team will contact you within 24 hours to provide personalized assistance.", "bot");
       
-      // Add follow-up information
-      addMessage("📧 You should receive a confirmation email shortly. If you don't see it, please check your spam folder or try contacting us directly.", "bot");
+      // Add follow-up information based on contact preference
+      if (formData.userEmail) {
+        addMessage("📧 You should receive a confirmation email shortly. If you don't see it, please check your spam folder.", "bot");
+      } else {
+        addMessage("📞 We'll contact you by phone at your preferred time. Thank you for providing your information!", "bot");
+      }
+      
+      // Log successful submission for analytics
+      console.log('✅ Form submitted successfully:', result.recordId);
       
     } else {
-      throw new Error(result.error || 'Submission failed');
+      // Handle specific error types
+      if (result.error.includes('Invalid') || result.error.includes('Missing')) {
+        addMessage("⚠️ Please check that all required fields are filled out correctly and try again.", "bot");
+      } else if (result.error.includes('network') || result.error.includes('timeout')) {
+        addMessage("🌐 There seems to be a connection issue. Please check your internet connection and try again.", "bot");
+      } else {
+        addMessage("⚠️ There was an issue submitting your request. Please try again, or contact us directly for immediate assistance.", "bot");
+      }
+      
+      console.error('❌ Form submission failed after retries:', result);
     }
     
   } catch (error) {
     console.error('❌ Form submission error:', error);
     
-    // Show error message
-    addMessage("⚠️ There was an issue submitting your request. Please try again, or contact us directly for immediate assistance.", "bot");
+    // Show user-friendly error message
+    addMessage("⚠️ We're experiencing technical difficulties. Your information is important to us - please try again in a few minutes or contact us directly.", "bot");
   }
   
   // Reset button
@@ -1995,6 +2000,113 @@ async function submitForm() {
 
 function generateSessionId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+// Enhanced form submission with retry logic and better error handling
+async function submitFormDataWithRetry(data, maxRetries = 3) {
+  let lastError = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`📤 Form submission attempt ${attempt}/${maxRetries}`);
+      
+      const response = await fetch('/api/user-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'help_request',
+          data: data
+        })
+      });
+      
+      if (!response.ok) {
+        // Handle HTTP errors
+        const errorText = await response.text();
+        let errorData;
+        
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: `HTTP ${response.status}: ${errorText}` };
+        }
+        
+        if (response.status >= 400 && response.status < 500) {
+          // Client errors - don't retry
+          console.error(`❌ Client error (${response.status}):`, errorData);
+          return {
+            success: false,
+            error: errorData.error || `Client error: ${response.status}`,
+            status: response.status,
+            attempt: attempt
+          };
+        } else if (response.status >= 500) {
+          // Server errors - retry
+          lastError = {
+            error: errorData.error || `Server error: ${response.status}`,
+            status: response.status,
+            details: errorData
+          };
+          
+          if (attempt < maxRetries) {
+            const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+            console.log(`🔄 Server error, retrying in ${waitTime}ms...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            continue;
+          }
+        }
+      }
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log(`✅ Form submitted successfully on attempt ${attempt}`);
+        return {
+          success: true,
+          recordId: result.recordId,
+          attempt: attempt
+        };
+      } else {
+        lastError = {
+          error: result.error || 'Unknown error',
+          details: result.details || result
+        };
+        
+        // Don't retry validation errors
+        if (result.error && result.error.includes('Missing required')) {
+          return {
+            success: false,
+            error: result.error,
+            attempt: attempt
+          };
+        }
+      }
+      
+    } catch (networkError) {
+      console.error(`🌐 Network error on attempt ${attempt}:`, networkError);
+      lastError = {
+        error: 'Network connection error',
+        details: networkError.message
+      };
+      
+      if (attempt < maxRetries) {
+        const waitTime = 1000 * attempt; // Linear backoff for network errors
+        console.log(`🔄 Network error, retrying in ${waitTime}ms...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+    }
+  }
+  
+  // All attempts failed
+  console.error(`❌ Form submission failed after ${maxRetries} attempts:`, lastError);
+  return {
+    success: false,
+    error: lastError?.error || 'Submission failed after multiple attempts',
+    details: lastError?.details,
+    maxAttemptsReached: true
+  };
 }
 
 // Form Event Handlers
