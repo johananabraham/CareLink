@@ -33,8 +33,10 @@ export default async function handler(req, res) {
     // Validate environment variable
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
     
+    console.log('🔑 Checking OpenAI API Key:', OPENAI_API_KEY ? 'Found' : 'Missing');
+    
     if (!OPENAI_API_KEY) {
-      console.log('OpenAI API key not found, falling back to keyword matching');
+      console.log('❌ OpenAI API key not found, falling back to keyword matching');
       res.status(200).json({ 
         success: false,
         error: 'OpenAI not configured',
