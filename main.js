@@ -232,33 +232,46 @@ const LocationService = {
     }
   },
   
-  // Calculate distance between two points using Haversine formula (more accurate version)
+  // Calculate distance using Turf.js for maximum accuracy
   calculateDistance(lat1, lng1, lat2, lng2) {
-    const R = 3958.8; // Earth's radius in miles (more precise value)
-    
-    // Convert decimal degrees to radians
-    const lat1Rad = this.toRad(lat1);
-    const lng1Rad = this.toRad(lng1);
-    const lat2Rad = this.toRad(lat2);
-    const lng2Rad = this.toRad(lng2);
-    
-    // Differences in coordinates
-    const dLat = lat2Rad - lat1Rad;
-    const dLng = lng2Rad - lng1Rad;
-    
-    // Haversine formula
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
-              Math.sin(dLng/2) * Math.sin(dLng/2);
-    
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    
-    const distance = R * c; // Distance in miles
-    
-    // Debug logging for verification
-    console.log(`🧮 Distance calculation: [${lat1}, ${lng1}] to [${lat2}, ${lng2}] = ${distance.toFixed(2)} miles`);
-    
-    return distance;
+    try {
+      // Create GeoJSON points for Turf.js
+      const point1 = turf.point([lng1, lat1]); // Note: Turf uses [lng, lat] format
+      const point2 = turf.point([lng2, lat2]);
+      
+      // Calculate distance using Turf.js (returns kilometers by default)
+      const distanceKm = turf.distance(point1, point2, { units: 'kilometers' });
+      
+      // Convert to miles (1 km = 0.621371 miles)
+      const distanceMiles = distanceKm * 0.621371;
+      
+      // Debug logging for verification
+      console.log(`🧮 Turf.js distance: [${lat1}, ${lng1}] to [${lat2}, ${lng2}] = ${distanceMiles.toFixed(2)} miles`);
+      
+      return distanceMiles;
+      
+    } catch (error) {
+      console.error('❌ Error calculating distance with Turf.js:', error);
+      
+      // Fallback to simple calculation if Turf.js fails
+      const lat1Rad = this.toRad(lat1);
+      const lng1Rad = this.toRad(lng1);
+      const lat2Rad = this.toRad(lat2);
+      const lng2Rad = this.toRad(lng2);
+      
+      const dLat = lat2Rad - lat1Rad;
+      const dLng = lng2Rad - lng1Rad;
+      
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const fallbackDistance = 3958.8 * c;
+      
+      console.log(`🔄 Fallback distance calculation: ${fallbackDistance.toFixed(2)} miles`);
+      return fallbackDistance;
+    }
   },
   
   toRad(degrees) {
