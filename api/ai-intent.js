@@ -51,7 +51,7 @@ async function detectIntentWithAI(message, language) {
   console.log('🤖 Using Hugging Face free API for intent detection...');
   
   // Use Hugging Face's zero-shot classification (completely free!)
-  const response = await fetch('https://api-inference.huggingface.co/models/facebook/bart-large-mnli', {
+  const response = await fetch('https://router.huggingface.co/models/facebook/bart-large-mnli', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
