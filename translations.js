@@ -22,6 +22,15 @@ const TRANSLATIONS = {
       error: "An error occurred. Please try again."
     },
     
+    // Location services
+    location: {
+      servicesTitle: "Location Services:",
+      enableNearMe: "Enable \"Near Me\"",
+      nearMeActive: "✓ \"Near Me\" Active",
+      yourLocation: "Your Location",
+      accuracy: "Accuracy"
+    },
+    
     // Bot responses
     bot: {
       welcome: "I can help you find resources for food, housing, healthcare, mental health, substance use treatment, employment, veteran services, or crisis support. What do you need help with?",
@@ -93,6 +102,15 @@ const TRANSLATIONS = {
       mapTitle: "Ubicaciones de Recursos",
       loading: "Cargando...",
       error: "Ocurrió un error. Por favor inténtalo de nuevo."
+    },
+    
+    // Location services
+    location: {
+      servicesTitle: "Servicios de Ubicación:",
+      enableNearMe: "Activar \"Cerca de Mí\"",
+      nearMeActive: "✓ \"Cerca de Mí\" Activo",
+      yourLocation: "Tu Ubicación",
+      accuracy: "Precisión"
     },
     
     // Bot responses
@@ -168,6 +186,15 @@ const TRANSLATIONS = {
       error: "Qalad ayaa dhacay. Fadlan mar kale isku day."
     },
     
+    // Location services
+    location: {
+      servicesTitle: "Adeegyada Goobta:",
+      enableNearMe: "Daar \"Ii Dhow\"",
+      nearMeActive: "✓ \"Ii Dhow\" La Daray",
+      yourLocation: "Goobtagaaga",
+      accuracy: "Saxnaanta"
+    },
+    
     // Bot responses
     bot: {
       welcome: "Waxaan kaa caawin karaa in aad hesho agab loogu talagalay cunto, guri, daryeel caafimaad, caafimaadka maskaxda, daawaynta isticmaalka daroogada, shaqo, adeegyada askarta, ama taageerada xiisadaha. Maxaad u baahan tahay caawimo?",
@@ -241,6 +268,15 @@ const TRANSLATIONS = {
       error: "حدث خطأ. يرجى المحاولة مرة أخرى."
     },
     
+    // Location services
+    location: {
+      servicesTitle: "خدمات الموقع:",
+      enableNearMe: "تفعيل \"بالقرب مني\"",
+      nearMeActive: "✓ \"بالقرب مني\" مفعل",
+      yourLocation: "موقعك",
+      accuracy: "الدقة"
+    },
+    
     // Bot responses
     bot: {
       welcome: "يمكنني مساعدتك في العثور على موارد للطعام والإسكان والرعاية الصحية والصحة النفسية وعلاج تعاطي المواد والتوظيف وخدمات المحاربين القدامى أو دعم الأزمات. بماذا تحتاج المساعدة؟",
@@ -312,6 +348,15 @@ const TRANSLATIONS = {
       mapTitle: "संसाधन स्थान",
       loading: "लोड हो रहा है...",
       error: "एक त्रुटि हुई है। कृपया पुनः प्रयास करें।"
+    },
+    
+    // Location services
+    location: {
+      servicesTitle: "स्थान सेवाएं:",
+      enableNearMe: "\"मेरे पास\" सक्षम करें",
+      nearMeActive: "✓ \"मेरे पास\" सक्रिय",
+      yourLocation: "आपका स्थान",
+      accuracy: "सटीकता"
     },
     
     // Bot responses

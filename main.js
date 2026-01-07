@@ -182,6 +182,7 @@ function setupLanguageSwitcher() {
 const LocationService = {
   userLocation: null,
   permissionAsked: false,
+  userMarker: null, // Track user location marker
   
   // Request user location with privacy-focused messaging
   async requestLocation() {
@@ -221,6 +222,7 @@ const LocationService = {
       
       console.log('✅ Location acquired:', this.userLocation);
       this.showLocationSuccess();
+      this.addUserMarkerToMap();
       return this.userLocation;
       
     } catch (error) {
@@ -230,17 +232,33 @@ const LocationService = {
     }
   },
   
-  // Calculate distance between two points using Haversine formula
+  // Calculate distance between two points using Haversine formula (more accurate version)
   calculateDistance(lat1, lng1, lat2, lng2) {
-    const R = 3959; // Earth's radius in miles
-    const dLat = this.toRad(lat2 - lat1);
-    const dLng = this.toRad(lng2 - lng1);
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2);
+    const R = 3958.8; // Earth's radius in miles (more precise value)
+    
+    // Convert decimal degrees to radians
+    const lat1Rad = this.toRad(lat1);
+    const lng1Rad = this.toRad(lng1);
+    const lat2Rad = this.toRad(lat2);
+    const lng2Rad = this.toRad(lng2);
+    
+    // Differences in coordinates
+    const dLat = lat2Rad - lat1Rad;
+    const dLng = lng2Rad - lng1Rad;
+    
+    // Haversine formula
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c; // Distance in miles
+    
+    const distance = R * c; // Distance in miles
+    
+    // Debug logging for verification
+    console.log(`🧮 Distance calculation: [${lat1}, ${lng1}] to [${lat2}, ${lng2}] = ${distance.toFixed(2)} miles`);
+    
+    return distance;
   },
   
   toRad(degrees) {
@@ -272,6 +290,62 @@ const LocationService = {
   // Show fallback options when location is denied
   showLocationFallback() {
     addMessage("📍 I can still help you find resources! You can search by ZIP code or browse all available options.", "bot");
+  },
+  
+  // Add user location marker to map
+  addUserMarkerToMap() {
+    if (!this.userLocation || !map) {
+      return;
+    }
+    
+    // Remove existing user marker if it exists
+    if (this.userMarker) {
+      map.removeLayer(this.userMarker);
+    }
+    
+    // Create custom icon for user location (blue circle)
+    const userIcon = L.divIcon({
+      className: 'user-location-marker',
+      html: `<div style="
+        width: 20px; 
+        height: 20px; 
+        background-color: #3B82F6; 
+        border: 3px solid white; 
+        border-radius: 50%; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        position: relative;
+      "></div>`,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+    
+    // Add user marker with custom popup
+    this.userMarker = L.marker([this.userLocation.lat, this.userLocation.lng], {
+      icon: userIcon,
+      zIndexOffset: 1000 // Ensure it appears above other markers
+    }).addTo(map);
+    
+    // Add popup to user marker
+    const accuracy = this.userLocation.accuracy ? Math.round(this.userLocation.accuracy) : 'unknown';
+    this.userMarker.bindPopup(`
+      <div style="text-align: center; min-width: 150px;">
+        <div style="font-weight: bold; color: #3B82F6; margin-bottom: 8px;">📍 ${window.i18n.t('location.yourLocation')}</div>
+        <div style="font-size: 12px; color: #6B7280;">
+          ${window.i18n.t('location.accuracy')}: ±${accuracy} meters
+        </div>
+      </div>
+    `, { maxWidth: 200 });
+    
+    console.log('✅ User location marker added to map');
+  },
+  
+  // Remove user location marker
+  removeUserMarkerFromMap() {
+    if (this.userMarker && map) {
+      map.removeLayer(this.userMarker);
+      this.userMarker = null;
+      console.log('📍 User location marker removed');
+    }
   }
 };
 
@@ -308,7 +382,8 @@ function enableNearMeMode() {
   const text = document.getElementById('nearMeText');
   
   toggle.className = 'px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400';
-  text.textContent = '✓ "Near Me" Active';
+  text.textContent = window.i18n.t('location.nearMeActive');
+  text.setAttribute('data-i18n', 'location.nearMeActive');
   
   addMessage("📍 Great! I'll now show you the closest resources first.", "bot");
 }
@@ -319,7 +394,8 @@ function disableNearMeMode() {
   const text = document.getElementById('nearMeText');
   
   toggle.className = 'px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400';
-  text.textContent = 'Enable "Near Me"';
+  text.textContent = window.i18n.t('location.enableNearMe');
+  text.setAttribute('data-i18n', 'location.enableNearMe');
   
   addMessage("📍 I'll now show you all available resources.", "bot");
 }
@@ -567,6 +643,11 @@ function initializeMap() {
   if (map === null) {
     map = L.map('map').setView([39.9612, -82.9988], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+    // Add user location marker if location is already available
+    if (LocationService.userLocation) {
+      LocationService.addUserMarkerToMap();
+    }
   }
 }
 
@@ -689,9 +770,13 @@ async function showResources(category) {
     console.log('🏷️ Sample resource categories:', resources.slice(0, 5).map(r => r.category));
   }
   
-  // Clear existing markers (ensure map is initialized first)
+  // Clear existing resource markers (preserve user location marker)
   if (map) {
-    map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
+    map.eachLayer(layer => { 
+      if (layer instanceof L.Marker && layer !== LocationService.userMarker) {
+        map.removeLayer(layer); 
+      }
+    });
   }
   
   // Enhanced category matching with flexible patterns  
