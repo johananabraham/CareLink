@@ -171,7 +171,8 @@ function analyzeIntentLocally(text, categories) {
     'Housing': [
       /(?:^|[^a-z])(rent|apartment|house|homeless|shelter|evict)/,
       /(housing.*assistance|housing.*help|place.*stay|roof)/,
-      /(lease|landlord|utilities|mortgage)/
+      /(lease|landlord|utilities|mortgage)/,
+      /(help.*with.*housing|need.*housing|housing.*support)/
     ],
     'Healthcare': [
       /(?:^|[^a-z])(doctor|hospital|medical|health|sick|medicine|clinic)/,
@@ -234,9 +235,9 @@ function analyzeIntentLocally(text, categories) {
     }
   }
   
-  // Return result
-  if (bestScore > 0.5) {
-    return { category: bestMatch, confidence: Math.min(bestScore, 0.95) };
+  // Return result with higher confidence for clear matches
+  if (bestScore > 0.3) {
+    return { category: bestMatch, confidence: Math.min(bestScore + 0.2, 0.95) };
   } else {
     return { isGeneral: true, confidence: 0.7 };
   }
