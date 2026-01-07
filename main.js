@@ -1133,17 +1133,35 @@ async function handleUserInput() {
     return;
   }
 
-  // Detect user intent
-  const intent = detectIntent(text);
+  // Detect user intent with AI (fallback to keyword matching)
+  const intent = await detectIntentWithAI(text);
   console.log("Detected intent:", intent); // For debugging
   
-  // Generate appropriate response
-  const response = generateResponse(intent, text);
+  // Handle different intent types
+  if (intent.isNonsensical) {
+    // Handle nonsensical input by offering help
+    addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
+    startTier2Intake(null);
+    return;
+  }
+  
+  if (intent.isGeneral) {
+    // Handle general conversation
+    const response = generateSmartResponse(intent, text);
+    addMessage(response.text, "bot");
+    return;
+  }
+  
+  // Generate appropriate response for resource requests
+  const response = generateSmartResponse(intent, text);
   addMessage(response.text, "bot");
 
   // Show resources if we have a confident category match
-  if (response.category) {
-    showResources(response.category);
+  if (intent.category && intent.confidence > 0.7) {
+    showResources(intent.category);
+  } else if (intent.category) {
+    // Lower confidence - ask for clarification
+    addMessage(window.i18n.t(`clarifications.${intent.category}`), "bot");
   }
 }
 
@@ -1251,4 +1269,90 @@ async function handleTier2IntakeResponse(response) {
 // Helper function to generate session ID
 function generateSessionId() {
   return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// AI-Powered Intent Detection with Fallback
+async function detectIntentWithAI(text) {
+  const currentLanguage = window.i18n.getCurrentLanguage();
+  
+  try {
+    console.log('🤖 Attempting AI intent detection...');
+    
+    // Call AI intent detection API
+    const response = await fetch('/api/ai-intent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: text,
+        language: currentLanguage
+      })
+    });
+
+    const result = await response.json();
+    
+    if (result.success && result.intent) {
+      console.log('✅ AI detected intent:', result.intent);
+      return result.intent;
+    }
+    
+    if (result.fallback) {
+      console.log('⚠️ AI unavailable, using keyword fallback...');
+      return detectIntent(text); // Fallback to original keyword matching
+    }
+    
+  } catch (error) {
+    console.error('❌ AI intent detection error:', error);
+  }
+  
+  // Fallback to original keyword matching
+  console.log('🔄 Falling back to keyword matching...');
+  return detectIntent(text);
+}
+
+// Enhanced response generation that handles AI intents
+function generateSmartResponse(intent, text) {
+  // Handle nonsensical input
+  if (intent.isNonsensical) {
+    return {
+      text: window.i18n.t('bot.noResourcesOffer'),
+      category: null,
+      shouldEscalateToHuman: true
+    };
+  }
+  
+  // Handle general conversation
+  if (intent.isGeneral || !intent.category) {
+    // Check for greetings
+    if (text.toLowerCase().includes('hello') || text.toLowerCase().includes('hi') || 
+        text.toLowerCase().includes('hola') || text.toLowerCase().includes('salaam')) {
+      return {
+        text: window.i18n.t('bot.welcome'),
+        category: null
+      };
+    }
+    
+    // Default response for unclear input
+    return {
+      text: window.i18n.t('bot.needMoreInfo'),
+      category: null
+    };
+  }
+  
+  // Handle specific category requests
+  if (intent.category && intent.confidence > 0.7) {
+    return {
+      text: window.i18n.t('bot.clarificationPrefix', { 
+        category: window.i18n.t(`categories.${intent.category}`) 
+      }),
+      category: intent.category
+    };
+  }
+  
+  // Lower confidence - ask for clarification
+  return {
+    text: window.i18n.t(`clarifications.${intent.category}`),
+    category: null
+  };
 }
