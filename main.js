@@ -1138,14 +1138,14 @@ async function handleUserInput() {
   console.log("Detected intent:", intent); // For debugging
   
   // Handle different intent types
-  if (intent.isNonsensical) {
+  if (intent && intent.isNonsensical) {
     // Handle nonsensical input by offering help
     addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
     startTier2Intake(null);
     return;
   }
   
-  if (intent.isGeneral) {
+  if (intent && intent.isGeneral) {
     // Handle general conversation
     const response = generateSmartResponse(intent, text);
     addMessage(response.text, "bot");
@@ -1157,9 +1157,9 @@ async function handleUserInput() {
   addMessage(response.text, "bot");
 
   // Show resources if we have a confident category match
-  if (intent.category && intent.confidence > 0.7) {
+  if (intent && intent.category && intent.confidence > 0.7) {
     showResources(intent.category);
-  } else if (intent.category) {
+  } else if (intent && intent.category) {
     // Lower confidence - ask for clarification
     addMessage(window.i18n.t(`clarifications.${intent.category}`), "bot");
   }
