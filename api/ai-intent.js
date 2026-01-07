@@ -83,6 +83,8 @@ Examples:
 
 Response (category name only):`;
 
+  console.log('🌐 Making OpenAI API call...');
+  
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -106,8 +108,11 @@ Response (category name only):`;
     })
   });
 
+  console.log('📡 OpenAI API response status:', response.status);
+
   if (!response.ok) {
     const error = await response.text();
+    console.log('❌ OpenAI API error details:', error);
     throw new Error(`OpenAI API error: ${response.status} - ${error}`);
   }
 
