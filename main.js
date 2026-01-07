@@ -857,6 +857,10 @@ function translateResourceDescription(description) {
 
 async function showResources(category) {
   console.log('🔍 Searching for category:', category);
+  
+  // Show loading message
+  addMessage(`🔍 Searching for ${category.toLowerCase()} resources...`, "bot", 300);
+  
   const resources = await loadResources();
   
   console.log('📊 Total resources loaded:', resources.length);
@@ -2451,9 +2455,26 @@ function initializeSessionControl() {
     sessionMenu.classList.toggle('hidden');
   });
 
-  // Close menu when clicking outside
+  // Keyboard accessibility for session menu
+  sessionMenuToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      sessionMenu.classList.toggle('hidden');
+    }
+    if (e.key === 'Escape') {
+      sessionMenu.classList.add('hidden');
+    }
+  });
+
+  // Close menu when clicking outside or pressing escape
   document.addEventListener('click', (e) => {
     if (!sessionMenuToggle.contains(e.target) && !sessionMenu.contains(e.target)) {
+      sessionMenu.classList.add('hidden');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
       sessionMenu.classList.add('hidden');
     }
   });
