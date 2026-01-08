@@ -38,15 +38,15 @@ const TRANSLATIONS = {
       subtitle: "Getting connected to quality care does not have to be confusing. Follow these three steps.",
       step1: {
         title: "Share Your Needs",
-        description: "Answer a few short questions about what you are looking for. This can include healthcare, insurance, food, housing, employment and more. You do not need to share personal documents, and your information stays private."
+        description: "Answer a few short questions about what you are looking for. This can include healthcare, insurance, food, housing, or help in your language. You do not need to share personal documents, and your information stays private."
       },
       step2: {
         title: "Find Trusted Local Help", 
-        description: "We connect you to reliable community organizations, clinics, and programs near you that fit your needs. We focus on services that are welcoming and available in your preferred language."
+        description: "We connect you to reliable community organizations, clinics, and programs near you that fit your needs. We focus on services that are affordable, welcoming, and available in your preferred language."
       },
       step3: {
         title: "Get Support You Can Trust",
-        description: "Use the resources we share or connect with volunteers who can further help guide you through the system. Our goal is to make the system easier to understand and to help you feel supported, not overwhelmed."
+        description: "Use the resources we share or connect with volunteers who can further help guide you through the process. We are here to make the system easier to understand and to help you feel supported, not overwhelmed."
       }
     },
     
@@ -94,7 +94,7 @@ const TRANSLATIONS = {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       accessibility: "Accessibility",
-      copyright: "© 2024 CareLink+. All rights reserved.",
+      copyright: "© 2025 CareLink+. All rights reserved.",
       emergency: "For emergencies, call 911"
     },
     
