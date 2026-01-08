@@ -34,16 +34,16 @@ function showLanguageModal() {
   const languages = window.i18n.getAvailableLanguages();
   languages.forEach(lang => {
     const option = document.createElement('button');
-    option.className = 'language-option w-full p-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors flex items-center justify-between';
+    option.className = 'language-option w-full p-4 border border-neutral-200 rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all duration-200 flex items-center justify-between group hover:shadow-md';
     option.innerHTML = `
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">${lang.flag}</span>
+      <div class="flex items-center gap-4">
+        <span class="text-3xl">${lang.flag}</span>
         <div class="text-left" dir="${lang.dir}">
-          <div class="font-medium">${lang.nativeName}</div>
-          <div class="text-sm text-gray-500">${lang.name}</div>
+          <div class="font-semibold text-neutral-800">${lang.nativeName}</div>
+          <div class="text-sm text-neutral-500">${lang.name}</div>
         </div>
       </div>
-      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 text-neutral-400 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
       </svg>
     `;
@@ -960,11 +960,13 @@ async function showResources(category) {
       category: window.i18n.t(`categories.${category}`) 
     }), "bot");
     
-    // Offer personal assistance directly when no resources found
+    // Offer personal assistance when no resources found
     addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
     
-    // Trigger Tier 2 intake directly
-    startTier2Intake(category);
+    // Request consent before showing form
+    setTimeout(() => {
+      requestFormConsent(category);
+    }, 800);
     return; // Exit early when no resources found
   }
   
@@ -1042,7 +1044,8 @@ let conversationState = {
   awaitingIntakeForm: false,
   awaitingZipCode: false,
   awaitingFormConfirmation: false,
-  lastSearchCategory: null
+  lastSearchCategory: null,
+  pendingFormCategory: null
 };
 
 // Feedback System Functions - More seamless approach
@@ -1116,10 +1119,9 @@ function handleFeedbackResponse(wasHelpful, category) {
     // Tier 2: Full intake for personalized assistance
     addMessage("I'd love to help you find exactly what you need! Let me connect you with someone who can provide more personalized assistance.", "bot");
     
-    // Ask for confirmation first
-    conversationState.awaitingFormConfirmation = true;
+    // Use the new consent flow
     setTimeout(() => {
-      addMessage("Would you like me to open a form where you can share your information so someone can help you directly? Just type 'yes' or 'no'.", "bot");
+      requestFormConsent(conversationState.lastSearchCategory);
     }, 800);
   }
   
@@ -1133,8 +1135,22 @@ function startTier1Analytics(category) {
   // Message is now handled in the calling function for better flow
 }
 
+// Request consent before showing progressive form
+function requestFormConsent(category) {
+  // Store the category for later use
+  conversationState.pendingFormCategory = category;
+  
+  // Ask for consent first
+  conversationState.awaitingFormConfirmation = true;
+  
+  addMessage("I'd be happy to connect you with someone who can provide personalized assistance.", "bot");
+  setTimeout(() => {
+    addMessage("Would you like me to open a form where you can share your information so someone can help you directly? Just type 'yes' or 'no'.", "bot");
+  }, 800);
+}
+
 function startTier2Intake(category) {
-  // Show the progressive form instead of chat-based intake
+  // Show the progressive form after consent is given
   showProgressiveForm(category);
 }
 
@@ -1152,10 +1168,39 @@ function addMessage(text, sender, delay = 0) {
     hideTypingIndicator();
 
     const msg = document.createElement("div");
-    msg.className = sender === "user" ? "text-right mb-2" : "text-left mb-2";
-    msg.innerHTML = `<span class="inline-block px-3 py-2 rounded-lg ${
-      sender === "user" ? 'bg-blue-500 text-white' : 'bg-gray-200'
-    }">${text}</span>`;
+    msg.className = sender === "user" ? "text-right mb-4" : "text-left mb-4";
+    
+    if (sender === "user") {
+      msg.innerHTML = `
+        <div class="flex justify-end">
+          <div class="flex items-end gap-2 max-w-xs lg:max-w-md">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-3 rounded-2xl rounded-br-md shadow-sm">
+              <p class="text-sm font-medium">${text}</p>
+            </div>
+            <div class="w-8 h-8 bg-gradient-to-r from-primary-100 to-primary-200 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      msg.innerHTML = `
+        <div class="flex justify-start">
+          <div class="flex items-end gap-3 max-w-xs lg:max-w-md xl:max-w-lg">
+            <div class="w-8 h-8 bg-gradient-to-r from-primary-400 to-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <div class="bg-white border border-neutral-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm">
+              <p class="text-sm text-neutral-800">${text}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
     
     // Add subtle animation
     msg.style.opacity = '0';
@@ -1650,11 +1695,10 @@ async function handleUserInput() {
     console.log('🎯 Direct help request detected, offering personal assistance');
     addMessage(window.i18n.t('bot.offerPersonalHelp'), "bot", 800);
     
-    // Set state to await confirmation
-    conversationState.awaitingFormConfirmation = true;
-    
-    // Show yes/no buttons for user to confirm with delay
-    addMessage("Would you like me to connect you with someone for personalized help? Please type 'yes' to continue or 'no' if you'd prefer to browse resources on your own.", "bot", 1600);
+    // Use the new consent flow
+    setTimeout(() => {
+      requestFormConsent(null);
+    }, 1600);
     return;
   }
 
@@ -1666,7 +1710,9 @@ async function handleUserInput() {
   if (intent && intent.isNonsensical) {
     // Handle nonsensical input by offering help
     addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
-    startTier2Intake(null);
+    setTimeout(() => {
+      requestFormConsent(null);
+    }, 800);
     return;
   }
   
@@ -1684,7 +1730,9 @@ async function handleUserInput() {
   if (nonsensicalPatterns.some(pattern => pattern.test(lowercaseText))) {
     console.log('🦄 Nonsensical request detected, offering personal help');
     addMessage(window.i18n.t('bot.noResourcesOffer'), "bot");
-    startTier2Intake(null);
+    setTimeout(() => {
+      requestFormConsent(null);
+    }, 800);
     return;
   }
   
@@ -1824,12 +1872,15 @@ function handleFormConfirmation(text) {
   if (response === 'yes' || response === 'y' || response === 'yeah' || response === 'sure' || 
       response === 'ok' || response === 'okay' || response.includes('yes')) {
     addMessage("Great! I'll open a form where you can provide your information so someone can assist you personally.", "bot");
-    startTier2Intake(null);
+    // Use the stored category from the consent request
+    startTier2Intake(conversationState.pendingFormCategory || null);
+    conversationState.pendingFormCategory = null; // Clear the stored category
   } 
   // Check for no responses
   else if (response === 'no' || response === 'n' || response === 'nah' || response === 'not now' ||
            response.includes('no') || response.includes('browse') || response.includes('on my own')) {
     addMessage("No problem! Feel free to browse resources by telling me what you need (like 'food', 'housing', 'healthcare', etc.) or just ask me any questions.", "bot");
+    conversationState.pendingFormCategory = null; // Clear the stored category
   }
   // Handle unclear responses
   else {
@@ -2512,7 +2563,8 @@ function startNewSession() {
     awaitingIntakeForm: false,
     awaitingZipCode: false,
     awaitingFormConfirmation: false,
-    lastSearchCategory: null
+    lastSearchCategory: null,
+    pendingFormCategory: null
   };
 
   // Close any open modals
@@ -2564,6 +2616,7 @@ function handleEscapePhrase(text) {
   conversationState.awaitingZipCode = false;
   conversationState.awaitingFormConfirmation = false;
   conversationState.awaitingFeedback = false;
+  conversationState.pendingFormCategory = null;
   
   // Close any open modals
   hideProgressiveForm();

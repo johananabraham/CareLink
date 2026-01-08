@@ -6,6 +6,69 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <script src="https://unpkg.com/@turf/turf@7/turf.min.js"></script>
+  
+  <!-- Inter Font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+            neutral: {
+              50: '#fafafa',
+              100: '#f5f5f5',
+              200: '#e5e5e5',
+              300: '#d4d4d4',
+              400: '#a3a3a3',
+              500: '#737373',
+              600: '#525252',
+              700: '#404040',
+              800: '#262626',
+              900: '#171717',
+            },
+            success: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              500: '#22c55e',
+              600: '#16a34a',
+            },
+            warning: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+            },
+            error: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              500: '#ef4444',
+              600: '#dc2626',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
     /* RTL Support - More specific and controlled */
     
@@ -102,12 +165,19 @@
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+<body class="bg-neutral-50 min-h-screen font-sans antialiased">
   <!-- Language Selection Modal -->
-  <div id="languageModal" class="language-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-      <h2 class="text-2xl font-bold text-center mb-2" data-i18n="languageModal.title">Welcome to Carelink+</h2>
-      <p class="text-gray-600 text-center mb-6" data-i18n="languageModal.subtitle">Please select your preferred language</p>
+  <div id="languageModal" class="language-modal fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl border border-neutral-200/50">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-neutral-800 mb-2" data-i18n="languageModal.title">Welcome to Carelink+</h2>
+        <p class="text-neutral-600" data-i18n="languageModal.subtitle">Please select your preferred language</p>
+      </div>
       
       <div id="languageOptions" class="space-y-3">
         <!-- Language options will be populated by JavaScript -->
@@ -116,44 +186,81 @@
   </div>
 
   <!-- Main App Content -->
-  <div class="w-full max-w-4xl">
-    <!-- Header with Language Switcher -->
-    <div class="header-flex flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold" data-i18n="appTitle">Carelink+</h1>
-      
-      <!-- Language Switcher Button -->
-      <button id="languageSwitcher" class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow hover:shadow-md transition-shadow">
-        <span id="currentLanguageFlag">🇺🇸</span>
-        <span id="currentLanguageName">English</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Location Toggle -->
-    <div class="w-full max-w-lg mx-auto mb-4">
-      <div class="flex items-center justify-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-        <span class="text-blue-700 text-sm font-medium" data-i18n="location.servicesTitle">📍 Location Services:</span>
-        <button id="nearMeToggle" 
-                class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 
-                       bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 
-                       focus:outline-none focus:ring-2 focus:ring-blue-400"
-                onclick="toggleNearMeMode()">
-          <span id="nearMeText" data-i18n="location.enableNearMe">Enable "Near Me"</span>
+  <div class="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+      <!-- Header with Language Switcher -->
+      <header class="header-flex flex justify-between items-center mb-12">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <h1 class="text-3xl font-bold text-neutral-800 tracking-tight" data-i18n="appTitle">Carelink+</h1>
+        </div>
+        
+        <!-- Language Switcher Button -->
+        <button id="languageSwitcher" class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl shadow-sm border border-neutral-200 hover:shadow-md hover:border-neutral-300 transition-all duration-200 group">
+          <span id="currentLanguageFlag" class="text-lg">🇺🇸</span>
+          <span id="currentLanguageName" class="font-medium text-neutral-700">English</span>
+          <svg class="w-4 h-4 text-neutral-500 group-hover:text-neutral-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
         </button>
-      </div>
-    </div>
+      </header>
 
-    <!-- Chat Interface -->
-    <div id="chatbox" class="bg-white p-4 rounded-2xl shadow-md w-full max-w-lg mx-auto">
-      <div id="messages" class="h-96 overflow-y-auto mb-4"></div>
-      <div class="flex gap-2">
-        <input id="userInput" type="text" data-i18n-placeholder="ui.chatPlaceholder" placeholder="Type your message..."
-               class="flex-1 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-        <button id="sendBtn" class="bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600" data-i18n="ui.sendButton">Send</button>
+      <!-- Location Toggle -->
+      <div class="max-w-xl mx-auto mb-8">
+        <div class="flex items-center justify-center gap-4 p-4 bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl border border-primary-200/50">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span class="text-primary-700 font-medium" data-i18n="location.servicesTitle">Location Services</span>
+          </div>
+          <button id="nearMeToggle" 
+                  class="px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 
+                         bg-white text-primary-600 border border-primary-200 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700
+                         focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 shadow-sm"
+                  onclick="toggleNearMeMode()">
+            <span id="nearMeText" data-i18n="location.enableNearMe">Enable "Near Me"</span>
+          </button>
+        </div>
       </div>
-    </div>
+
+      <!-- Chat Interface -->
+      <div class="max-w-2xl mx-auto">
+        <div id="chatbox" class="bg-white rounded-3xl shadow-lg border border-neutral-200/50 overflow-hidden">
+          <!-- Chat Header -->
+          <div class="bg-gradient-to-r from-neutral-800 to-neutral-900 px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-gradient-to-r from-primary-400 to-primary-500 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-white font-semibold text-lg">Carelink+ Assistant</h2>
+                <p class="text-neutral-400 text-sm">Here to help you find community resources</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Messages Area -->
+          <div id="messages" class="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-neutral-50/30 to-white"></div>
+          
+          <!-- Input Area -->
+          <div class="p-4 border-t border-neutral-200/50 bg-neutral-50/50">
+            <div class="flex gap-3">
+              <input id="userInput" type="text" data-i18n-placeholder="ui.chatPlaceholder" placeholder="Type your message..."
+                     class="flex-1 border border-neutral-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm">
+              <button id="sendBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-medium transition-all duration-200 shadow-sm" data-i18n="ui.sendButton">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <!-- Progressive Form Modal (Hidden by default) -->
     <div id="formModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 hidden" style="z-index: 10000 !important;">
@@ -332,62 +439,81 @@
       </div>
     </div>
 
-    <!-- Map Container -->
-    <div id="map" class="mt-8 w-full h-96 rounded-2xl shadow-md"></div>
+      <!-- Map Container -->
+      <div class="max-w-2xl mx-auto mt-12">
+        <div class="bg-white rounded-3xl shadow-lg border border-neutral-200/50 p-4">
+          <div class="flex items-center gap-3 mb-4">
+            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
+            </svg>
+            <h3 class="text-lg font-semibold text-neutral-800" data-i18n="ui.mapTitle">Resource Locations</h3>
+          </div>
+          <div id="map" class="w-full h-96 rounded-2xl overflow-hidden border border-neutral-200"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Floating Session Control Menu -->
-  <div id="sessionControl" class="fixed bottom-4 right-4 z-50">
+  <div id="sessionControl" class="fixed bottom-6 right-6 z-50">
     <!-- Main Session Button -->
     <button id="sessionMenuToggle" 
-            class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center group hover:w-auto hover:px-4">
-      <svg class="w-5 h-5 group-hover:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="bg-gradient-to-r from-neutral-700 to-neutral-800 text-white w-14 h-14 rounded-2xl shadow-xl hover:shadow-2xl hover:from-neutral-800 hover:to-neutral-900 transition-all duration-300 flex items-center justify-center group hover:w-auto hover:px-5 border border-neutral-600/50">
+      <svg class="w-5 h-5 group-hover:mr-3 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
       </svg>
-      <span class="hidden group-hover:inline text-sm font-medium">Session</span>
+      <span class="hidden group-hover:inline text-sm font-medium whitespace-nowrap transition-all duration-300">Session</span>
     </button>
 
     <!-- Dropdown Menu -->
-    <div id="sessionMenu" class="absolute bottom-14 right-0 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-48 hidden">
-      <button id="startOverBtn" class="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors">
-        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-        </svg>
+    <div id="sessionMenu" class="absolute bottom-16 right-0 bg-white rounded-2xl shadow-2xl border border-neutral-200/50 py-2 min-w-56 hidden backdrop-blur-sm">
+      <button id="startOverBtn" class="w-full px-4 py-3 text-left hover:bg-success-50 flex items-center gap-3 transition-all duration-200 rounded-xl mx-2">
+        <div class="w-8 h-8 bg-success-100 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </div>
         <div>
-          <div class="font-medium text-sm">Start Over</div>
-          <div class="text-xs text-gray-500">Fresh conversation</div>
+          <div class="font-medium text-sm text-neutral-800">Start Over</div>
+          <div class="text-xs text-neutral-500">Fresh conversation</div>
         </div>
       </button>
 
-      <button id="clearChatBtn" class="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors">
-        <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-        </svg>
+      <button id="clearChatBtn" class="w-full px-4 py-3 text-left hover:bg-warning-50 flex items-center gap-3 transition-all duration-200 rounded-xl mx-2">
+        <div class="w-8 h-8 bg-warning-100 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-warning-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </div>
         <div>
-          <div class="font-medium text-sm">Clear Chat</div>
-          <div class="text-xs text-gray-500">Remove message history</div>
+          <div class="font-medium text-sm text-neutral-800">Clear Chat</div>
+          <div class="text-xs text-neutral-500">Remove message history</div>
         </div>
       </button>
 
-      <button id="helpTipsBtn" class="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors">
-        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
+      <button id="helpTipsBtn" class="w-full px-4 py-3 text-left hover:bg-primary-50 flex items-center gap-3 transition-all duration-200 rounded-xl mx-2">
+        <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
         <div>
-          <div class="font-medium text-sm">Help & Tips</div>
-          <div class="text-xs text-gray-500">How to use Carelink+</div>
+          <div class="font-medium text-sm text-neutral-800">Help & Tips</div>
+          <div class="text-xs text-neutral-500">How to use Carelink+</div>
         </div>
       </button>
 
-      <div class="border-t border-gray-100 my-1"></div>
+      <div class="border-t border-neutral-200/50 my-2 mx-2"></div>
 
-      <button id="endSessionBtn" class="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center gap-3 transition-colors text-red-600">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-        </svg>
+      <button id="endSessionBtn" class="w-full px-4 py-3 text-left hover:bg-error-50 flex items-center gap-3 transition-all duration-200 rounded-xl mx-2">
+        <div class="w-8 h-8 bg-error-100 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-error-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+        </div>
         <div>
-          <div class="font-medium text-sm">End Session</div>
-          <div class="text-xs">Close Carelink+</div>
+          <div class="font-medium text-sm text-error-600">End Session</div>
+          <div class="text-xs text-error-500">Close Carelink+</div>
         </div>
       </button>
     </div>

@@ -86,6 +86,7 @@ class I18nManager {
 
     this.currentLanguage = langCode;
     localStorage.setItem('carelink_language', langCode);
+    localStorage.setItem('carelink_has_visited', 'true'); // Mark that user has visited and chosen language
     
     // Update document direction for RTL languages
     document.dir = this.getLanguageDirection();
@@ -147,7 +148,13 @@ class I18nManager {
 
   // Check if we should show language selection modal
   shouldShowLanguageModal() {
-    return !localStorage.getItem('carelink_language');
+    // Always show language modal on first visit, regardless of browser language
+    // This ensures users explicitly choose their language preference
+    const hasVisited = localStorage.getItem('carelink_has_visited');
+    const hasLanguagePreference = localStorage.getItem('carelink_language');
+    
+    // Show modal if user hasn't visited before OR hasn't set language preference
+    return !hasVisited || !hasLanguagePreference;
   }
 
   // Format pluralization based on count
