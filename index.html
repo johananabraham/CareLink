@@ -156,12 +156,21 @@
     }
     
     .language-option {
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
     }
     
     .language-option:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    /* Enhanced hover states for all buttons */
+    .hover\\:scale-105:hover {
+      transform: scale(1.05);
+    }
+    
+    .hover\\:scale-102:hover {
+      transform: scale(1.02);
     }
   </style>
 </head>
@@ -209,23 +218,23 @@
       <!-- Right Side Actions -->
       <div class="flex items-center space-x-4">
         <!-- Language Switcher -->
-        <button id="languageSwitcher" class="flex items-center gap-2 text-neutral-600 hover:text-neutral-800 transition-colors">
+        <button id="languageSwitcher" class="flex items-center gap-2 px-4 py-2 rounded-xl text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 transition-all duration-200 border border-neutral-200 hover:border-neutral-300">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
           </svg>
           <span id="currentLanguageName" class="font-medium">English</span>
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
         
         <!-- Get Help Now Button -->
-        <button id="getHelpBtn" class="bg-primary-600 text-white px-6 py-2.5 rounded-full font-medium hover:bg-primary-700 transition-colors shadow-sm" data-i18n="nav.getHelp">
+        <button id="getHelpBtn" class="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-8 py-3 rounded-full font-semibold hover:from-primary-700 hover:to-primary-800 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 transform" data-i18n="nav.getHelp">
           Get Help Now
         </button>
         
         <!-- Mobile Menu Toggle -->
-        <button id="mobileMenuToggle" class="md:hidden text-neutral-600">
+        <button id="mobileMenuToggle" class="md:hidden p-2 rounded-xl text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 transition-all duration-200">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
@@ -359,9 +368,9 @@
             <span class="text-primary-700 font-medium" data-i18n="location.servicesTitle">Location Services</span>
           </div>
           <button id="nearMeToggle" 
-                  class="px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 
-                         bg-white text-primary-600 border border-primary-200 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700
-                         focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 shadow-sm"
+                  class="px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 
+                         bg-white text-primary-600 border-2 border-primary-200 hover:bg-primary-50 hover:border-primary-400 hover:text-primary-700 hover:shadow-md hover:scale-105 transform
+                         focus:outline-none focus:ring-3 focus:ring-primary-300 focus:ring-offset-2 shadow-sm"
                   onclick="toggleNearMeMode()">
             <span id="nearMeText" data-i18n="location.enableNearMe">Enable "Near Me"</span>
           </button>
@@ -393,8 +402,8 @@
           <div class="p-4 border-t border-neutral-200/50 bg-neutral-50/50">
             <div class="flex gap-3">
               <input id="userInput" type="text" data-i18n-placeholder="ui.chatPlaceholder" placeholder="Type your message..."
-                     class="flex-1 border border-neutral-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm">
-              <button id="sendBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-medium transition-all duration-200 shadow-sm" data-i18n="ui.sendButton">Send</button>
+                     class="flex-1 border-2 border-neutral-300 p-4 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-400 focus:border-primary-400 transition-all duration-300 bg-white shadow-sm hover:shadow-md placeholder:text-neutral-400">
+              <button id="sendBtn" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-8 py-4 rounded-xl hover:from-primary-600 hover:to-primary-700 hover:shadow-lg hover:scale-105 transform focus:outline-none focus:ring-3 focus:ring-primary-400 focus:ring-offset-2 font-semibold transition-all duration-300 shadow-md" data-i18n="ui.sendButton">Send</button>
             </div>
           </div>
         </div>
@@ -435,7 +444,7 @@
             <div>
               <label for="userName" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.fullName">Full Name *</label>
               <input type="text" id="userName" name="userName" required
-                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                     class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 placeholder:text-neutral-400 font-medium"
                      data-i18n-placeholder="forms.fullNamePlaceholder" placeholder="Enter your full name">
               <div id="userNameError" class="text-red-500 text-xs mt-1 hidden"></div>
             </div>
@@ -443,7 +452,7 @@
             <div>
               <label for="userPhone" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.phoneNumber">Phone Number *</label>
               <input type="tel" id="userPhone" name="userPhone" required
-                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                     class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 placeholder:text-neutral-400 font-medium"
                      data-i18n-placeholder="forms.phoneNumberPlaceholder" placeholder="(555) 123-4567">
               <div id="userPhoneError" class="text-red-500 text-xs mt-1 hidden"></div>
             </div>
@@ -451,7 +460,7 @@
             <div>
               <label for="userEmail" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.email">Email Address (Optional)</label>
               <input type="email" id="userEmail" name="userEmail"
-                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                     class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 placeholder:text-neutral-400 font-medium"
                      data-i18n-placeholder="forms.emailPlaceholder" placeholder="your.email@example.com">
               <div id="userEmailError" class="text-red-500 text-xs mt-1 hidden"></div>
             </div>
@@ -464,7 +473,7 @@
             <div>
               <label for="userAddress" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.address">Address/ZIP Code *</label>
               <input type="text" id="userAddress" name="userAddress" required
-                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                     class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 placeholder:text-neutral-400 font-medium"
                      data-i18n-placeholder="forms.addressPlaceholder" placeholder="Street address or ZIP code">
               <div id="userAddressError" class="text-red-500 text-xs mt-1 hidden"></div>
             </div>
@@ -472,7 +481,7 @@
             <div>
               <label for="helpCategory" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.helpCategory">What do you need help with? *</label>
               <select id="helpCategory" name="helpCategory" required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 font-medium cursor-pointer">
                 <option value="" data-i18n="forms.selectCategory">-- Select a category --</option>
                 <option value="Food" data-i18n="categories.Food">Food</option>
                 <option value="Housing" data-i18n="categories.Housing">Housing</option>
@@ -490,7 +499,7 @@
             <div>
               <label for="helpDescription" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.helpDescription">Describe your situation *</label>
               <textarea id="helpDescription" name="helpDescription" rows="3" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 placeholder:text-neutral-400 font-medium resize-none"
                         data-i18n-placeholder="forms.helpDescriptionPlaceholder" placeholder="Please describe what kind of help you need..."></textarea>
               <div id="helpDescriptionError" class="text-red-500 text-xs mt-1 hidden"></div>
             </div>
@@ -503,7 +512,7 @@
             <div>
               <label for="urgencyLevel" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.urgency">How urgent is your need? *</label>
               <select id="urgencyLevel" name="urgencyLevel" required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 font-medium cursor-pointer">
                 <option value="" data-i18n="forms.selectUrgency">-- Select urgency level --</option>
                 <option value="emergency" data-i18n="forms.emergency">Emergency (Need help today)</option>
                 <option value="urgent" data-i18n="forms.urgent">Urgent (Need help within a week)</option>
@@ -516,7 +525,7 @@
             <div>
               <label for="bestContactTime" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.contactTime">Best time to contact you</label>
               <select id="bestContactTime" name="bestContactTime"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 font-medium cursor-pointer">
                 <option value="anytime" data-i18n="forms.anytime">Anytime</option>
                 <option value="morning" data-i18n="forms.morning">Morning (8AM - 12PM)</option>
                 <option value="afternoon" data-i18n="forms.afternoon">Afternoon (12PM - 5PM)</option>
@@ -527,7 +536,7 @@
             <div>
               <label for="additionalNotes" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="forms.additionalNotes">Additional Notes (Optional)</label>
               <textarea id="additionalNotes" name="additionalNotes" rows="2"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        class="w-full px-4 py-3 border-2 border-neutral-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-primary-300 focus:border-primary-400 transition-all duration-300 bg-white hover:border-neutral-400 placeholder:text-neutral-400 font-medium resize-none"
                         data-i18n-placeholder="forms.additionalNotesPlaceholder" placeholder="Any other information that might help us assist you..."></textarea>
             </div>
 
@@ -543,14 +552,14 @@
         <!-- Form Actions -->
         <div class="bg-gray-50 px-6 py-4 flex justify-between">
           <button id="formBackBtn" type="button" 
-                  class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors hidden"
+                  class="px-5 py-2.5 text-neutral-600 border-2 border-neutral-300 rounded-xl hover:bg-neutral-100 hover:border-neutral-400 transition-all duration-300 hidden font-medium shadow-sm hover:shadow-md"
                   data-i18n="forms.back">Back</button>
           
           <div class="flex space-x-3">
             <!-- Enhanced Cancel Button -->
             <button id="formCancelBtn" type="button" 
-                    class="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="px-5 py-2.5 text-error-600 border-2 border-error-300 rounded-xl hover:bg-error-50 hover:border-error-400 transition-all duration-300 font-semibold shadow-sm hover:shadow-md">
+              <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
               <span data-i18n="forms.cancel">Cancel</span>
@@ -558,19 +567,19 @@
 
             <!-- Save Draft Button (when applicable) -->
             <button id="formSaveDraftBtn" type="button" 
-                    class="px-4 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors hidden">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="px-5 py-2.5 text-primary-600 border-2 border-primary-300 rounded-xl hover:bg-primary-50 hover:border-primary-400 transition-all duration-300 hidden font-semibold shadow-sm hover:shadow-md">
+              <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
               </svg>
               Save Draft
             </button>
             
             <button id="formNextBtn" type="button" 
-                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    class="px-8 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 hover:shadow-lg hover:scale-105 transform transition-all duration-300 font-semibold shadow-md"
                     data-i18n="forms.next">Next</button>
                     
             <button id="formSubmitBtn" type="button" 
-                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors hidden"
+                    class="px-8 py-2.5 bg-gradient-to-r from-success-600 to-success-700 text-white rounded-xl hover:from-success-700 hover:to-success-800 hover:shadow-lg hover:scale-105 transform transition-all duration-300 hidden font-semibold shadow-md"
                     data-i18n="forms.submit">Submit Request</button>
           </div>
         </div>
@@ -658,88 +667,94 @@
   </div>
   
   <!-- About CareLink Section -->
-  <section id="about" class="py-16 bg-neutral-100">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-neutral-800 mb-4" data-i18n="about.title">About CareLink</h2>
-      </div>
-      
-      <div class="bg-white rounded-3xl p-8 shadow-sm border border-neutral-200/50">
-        <div class="max-w-3xl mx-auto text-center">
-          <p class="text-neutral-700 leading-relaxed mb-6" data-i18n="about.description">
+  <section id="about" class="py-16 bg-white">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <!-- About Title and Description -->
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-neutral-800 mb-6" data-i18n="about.title">About CareLink+</h2>
+        <div class="max-w-4xl mx-auto">
+          <p class="text-neutral-700 leading-relaxed text-lg" data-i18n="about.description">
             Finding help should not feel confusing or overwhelming. Many people face barriers like language, cost, and unfamiliar systems when trying to access healthcare and basic resources. We exist to make that process easier. Our platform connects individuals and families to trusted local services, including healthcare, insurance assistance, food programs, housing support, and community organizations. We believe everyone deserves clear information and support they can trust, no matter where they come from or what language they speak.
           </p>
         </div>
-        
-        <!-- Vision Section -->
-        <div class="mt-12 p-6 bg-primary-50 rounded-2xl border border-primary-200/50">
+      </div>
+      
+      <!-- Vision Section -->
+      <div class="mb-8">
+        <div class="bg-primary-50 rounded-3xl p-8 border border-primary-200/50">
           <div class="flex items-center gap-3 mb-4">
             <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-neutral-800" data-i18n="about.vision.title">Our Vision</h3>
+            <h3 class="text-xl font-semibold text-neutral-800" data-i18n="about.vision.title">Our Vision</h3>
           </div>
-          <p class="text-neutral-700" data-i18n="about.vision.description">
+          <p class="text-neutral-700 leading-relaxed" data-i18n="about.vision.description">
             A future where people can access healthcare and essential resources with confidence and clarity, without fear, confusion, or unnecessary barriers.
           </p>
         </div>
       </div>
-    </div>
-  </section>
-  
-  <!-- Values Section -->
-  <section id="values" class="py-16 bg-primary-50">
-    <div class="container mx-auto px-4 max-w-6xl">
-      <div class="text-center mb-12">
-        <h2 class="text-2xl font-bold text-neutral-800 mb-4" data-i18n="values.title">Our Values</h2>
-      </div>
       
-      <div class="grid md:grid-cols-2 gap-8">
-        <!-- Left Column -->
-        <div class="space-y-6">
-          <!-- Accessibility -->
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-200/50">
-            <h3 class="text-lg font-semibold text-neutral-800 mb-3" data-i18n="values.accessibility.title">Accessibility</h3>
-            <p class="text-neutral-700 text-sm" data-i18n="values.accessibility.description">
-              Information should be easy to understand and available to everyone, regardless of language, income, or background.
-            </p>
+      <!-- Values Section -->
+      <div>
+        <div class="bg-primary-50 rounded-3xl p-8 border border-primary-200/50">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-neutral-800" data-i18n="values.title">Our Values</h3>
           </div>
           
-          <!-- Respect -->
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-200/50">
-            <h3 class="text-lg font-semibold text-neutral-800 mb-3" data-i18n="values.respect.title">Respect</h3>
-            <p class="text-neutral-700 text-sm" data-i18n="values.respect.description">
-              Everyone deserves to be treated with care and understanding when seeking help.
-            </p>
-          </div>
-          
-          <!-- Equity -->
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-200/50">
-            <h3 class="text-lg font-semibold text-neutral-800 mb-3" data-i18n="values.equity.title">Equity</h3>
-            <p class="text-neutral-700 text-sm" data-i18n="values.equity.description">
-              We are committed to reducing disparities and helping close gaps in access to care and essential services.
-            </p>
-          </div>
-        </div>
-        
-        <!-- Right Column -->
-        <div class="space-y-6">
-          <!-- Trust -->
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-200/50">
-            <h3 class="text-lg font-semibold text-neutral-800 mb-3" data-i18n="values.trust.title">Trust</h3>
-            <p class="text-neutral-700 text-sm" data-i18n="values.trust.description">
-              We prioritize privacy, accuracy, and partnerships with organizations that truly serve communities.
-            </p>
-          </div>
-          
-          <!-- Community -->
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-neutral-200/50">
-            <h3 class="text-lg font-semibold text-neutral-800 mb-3" data-i18n="values.community.title">Community</h3>
-            <p class="text-neutral-700 text-sm" data-i18n="values.community.description">
-              We believe in the strength of local communities and work to connect people to support systems close to home.
-            </p>
+          <!-- Values Grid -->
+          <div class="grid md:grid-cols-2 gap-x-12 gap-y-6">
+            <!-- Left Column -->
+            <div class="space-y-6">
+              <!-- Accessibility -->
+              <div>
+                <h4 class="text-lg font-semibold text-neutral-800 mb-2" data-i18n="values.accessibility.title">Accessibility</h4>
+                <p class="text-neutral-700 text-sm leading-relaxed" data-i18n="values.accessibility.description">
+                  Information should be easy to understand and available to everyone, regardless of language, income, or background.
+                </p>
+              </div>
+              
+              <!-- Respect -->
+              <div>
+                <h4 class="text-lg font-semibold text-neutral-800 mb-2" data-i18n="values.respect.title">Respect</h4>
+                <p class="text-neutral-700 text-sm leading-relaxed" data-i18n="values.respect.description">
+                  Everyone deserves to be treated with care and understanding when seeking help.
+                </p>
+              </div>
+              
+              <!-- Equity -->
+              <div>
+                <h4 class="text-lg font-semibold text-neutral-800 mb-2" data-i18n="values.equity.title">Equity</h4>
+                <p class="text-neutral-700 text-sm leading-relaxed" data-i18n="values.equity.description">
+                  We are committed to reducing disparities and helping close gaps in access to care and essential services.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-6">
+              <!-- Trust -->
+              <div>
+                <h4 class="text-lg font-semibold text-neutral-800 mb-2" data-i18n="values.trust.title">Trust</h4>
+                <p class="text-neutral-700 text-sm leading-relaxed" data-i18n="values.trust.description">
+                  We prioritize privacy, accuracy, and partnerships with organizations that truly serve communities.
+                </p>
+              </div>
+              
+              <!-- Community -->
+              <div>
+                <h4 class="text-lg font-semibold text-neutral-800 mb-2" data-i18n="values.community.title">Community</h4>
+                <p class="text-neutral-700 text-sm leading-relaxed" data-i18n="values.community.description">
+                  We believe in the strength of local communities and work to connect people to support systems close to home.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

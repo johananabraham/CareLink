@@ -52,7 +52,7 @@ const TRANSLATIONS = {
     
     // About Section
     about: {
-      title: "About CareLink",
+      title: "About CareLink+",
       description: "Finding help should not feel confusing or overwhelming. Many people face barriers like language, cost, and unfamiliar systems when trying to access healthcare and basic resources. We exist to make that process easier. Our platform connects individuals and families to trusted local services, including healthcare, insurance assistance, food programs, housing support, and community organizations. We believe everyone deserves clear information and support they can trust, no matter where they come from or what language they speak.",
       vision: {
         title: "Our Vision",

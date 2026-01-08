@@ -34,7 +34,7 @@ function showLanguageModal() {
   const languages = window.i18n.getAvailableLanguages();
   languages.forEach(lang => {
     const option = document.createElement('button');
-    option.className = 'language-option w-full p-4 border border-neutral-200 rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all duration-200 flex items-center justify-between group hover:shadow-md';
+    option.className = 'language-option w-full p-4 border-2 border-neutral-200 rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all duration-300 flex items-center justify-between group hover:shadow-lg hover:scale-102 transform cursor-pointer';
     option.innerHTML = `
       <div class="flex items-center gap-4">
         <span class="text-3xl">${lang.flag}</span>
