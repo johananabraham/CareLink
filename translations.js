@@ -13,6 +13,15 @@ const TRANSLATIONS = {
       close: "Close"
     },
     
+    // Navigation
+    nav: {
+      home: "Home",
+      howItWorks: "How It Works",
+      about: "About", 
+      contact: "Contact",
+      getHelp: "Get Help Now"
+    },
+    
     // Main UI elements
     ui: {
       chatPlaceholder: "Type your message...",
@@ -20,6 +29,73 @@ const TRANSLATIONS = {
       mapTitle: "Resource Locations",
       loading: "Loading...",
       error: "An error occurred. Please try again."
+    },
+    
+    // Process/How It Works Section
+    process: {
+      badge: "Simple Process",
+      title: "How It Works",
+      subtitle: "Getting connected to quality care does not have to be confusing. Follow these three steps.",
+      step1: {
+        title: "Share Your Needs",
+        description: "Answer a few short questions about what you are looking for. This can include healthcare, insurance, food, housing, employment and more. You do not need to share personal documents, and your information stays private."
+      },
+      step2: {
+        title: "Find Trusted Local Help", 
+        description: "We connect you to reliable community organizations, clinics, and programs near you that fit your needs. We focus on services that are welcoming and available in your preferred language."
+      },
+      step3: {
+        title: "Get Support You Can Trust",
+        description: "Use the resources we share or connect with volunteers who can further help guide you through the system. Our goal is to make the system easier to understand and to help you feel supported, not overwhelmed."
+      }
+    },
+    
+    // About Section
+    about: {
+      title: "About CareLink",
+      description: "Finding help should not feel confusing or overwhelming. Many people face barriers like language, cost, and unfamiliar systems when trying to access healthcare and basic resources. We exist to make that process easier. Our platform connects individuals and families to trusted local services, including healthcare, insurance assistance, food programs, housing support, and community organizations. We believe everyone deserves clear information and support they can trust, no matter where they come from or what language they speak.",
+      vision: {
+        title: "Our Vision",
+        description: "A future where people can access healthcare and essential resources with confidence and clarity, without fear, confusion, or unnecessary barriers."
+      }
+    },
+    
+    // Values Section
+    values: {
+      title: "Our Values",
+      accessibility: {
+        title: "Accessibility",
+        description: "Information should be easy to understand and available to everyone, regardless of language, income, or background."
+      },
+      respect: {
+        title: "Respect", 
+        description: "Everyone deserves to be treated with care and understanding when seeking help."
+      },
+      equity: {
+        title: "Equity",
+        description: "We are committed to reducing disparities and helping close gaps in access to care and essential services."
+      },
+      trust: {
+        title: "Trust",
+        description: "We prioritize privacy, accuracy, and partnerships with organizations that truly serve communities."
+      },
+      community: {
+        title: "Community",
+        description: "We believe in the strength of local communities and work to connect people to support systems close to home."
+      }
+    },
+    
+    // Footer Section
+    footer: {
+      description: "Connecting communities to trusted healthcare and essential resources with clarity and compassion.",
+      quickLinks: "Quick Links",
+      support: "Support", 
+      help: "Help Center",
+      privacy: "Privacy Policy",
+      terms: "Terms of Service",
+      accessibility: "Accessibility",
+      copyright: "© 2024 CareLink+. All rights reserved.",
+      emergency: "For emergencies, call 911"
     },
     
     // Location services

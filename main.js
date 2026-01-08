@@ -1156,6 +1156,52 @@ function startTier2Intake(category) {
 
 sendBtn.onclick = handleUserInput;
 
+// Navigation functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  
+  if (mobileMenuToggle && mobileMenu) {
+    mobileMenuToggle.addEventListener('click', function() {
+      mobileMenu.classList.toggle('hidden');
+    });
+  }
+  
+  // Get Help Now button functionality
+  const getHelpBtn = document.getElementById('getHelpBtn');
+  if (getHelpBtn) {
+    getHelpBtn.addEventListener('click', function() {
+      // Scroll to chat interface or trigger form
+      const chatInterface = document.getElementById('chat-interface');
+      if (chatInterface) {
+        chatInterface.scrollIntoView({ behavior: 'smooth' });
+        // Focus on the input after scroll
+        setTimeout(() => {
+          const userInput = document.getElementById('userInput');
+          if (userInput) {
+            userInput.focus();
+          }
+        }, 500);
+      }
+    });
+  }
+  
+  // Smooth scrolling for navigation links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+});
+
 // Enhanced message system with typing indicators and smoother animations
 function addMessage(text, sender, delay = 0) {
   // Add typing indicator for bot messages if there's a delay
