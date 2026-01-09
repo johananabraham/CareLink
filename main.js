@@ -1123,7 +1123,8 @@ async function showResources(category) {
     return; // Exit early when no resources found
   }
   
-  // Add markers to map (now sorted by distance)
+  // Add markers to map and store for carousel (now sorted by distance)
+  const mapMarkers = [];
   resourcesWithDistance.forEach((r, index) => {
     console.log(`📌 Adding marker ${index + 1}:`, r.name, 'at', [r.lat, r.lng]);
     
@@ -1140,11 +1141,15 @@ async function showResources(category) {
         
         // Store resource data with marker for language switching
         marker.resourceData = r;
+        marker.resourceIndex = index; // Add index for carousel sync
         
         // Create popup content
         const popupContent = createPopupContent(r);
         
         marker.addTo(map).bindPopup(popupContent, { maxWidth: 300 });
+        
+        // Store marker for carousel interaction
+        mapMarkers.push(marker);
         
         console.log(`✅ Marker successfully added to map`);
       } else {
@@ -1154,6 +1159,9 @@ async function showResources(category) {
       console.error(`❌ Error creating marker for ${r.name}:`, error);
     }
   });
+
+  // Create and show resource carousel
+  createResourceCarousel(resourcesWithDistance, mapMarkers);
   
   // Success message to user with distance information
   if (resourcesWithDistance.length > 0) {
@@ -1672,6 +1680,282 @@ const INTENT_PATTERNS = {
     }
   }
 };
+
+// Resource Carousel Implementation
+let currentCarouselIndex = 0;
+let carouselResources = [];
+let carouselMarkers = [];
+
+function createResourceCarousel(resources, markers) {
+  const carouselContainer = document.getElementById('resourceCarousel');
+  const cardsContainer = document.getElementById('resourceCardsContainer');
+  const dotsContainer = document.getElementById('carouselDots');
+  const counter = document.getElementById('carouselCounter');
+  const prevBtn = document.getElementById('prevResourceBtn');
+  const nextBtn = document.getElementById('nextResourceBtn');
+  
+  if (!carouselContainer || !cardsContainer) {
+    console.warn('⚠️ Carousel elements not found');
+    return;
+  }
+  
+  // Store data globally for navigation
+  carouselResources = resources;
+  carouselMarkers = markers;
+  currentCarouselIndex = 0;
+  
+  // Clear existing content
+  cardsContainer.innerHTML = '';
+  dotsContainer.innerHTML = '';
+  
+  // Create resource cards
+  resources.forEach((resource, index) => {
+    const card = createResourceCard(resource, index);
+    cardsContainer.appendChild(card);
+    
+    // Create dot indicator
+    const dot = document.createElement('button');
+    dot.className = `w-2 h-2 rounded-full transition-all duration-200 ${index === 0 ? 'bg-primary-600' : 'bg-neutral-300 hover:bg-neutral-400'}`;
+    dot.onclick = () => goToCarouselSlide(index);
+    dotsContainer.appendChild(dot);
+  });
+  
+  // Set up navigation
+  updateCarouselCounter();
+  updateCarouselButtons();
+  
+  // Event listeners
+  prevBtn.onclick = () => previousCarouselSlide();
+  nextBtn.onclick = () => nextCarouselSlide();
+  
+  // Show carousel
+  carouselContainer.classList.remove('hidden');
+  
+  // Set initial card width for responsive carousel
+  updateCarouselLayout();
+  
+  console.log('✅ Resource carousel created with', resources.length, 'resources');
+}
+
+function createResourceCard(resource, index) {
+  const card = document.createElement('div');
+  card.className = 'min-w-full bg-gradient-to-br from-white to-neutral-50 rounded-2xl p-6 border border-neutral-200 shadow-sm';
+  
+  // Distance display
+  let distanceHtml = '';
+  if (resource.distance) {
+    distanceHtml = `
+      <div class="flex items-center gap-1 text-primary-600 text-sm font-medium mb-3">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>${resource.distance.toFixed(1)} mi away</span>
+      </div>
+    `;
+  }
+  
+  // Operating hours display
+  let hoursHtml = '';
+  if (resource.hours) {
+    const isOpenNow = checkIfOpen(resource.hours);
+    const statusColor = isOpenNow ? 'text-success-600' : 'text-error-600';
+    const statusText = window.i18n.t(isOpenNow ? 'ui.open' : 'ui.closed');
+    
+    hoursHtml = `
+      <div class="flex items-center gap-2 mb-3">
+        <div class="flex items-center gap-1">
+          <div class="w-2 h-2 rounded-full ${isOpenNow ? 'bg-success-500' : 'bg-error-500'}"></div>
+          <span class="${statusColor} text-sm font-medium">${statusText}</span>
+        </div>
+        <span class="text-neutral-500 text-sm">${resource.hours}</span>
+      </div>
+    `;
+  } else {
+    hoursHtml = `
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-neutral-400 text-sm">${window.i18n.t('ui.unknownHours')}</span>
+      </div>
+    `;
+  }
+  
+  // Contact buttons
+  let contactButtons = '';
+  if (resource.phone) {
+    contactButtons += `
+      <button onclick="window.open('tel:${resource.phone}', '_self')" 
+              class="flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+        </svg>
+        <span data-i18n="ui.callNow">${window.i18n.t('ui.callNow')}</span>
+      </button>
+    `;
+  }
+  
+  if (resource.website) {
+    contactButtons += `
+      <button onclick="window.open('${resource.website}', '_blank')" 
+              class="flex items-center justify-center gap-2 bg-neutral-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-neutral-700 transition-colors flex-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+        </svg>
+        <span data-i18n="ui.website">${window.i18n.t('ui.website')}</span>
+      </button>
+    `;
+  }
+  
+  card.innerHTML = `
+    ${distanceHtml}
+    
+    <div class="mb-4">
+      <h4 class="text-xl font-bold text-neutral-900 mb-2 leading-tight">${resource.name}</h4>
+      <p class="text-neutral-600 leading-relaxed">${resource.description || resource.services || 'Community resource available to help with your needs.'}</p>
+    </div>
+    
+    ${hoursHtml}
+    
+    ${resource.address ? `
+      <div class="flex items-start gap-2 mb-4">
+        <svg class="w-4 h-4 text-neutral-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span class="text-neutral-600 text-sm leading-relaxed">${resource.address}</span>
+      </div>
+    ` : ''}
+    
+    <div class="flex gap-2 mb-4">
+      <button onclick="showResourceOnMap(${index})" 
+              class="flex items-center justify-center gap-2 bg-white border border-neutral-300 text-neutral-700 px-4 py-3 rounded-xl font-semibold hover:bg-neutral-50 transition-colors flex-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
+        </svg>
+        <span data-i18n="ui.viewOnMap">${window.i18n.t('ui.viewOnMap')}</span>
+      </button>
+      
+      ${resource.lat && resource.lng ? `
+        <button onclick="getDirections(${resource.lat}, ${resource.lng}, '${resource.name.replace(/'/g, "\\'")}')" 
+                class="flex items-center justify-center gap-2 bg-white border border-neutral-300 text-neutral-700 px-4 py-3 rounded-xl font-semibold hover:bg-neutral-50 transition-colors flex-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
+          </svg>
+          <span data-i18n="ui.getDirections">${window.i18n.t('ui.getDirections')}</span>
+        </button>
+      ` : ''}
+    </div>
+    
+    ${contactButtons ? `<div class="flex gap-2">${contactButtons}</div>` : ''}
+  `;
+  
+  return card;
+}
+
+// Carousel navigation functions
+function goToCarouselSlide(index) {
+  currentCarouselIndex = index;
+  updateCarousel();
+}
+
+function nextCarouselSlide() {
+  if (currentCarouselIndex < carouselResources.length - 1) {
+    currentCarouselIndex++;
+    updateCarousel();
+  }
+}
+
+function previousCarouselSlide() {
+  if (currentCarouselIndex > 0) {
+    currentCarouselIndex--;
+    updateCarousel();
+  }
+}
+
+function updateCarousel() {
+  const cardsContainer = document.getElementById('resourceCardsContainer');
+  const dots = document.getElementById('carouselDots').children;
+  
+  if (!cardsContainer) return;
+  
+  // Update carousel position
+  const translateX = -currentCarouselIndex * 100;
+  cardsContainer.style.transform = `translateX(${translateX}%)`;
+  
+  // Update dots
+  Array.from(dots).forEach((dot, index) => {
+    if (index === currentCarouselIndex) {
+      dot.className = 'w-2 h-2 rounded-full bg-primary-600 transition-all duration-200';
+    } else {
+      dot.className = 'w-2 h-2 rounded-full bg-neutral-300 hover:bg-neutral-400 transition-all duration-200';
+    }
+  });
+  
+  updateCarouselCounter();
+  updateCarouselButtons();
+}
+
+function updateCarouselCounter() {
+  const counter = document.getElementById('carouselCounter');
+  if (counter && carouselResources.length > 0) {
+    counter.textContent = `${currentCarouselIndex + 1} of ${carouselResources.length}`;
+  }
+}
+
+function updateCarouselButtons() {
+  const prevBtn = document.getElementById('prevResourceBtn');
+  const nextBtn = document.getElementById('nextResourceBtn');
+  
+  if (prevBtn) {
+    prevBtn.disabled = currentCarouselIndex === 0;
+  }
+  
+  if (nextBtn) {
+    nextBtn.disabled = currentCarouselIndex === carouselResources.length - 1;
+  }
+}
+
+function updateCarouselLayout() {
+  // Ensure proper responsive behavior
+  const cardsContainer = document.getElementById('resourceCardsContainer');
+  if (cardsContainer) {
+    cardsContainer.style.width = `${carouselResources.length * 100}%`;
+  }
+}
+
+// Map integration functions
+function showResourceOnMap(index) {
+  if (carouselMarkers[index] && map) {
+    const marker = carouselMarkers[index];
+    
+    // Center map on marker
+    map.setView([marker.getLatLng().lat, marker.getLatLng().lng], 15);
+    
+    // Open popup
+    marker.openPopup();
+    
+    // Scroll to map
+    document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function getDirections(lat, lng, name) {
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encodeURIComponent(name)}`;
+  window.open(directionsUrl, '_blank');
+}
+
+function checkIfOpen(hoursStr) {
+  // Simple time checking - could be enhanced based on actual hours format
+  // For now, return true (assume open) since hours format varies
+  return true;
+}
+
+// Hide carousel function
+function hideResourceCarousel() {
+  const carouselContainer = document.getElementById('resourceCarousel');
+  if (carouselContainer) {
+    carouselContainer.classList.add('hidden');
+  }
+}
 
 function detectIntent(text) {
   const normalizedText = text.toLowerCase();
@@ -2780,6 +3064,7 @@ function startNewSession() {
 function clearChatHistory() {
   messagesDiv.innerHTML = '';
   removeFeedbackButtons();
+  hideResourceCarousel(); // Hide carousel when clearing chat
   addMessage("Chat history cleared. How can I help you today?", "bot");
   console.log('🧹 Chat history cleared');
 }
@@ -2871,4 +3156,19 @@ window.addEventListener('load', () => {
   
   // Add console message about test function
   console.log('🧪 Test function available: window.testSpanishTranslation()');
+});
+
+// Keyboard navigation for carousel
+document.addEventListener('keydown', (event) => {
+  const carouselVisible = !document.getElementById('resourceCarousel')?.classList.contains('hidden');
+  
+  if (carouselVisible && carouselResources.length > 0) {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      previousCarouselSlide();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      nextCarouselSlide();
+    }
+  }
 });

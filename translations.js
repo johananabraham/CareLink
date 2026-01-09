@@ -27,8 +27,17 @@ const TRANSLATIONS = {
       chatPlaceholder: "Type your message...",
       sendButton: "Send",
       mapTitle: "Resource Locations",
+      resourcesTitle: "Available Resources",
       loading: "Loading...",
-      error: "An error occurred. Please try again."
+      error: "An error occurred. Please try again.",
+      viewOnMap: "View on Map",
+      getDirections: "Get Directions",
+      callNow: "Call Now",
+      website: "Visit Website",
+      distance: "Distance",
+      open: "Open",
+      closed: "Closed",
+      unknownHours: "Hours not available"
     },
     
     // Chat interface
@@ -258,8 +267,17 @@ const TRANSLATIONS = {
       chatPlaceholder: "Escribe tu mensaje...",
       sendButton: "Enviar",
       mapTitle: "Ubicaciones de Recursos",
+      resourcesTitle: "Recursos Disponibles",
       loading: "Cargando...",
-      error: "Ocurrió un error. Por favor inténtalo de nuevo."
+      error: "Ocurrió un error. Por favor inténtalo de nuevo.",
+      viewOnMap: "Ver en Mapa",
+      getDirections: "Obtener Direcciones",
+      callNow: "Llamar Ahora",
+      website: "Visitar Sitio Web",
+      distance: "Distancia",
+      open: "Abierto",
+      closed: "Cerrado",
+      unknownHours: "Horarios no disponibles"
     },
     
     // Chat interface
@@ -489,8 +507,17 @@ const TRANSLATIONS = {
       chatPlaceholder: "Qor fariintaada...",
       sendButton: "Dir",
       mapTitle: "Goobaha Agabka",
+      resourcesTitle: "Agabka La Heli Karo",
       loading: "Waa la shubayaa...",
-      error: "Qalad ayaa dhacay. Fadlan mar kale isku day."
+      error: "Qalad ayaa dhacay. Fadlan mar kale isku day.",
+      viewOnMap: "Ku Arag Khariidadda",
+      getDirections: "Hel Hagitaan",
+      callNow: "Wac Hadda",
+      website: "Booqo Bogga",
+      distance: "Masaafada",
+      open: "Furan",
+      closed: "Xidhan",
+      unknownHours: "Saacadaha lama yaqaan"
     },
     
     // Chat interface
@@ -715,8 +742,17 @@ const TRANSLATIONS = {
       chatPlaceholder: "اكتب رسالتك...",
       sendButton: "إرسال",
       mapTitle: "مواقع الموارد",
+      resourcesTitle: "الموارد المتاحة",
       loading: "جاري التحميل...",
-      error: "حدث خطأ. يرجى المحاولة مرة أخرى."
+      error: "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      viewOnMap: "عرض على الخريطة",
+      getDirections: "الحصول على الاتجاهات",
+      callNow: "اتصل الآن",
+      website: "زيارة الموقع",
+      distance: "المسافة",
+      open: "مفتوح",
+      closed: "مغلق",
+      unknownHours: "الساعات غير متاحة"
     },
     
     // Chat interface
@@ -941,8 +977,17 @@ const TRANSLATIONS = {
       chatPlaceholder: "अपना संदेश लिखें...",
       sendButton: "भेजें",
       mapTitle: "संसाधन स्थान",
+      resourcesTitle: "उपलब्ध संसाधन",
       loading: "लोड हो रहा है...",
-      error: "एक त्रुटि हुई है। कृपया पुनः प्रयास करें।"
+      error: "एक त्रुटि हुई है। कृपया पुनः प्रयास करें।",
+      viewOnMap: "नक्शे पर देखें",
+      getDirections: "दिशा निर्देश प्राप्त करें",
+      callNow: "अभी कॉल करें",
+      website: "वेबसाइट पर जाएं",
+      distance: "दूरी",
+      open: "खुला",
+      closed: "बंद",
+      unknownHours: "समय उपलब्ध नहीं"
     },
     
     // Chat interface

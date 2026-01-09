@@ -588,6 +588,46 @@
 
       <!-- Map Container -->
       <div class="max-w-2xl mx-auto mt-12">
+        <!-- Resource Cards Carousel (Hidden by default) -->
+        <div id="resourceCarousel" class="bg-white rounded-3xl shadow-lg border border-neutral-200/50 p-4 mb-4 hidden">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+              <h3 class="text-lg font-semibold text-neutral-800" data-i18n="ui.resourcesTitle">Available Resources</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="carouselCounter" class="text-sm text-neutral-500">1 of 5</span>
+              <div class="flex gap-1">
+                <button id="prevResourceBtn" class="p-2 rounded-lg border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <svg class="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+                <button id="nextResourceBtn" class="p-2 rounded-lg border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <svg class="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Resource Cards Container -->
+          <div class="relative overflow-hidden rounded-2xl">
+            <div id="resourceCardsContainer" class="flex transition-transform duration-300 ease-in-out">
+              <!-- Resource cards will be dynamically inserted here -->
+            </div>
+          </div>
+          
+          <!-- Carousel Dots Indicator -->
+          <div id="carouselDots" class="flex justify-center gap-2 mt-4">
+            <!-- Dots will be dynamically added -->
+          </div>
+        </div>
+        
+        <!-- Map Container -->
         <div class="bg-white rounded-3xl shadow-lg border border-neutral-200/50 p-4">
           <div class="flex items-center gap-3 mb-4">
             <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
