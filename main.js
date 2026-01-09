@@ -1708,6 +1708,10 @@ function createResourceCarousel(resources, markers) {
   cardsContainer.innerHTML = '';
   dotsContainer.innerHTML = '';
   
+  // Enable native scrolling and snap behavior
+  cardsContainer.style.scrollBehavior = 'smooth';
+  cardsContainer.style.transform = 'none'; // Reset transform for scroll
+  
   // Create resource cards
   resources.forEach((resource, index) => {
     const card = createResourceCard(resource, index);
@@ -1715,8 +1719,8 @@ function createResourceCarousel(resources, markers) {
     
     // Create dot indicator
     const dot = document.createElement('button');
-    dot.className = `w-2 h-2 rounded-full transition-all duration-200 ${index === 0 ? 'bg-primary-600' : 'bg-neutral-300 hover:bg-neutral-400'}`;
-    dot.onclick = () => goToCarouselSlide(index);
+    dot.className = `w-3 h-3 rounded-full transition-all duration-200 carousel-nav ${index === 0 ? 'bg-primary-600 scale-110' : 'bg-neutral-300 hover:bg-neutral-400 hover:scale-105'}`;
+    dot.onclick = () => scrollToCarouselSlide(index);
     dotsContainer.appendChild(dot);
   });
   
@@ -1724,22 +1728,66 @@ function createResourceCarousel(resources, markers) {
   updateCarouselCounter();
   updateCarouselButtons();
   
-  // Event listeners
-  prevBtn.onclick = () => previousCarouselSlide();
-  nextBtn.onclick = () => nextCarouselSlide();
+  // Event listeners for button navigation
+  prevBtn.onclick = () => scrollToPreviousSlide();
+  nextBtn.onclick = () => scrollToNextSlide();
   
-  // Show carousel
+  // Add scroll event listener to update dots and counter
+  cardsContainer.addEventListener('scroll', handleCarouselScroll);
+  
+  // Add touch event support for mobile swipe
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+  
+  cardsContainer.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - cardsContainer.offsetLeft;
+    scrollLeft = cardsContainer.scrollLeft;
+    cardsContainer.style.cursor = 'grabbing';
+  });
+  
+  cardsContainer.addEventListener('mouseleave', () => {
+    isDown = false;
+    cardsContainer.style.cursor = 'grab';
+  });
+  
+  cardsContainer.addEventListener('mouseup', () => {
+    isDown = false;
+    cardsContainer.style.cursor = 'grab';
+  });
+  
+  cardsContainer.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - cardsContainer.offsetLeft;
+    const walk = (x - startX) * 2;
+    cardsContainer.scrollLeft = scrollLeft - walk;
+  });
+  
+  // Set initial cursor
+  cardsContainer.style.cursor = 'grab';
+  
+  // Show carousel with animation
   carouselContainer.classList.remove('hidden');
+  carouselContainer.style.opacity = '0';
+  carouselContainer.style.transform = 'translateY(20px)';
   
-  // Set initial card width for responsive carousel
+  setTimeout(() => {
+    carouselContainer.style.transition = 'all 0.5s ease-out';
+    carouselContainer.style.opacity = '1';
+    carouselContainer.style.transform = 'translateY(0)';
+  }, 50);
+  
+  // Set initial layout
   updateCarouselLayout();
   
-  console.log('✅ Resource carousel created with', resources.length, 'resources');
+  console.log('✅ Enhanced resource carousel created with trackpad scrolling and', resources.length, 'resources');
 }
 
 function createResourceCard(resource, index) {
   const card = document.createElement('div');
-  card.className = 'min-w-full bg-gradient-to-br from-white to-neutral-50 rounded-2xl p-6 border border-neutral-200 shadow-sm';
+  card.className = 'min-w-full bg-gradient-to-br from-white to-neutral-50 rounded-2xl p-8 border border-neutral-200 shadow-lg hover:shadow-xl transition-all duration-300 resource-card flex flex-col justify-between';
   
   // Distance display
   let distanceHtml = '';
@@ -1806,92 +1854,179 @@ function createResourceCard(resource, index) {
   }
   
   card.innerHTML = `
-    ${distanceHtml}
-    
-    <div class="mb-4">
-      <h4 class="text-xl font-bold text-neutral-900 mb-2 leading-tight">${resource.name}</h4>
-      <p class="text-neutral-600 leading-relaxed">${resource.description || resource.services || 'Community resource available to help with your needs.'}</p>
-    </div>
-    
-    ${hoursHtml}
-    
-    ${resource.address ? `
-      <div class="flex items-start gap-2 mb-4">
-        <svg class="w-4 h-4 text-neutral-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        </svg>
-        <span class="text-neutral-600 text-sm leading-relaxed">${resource.address}</span>
+    <div class="flex-1">
+      <!-- Header Section -->
+      <div class="mb-6">
+        ${distanceHtml}
+        <h4 class="text-2xl font-bold text-neutral-900 mb-3 leading-tight">${resource.name}</h4>
+        <p class="text-neutral-600 text-base leading-relaxed mb-4">${resource.description || resource.services || 'Community resource available to help with your needs.'}</p>
+        ${hoursHtml}
       </div>
-    ` : ''}
-    
-    <div class="flex gap-2 mb-4">
-      <button onclick="showResourceOnMap(${index})" 
-              class="flex items-center justify-center gap-2 bg-white border border-neutral-300 text-neutral-700 px-4 py-3 rounded-xl font-semibold hover:bg-neutral-50 transition-colors flex-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
-        </svg>
-        <span data-i18n="ui.viewOnMap">${window.i18n.t('ui.viewOnMap')}</span>
-      </button>
       
-      ${resource.lat && resource.lng ? `
-        <button onclick="getDirections(${resource.lat}, ${resource.lng}, '${resource.name.replace(/'/g, "\\'")}')" 
-                class="flex items-center justify-center gap-2 bg-white border border-neutral-300 text-neutral-700 px-4 py-3 rounded-xl font-semibold hover:bg-neutral-50 transition-colors flex-1">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
-          </svg>
-          <span data-i18n="ui.getDirections">${window.i18n.t('ui.getDirections')}</span>
-        </button>
+      <!-- Address Section -->
+      ${resource.address ? `
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span class="font-semibold text-neutral-800">Address</span>
+          </div>
+          <p class="text-neutral-600 leading-relaxed ml-7">${resource.address}</p>
+        </div>
+      ` : ''}
+      
+      <!-- Phone Section -->
+      ${resource.phone ? `
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+            </svg>
+            <span class="font-semibold text-neutral-800">Phone</span>
+          </div>
+          <p class="text-neutral-600 ml-7">${resource.phone}</p>
+        </div>
+      ` : ''}
+      
+      <!-- Website Section -->
+      ${resource.website ? `
+        <div class="mb-6">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            <span class="font-semibold text-neutral-800">Website</span>
+          </div>
+          <p class="text-primary-600 hover:text-primary-700 ml-7 cursor-pointer break-all" onclick="window.open('${resource.website}', '_blank')">${resource.website}</p>
+        </div>
       ` : ''}
     </div>
     
-    ${contactButtons ? `<div class="flex gap-2">${contactButtons}</div>` : ''}
+    <!-- Action Buttons Section -->
+    <div class="space-y-3 mt-6">
+      <!-- Map and Directions Row -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="showResourceOnMap(${index})" 
+                class="flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-200 shadow-md hover:shadow-lg">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
+          </svg>
+          <span data-i18n="ui.viewOnMap">${window.i18n.t('ui.viewOnMap')}</span>
+        </button>
+        
+        ${resource.lat && resource.lng ? `
+          <button onclick="getDirections(${resource.lat}, ${resource.lng}, '${resource.name.replace(/'/g, "\\'")}')" 
+                  class="flex items-center justify-center gap-2 bg-neutral-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-neutral-700 transition-all duration-200 shadow-md hover:shadow-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+            <span data-i18n="ui.getDirections">${window.i18n.t('ui.getDirections')}</span>
+          </button>
+        ` : `
+          <div></div>
+        `}
+      </div>
+      
+      <!-- Contact Buttons Row -->
+      ${(resource.phone || resource.website) ? `
+        <div class="grid ${resource.phone && resource.website ? 'grid-cols-2' : 'grid-cols-1'} gap-3">
+          ${resource.phone ? `
+            <button onclick="window.open('tel:${resource.phone}', '_self')" 
+                    class="flex items-center justify-center gap-2 bg-success-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-success-700 transition-all duration-200 shadow-md hover:shadow-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+              <span data-i18n="ui.callNow">${window.i18n.t('ui.callNow')}</span>
+            </button>
+          ` : ''}
+          
+          ${resource.website ? `
+            <button onclick="window.open('${resource.website}', '_blank')" 
+                    class="flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-200 shadow-md hover:shadow-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              <span data-i18n="ui.website">${window.i18n.t('ui.website')}</span>
+            </button>
+          ` : ''}
+        </div>
+      ` : ''}
+    </div>
   `;
   
   return card;
 }
 
-// Carousel navigation functions
-function goToCarouselSlide(index) {
-  currentCarouselIndex = index;
-  updateCarousel();
-}
-
-function nextCarouselSlide() {
-  if (currentCarouselIndex < carouselResources.length - 1) {
-    currentCarouselIndex++;
-    updateCarousel();
-  }
-}
-
-function previousCarouselSlide() {
-  if (currentCarouselIndex > 0) {
-    currentCarouselIndex--;
-    updateCarousel();
-  }
-}
-
-function updateCarousel() {
+// Enhanced carousel navigation functions with scroll support
+function scrollToCarouselSlide(index) {
   const cardsContainer = document.getElementById('resourceCardsContainer');
-  const dots = document.getElementById('carouselDots').children;
-  
   if (!cardsContainer) return;
   
-  // Update carousel position
-  const translateX = -currentCarouselIndex * 100;
-  cardsContainer.style.transform = `translateX(${translateX}%)`;
+  const cardWidth = cardsContainer.clientWidth;
+  const targetScroll = index * cardWidth;
+  
+  cardsContainer.scrollTo({
+    left: targetScroll,
+    behavior: 'smooth'
+  });
+  
+  currentCarouselIndex = index;
+  updateCarouselIndicators();
+}
+
+function scrollToNextSlide() {
+  if (currentCarouselIndex < carouselResources.length - 1) {
+    scrollToCarouselSlide(currentCarouselIndex + 1);
+  }
+}
+
+function scrollToPreviousSlide() {
+  if (currentCarouselIndex > 0) {
+    scrollToCarouselSlide(currentCarouselIndex - 1);
+  }
+}
+
+function handleCarouselScroll() {
+  const cardsContainer = document.getElementById('resourceCardsContainer');
+  if (!cardsContainer) return;
+  
+  // Debounce scroll updates
+  clearTimeout(cardsContainer.scrollTimeout);
+  cardsContainer.scrollTimeout = setTimeout(() => {
+    const cardWidth = cardsContainer.clientWidth;
+    const scrollLeft = cardsContainer.scrollLeft;
+    const newIndex = Math.round(scrollLeft / cardWidth);
+    
+    if (newIndex !== currentCarouselIndex && newIndex >= 0 && newIndex < carouselResources.length) {
+      currentCarouselIndex = newIndex;
+      updateCarouselIndicators();
+    }
+  }, 100);
+}
+
+function updateCarouselIndicators() {
+  const dots = document.getElementById('carouselDots')?.children;
+  
+  if (!dots) return;
   
   // Update dots
   Array.from(dots).forEach((dot, index) => {
     if (index === currentCarouselIndex) {
-      dot.className = 'w-2 h-2 rounded-full bg-primary-600 transition-all duration-200';
+      dot.className = 'w-3 h-3 rounded-full bg-primary-600 scale-110 transition-all duration-200 carousel-nav';
     } else {
-      dot.className = 'w-2 h-2 rounded-full bg-neutral-300 hover:bg-neutral-400 transition-all duration-200';
+      dot.className = 'w-3 h-3 rounded-full bg-neutral-300 hover:bg-neutral-400 hover:scale-105 transition-all duration-200 carousel-nav';
     }
   });
   
   updateCarouselCounter();
   updateCarouselButtons();
+}
+
+// Legacy function for backward compatibility
+function updateCarousel() {
+  updateCarouselIndicators();
 }
 
 function updateCarouselCounter() {
@@ -3158,17 +3293,29 @@ window.addEventListener('load', () => {
   console.log('🧪 Test function available: window.testSpanishTranslation()');
 });
 
-// Keyboard navigation for carousel
+// Enhanced keyboard navigation for carousel
 document.addEventListener('keydown', (event) => {
   const carouselVisible = !document.getElementById('resourceCarousel')?.classList.contains('hidden');
+  const cardsContainer = document.getElementById('resourceCardsContainer');
   
-  if (carouselVisible && carouselResources.length > 0) {
+  if (carouselVisible && carouselResources.length > 0 && cardsContainer) {
+    // Check if user is focused on carousel or its children
+    const isCarouselFocused = cardsContainer.contains(document.activeElement) || 
+                             document.activeElement === cardsContainer ||
+                             document.querySelector('#resourceCarousel').contains(document.activeElement);
+    
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      previousCarouselSlide();
+      scrollToPreviousSlide();
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
-      nextCarouselSlide();
+      scrollToNextSlide();
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      scrollToCarouselSlide(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      scrollToCarouselSlide(carouselResources.length - 1);
     }
   }
 });
