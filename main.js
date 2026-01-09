@@ -1732,8 +1732,35 @@ function createResourceCarousel(resources, markers) {
   prevBtn.onclick = () => scrollToPreviousSlide();
   nextBtn.onclick = () => scrollToNextSlide();
   
-  // Add scroll event listener to update dots and counter
-  cardsContainer.addEventListener('scroll', handleCarouselScroll);
+  // Add scroll event listener to update dots and counter with improved detection
+  let scrollTimeout;
+  cardsContainer.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      const cards = cardsContainer.querySelectorAll('.resource-card');
+      const containerRect = cardsContainer.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+      
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+      
+      cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const distance = Math.abs(containerCenter - cardCenter);
+        
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      
+      if (closestIndex !== currentCarouselIndex && closestIndex >= 0 && closestIndex < carouselResources.length) {
+        currentCarouselIndex = closestIndex;
+        updateCarouselIndicators();
+      }
+    }, 100);
+  });
   
   // Add touch event support for mobile swipe
   let isDown = false;
@@ -1990,24 +2017,6 @@ function scrollToPreviousSlide() {
   }
 }
 
-function handleCarouselScroll() {
-  const cardsContainer = document.getElementById('resourceCardsContainer');
-  if (!cardsContainer) return;
-  
-  // Debounce scroll updates
-  clearTimeout(cardsContainer.scrollTimeout);
-  cardsContainer.scrollTimeout = setTimeout(() => {
-    const cardWidth = 320; // w-80 = 320px
-    const gap = 16; // gap-4 = 16px
-    const scrollLeft = cardsContainer.scrollLeft;
-    const newIndex = Math.round(scrollLeft / (cardWidth + gap));
-    
-    if (newIndex !== currentCarouselIndex && newIndex >= 0 && newIndex < carouselResources.length) {
-      currentCarouselIndex = newIndex;
-      updateCarouselIndicators();
-    }
-  }, 100);
-}
 
 function updateCarouselIndicators() {
   const dots = document.getElementById('carouselDots')?.children;
