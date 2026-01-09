@@ -1787,7 +1787,7 @@ function createResourceCarousel(resources, markers) {
 
 function createResourceCard(resource, index) {
   const card = document.createElement('div');
-  card.className = 'min-w-full bg-white rounded-3xl p-8 shadow-lg border border-neutral-200/50 hover:shadow-xl transition-all duration-300 resource-card';
+  card.className = 'w-80 flex-shrink-0 bg-white rounded-3xl p-6 shadow-lg border border-neutral-200/50 hover:shadow-xl transition-all duration-300 resource-card';
   
   // Distance display
   let distanceHtml = '';
@@ -1965,8 +1965,9 @@ function scrollToCarouselSlide(index) {
   const cardsContainer = document.getElementById('resourceCardsContainer');
   if (!cardsContainer) return;
   
-  const cardWidth = cardsContainer.clientWidth;
-  const targetScroll = index * cardWidth;
+  const cardWidth = 320; // w-80 = 320px
+  const gap = 16; // gap-4 = 16px
+  const targetScroll = index * (cardWidth + gap);
   
   cardsContainer.scrollTo({
     left: targetScroll,
@@ -1996,9 +1997,10 @@ function handleCarouselScroll() {
   // Debounce scroll updates
   clearTimeout(cardsContainer.scrollTimeout);
   cardsContainer.scrollTimeout = setTimeout(() => {
-    const cardWidth = cardsContainer.clientWidth;
+    const cardWidth = 320; // w-80 = 320px
+    const gap = 16; // gap-4 = 16px
     const scrollLeft = cardsContainer.scrollLeft;
-    const newIndex = Math.round(scrollLeft / cardWidth);
+    const newIndex = Math.round(scrollLeft / (cardWidth + gap));
     
     if (newIndex !== currentCarouselIndex && newIndex >= 0 && newIndex < carouselResources.length) {
       currentCarouselIndex = newIndex;
@@ -2051,11 +2053,8 @@ function updateCarouselButtons() {
 }
 
 function updateCarouselLayout() {
-  // Ensure proper responsive behavior
-  const cardsContainer = document.getElementById('resourceCardsContainer');
-  if (cardsContainer) {
-    cardsContainer.style.width = `${carouselResources.length * 100}%`;
-  }
+  // Cards now have fixed width (w-80) so no dynamic width calculation needed
+  // The container will automatically size to fit all cards
 }
 
 // Map integration functions
