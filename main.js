@@ -17,6 +17,12 @@ function initializeI18n() {
   window.i18n.addListener((newLanguage) => {
     console.log(`🌐 Language changed to: ${newLanguage}`);
     updateUILanguage();
+    
+    // Force translate all sections
+    setTimeout(() => {
+      forceTranslateAllSections();
+    }, 50);
+    
     translateChatHistory();
     refreshMapPopups();
     console.log('✅ Language change processing completed');
@@ -80,8 +86,15 @@ function selectLanguage(langCode) {
   // Ensure all content is translated after a short delay
   setTimeout(() => {
     updateUILanguage(); // Second pass to catch any missed elements
+    
+    // Force translate all sections that were mentioned
+    forceTranslateAllSections();
+    
     console.log('✅ Language selection completed');
-  }, 100);
+  }, 200);
+  
+  // Also trigger immediate forced translation
+  forceTranslateAllSections();
   
   // Initialize map now that language is selected
   setTimeout(() => {
@@ -149,6 +162,37 @@ function updateUILanguage() {
   });
   
   console.log('✅ UI language update completed');
+}
+
+// Force translate all sections with aggressive approach
+function forceTranslateAllSections() {
+  console.log('🔥 Force translating ALL sections');
+  
+  const sectionsToTranslate = [
+    '#how-it-works',
+    '#about', 
+    'header nav',
+    'footer',
+    '#sessionControl',
+    '#chatbox'
+  ];
+  
+  sectionsToTranslate.forEach(sectionSelector => {
+    const section = document.querySelector(sectionSelector);
+    if (section) {
+      const elementsInSection = section.querySelectorAll('[data-i18n]');
+      console.log(`🔄 Force translating ${elementsInSection.length} elements in ${sectionSelector}`);
+      
+      elementsInSection.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = window.i18n.t(key);
+        if (translation && translation !== `[Missing: ${key}]`) {
+          element.textContent = translation;
+          console.log(`✅ Force translated: ${key} = "${translation}"`);
+        }
+      });
+    }
+  });
 }
 
 // Translate existing chat history when language changes
@@ -247,7 +291,10 @@ function refreshMapPopups() {
 function setupLanguageSwitcher() {
   const languageSwitcher = document.getElementById('languageSwitcher');
   if (languageSwitcher) {
-    languageSwitcher.onclick = showLanguageModal;
+    languageSwitcher.onclick = () => {
+      console.log('🔄 Language switcher clicked, showing modal');
+      showLanguageModal();
+    };
     console.log('✅ Language switcher initialized');
   } else {
     console.error('❌ Language switcher element not found');
@@ -2792,6 +2839,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(initializeSessionControl, 100);
 });
 
+// Test function to manually force Spanish translation
+window.testSpanishTranslation = () => {
+  console.log('🧪 Testing Spanish translation');
+  window.i18n.setLanguage('es');
+  updateUILanguage();
+  forceTranslateAllSections();
+  console.log('🧪 Spanish translation test completed');
+};
+
 // Fallback initialization for map and language switcher
 window.addEventListener('load', () => {
   console.log('🔄 Window fully loaded - checking initializations');
@@ -2812,4 +2868,7 @@ window.addEventListener('load', () => {
       initializeMap();
     }
   }, 2000);
+  
+  // Add console message about test function
+  console.log('🧪 Test function available: window.testSpanishTranslation()');
 });
