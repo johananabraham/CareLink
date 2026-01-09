@@ -31,6 +31,25 @@ const TRANSLATIONS = {
       error: "An error occurred. Please try again."
     },
     
+    // Chat interface
+    chat: {
+      assistantTitle: "Carelink+ Assistant",
+      assistantSubtitle: "Here to help you find community resources"
+    },
+    
+    // Session control menu
+    session: {
+      title: "Session",
+      startOver: "Start Over",
+      startOverDesc: "Fresh conversation",
+      clearChat: "Clear Chat",
+      clearChatDesc: "Remove message history",
+      helpTips: "Help & Tips",
+      helpTipsDesc: "How to use Carelink+",
+      endSession: "End Session",
+      endSessionDesc: "Close Carelink+"
+    },
+    
     // Process/How It Works Section
     process: {
       badge: "Simple Process",
@@ -234,6 +253,25 @@ const TRANSLATIONS = {
       error: "Ocurrió un error. Por favor inténtalo de nuevo."
     },
     
+    // Chat interface
+    chat: {
+      assistantTitle: "Asistente Carelink+",
+      assistantSubtitle: "Aquí para ayudarte a encontrar recursos comunitarios"
+    },
+    
+    // Session control menu
+    session: {
+      title: "Sesión",
+      startOver: "Empezar de Nuevo",
+      startOverDesc: "Conversación nueva",
+      clearChat: "Borrar Chat",
+      clearChatDesc: "Eliminar historial de mensajes",
+      helpTips: "Ayuda y Consejos",
+      helpTipsDesc: "Cómo usar Carelink+",
+      endSession: "Finalizar Sesión",
+      endSessionDesc: "Cerrar Carelink+"
+    },
+    
     // Location services
     location: {
       servicesTitle: "Servicios de Ubicación:",
@@ -370,6 +408,25 @@ const TRANSLATIONS = {
       error: "Qalad ayaa dhacay. Fadlan mar kale isku day."
     },
     
+    // Chat interface
+    chat: {
+      assistantTitle: "Caawinta Carelink+",
+      assistantSubtitle: "Halkan ayaan kaa caawinayaa si aad u hesho agab bulsho"
+    },
+    
+    // Session control menu
+    session: {
+      title: "Fadhiga",
+      startOver: "Dib u billow",
+      startOverDesc: "Wadahadal cusub",
+      clearChat: "Nadiifi Wadahadalka",
+      clearChatDesc: "Ka saar tariiqhda fariimaha",
+      helpTips: "Caawimada & Tilmaamaha",
+      helpTipsDesc: "Sida loo isticmaalo Carelink+",
+      endSession: "Dhamaadka Fadhiga",
+      endSessionDesc: "Xidh Carelink+"
+    },
+    
     // Location services
     location: {
       servicesTitle: "Adeegyada Goobta:",
@@ -501,6 +558,25 @@ const TRANSLATIONS = {
       error: "حدث خطأ. يرجى المحاولة مرة أخرى."
     },
     
+    // Chat interface
+    chat: {
+      assistantTitle: "مساعد Carelink+",
+      assistantSubtitle: "هنا لمساعدتك في العثور على الموارد المجتمعية"
+    },
+    
+    // Session control menu
+    session: {
+      title: "الجلسة",
+      startOver: "البدء من جديد",
+      startOverDesc: "محادثة جديدة",
+      clearChat: "مسح الدردشة",
+      clearChatDesc: "إزالة تاريخ الرسائل",
+      helpTips: "المساعدة والنصائح",
+      helpTipsDesc: "كيفية استخدام Carelink+",
+      endSession: "إنهاء الجلسة",
+      endSessionDesc: "إغلاق Carelink+"
+    },
+    
     // Location services
     location: {
       servicesTitle: "خدمات الموقع:",
@@ -630,6 +706,25 @@ const TRANSLATIONS = {
       mapTitle: "संसाधन स्थान",
       loading: "लोड हो रहा है...",
       error: "एक त्रुटि हुई है। कृपया पुनः प्रयास करें।"
+    },
+    
+    // Chat interface
+    chat: {
+      assistantTitle: "Carelink+ सहायक",
+      assistantSubtitle: "यहाँ आपको सामुदायिक संसाधन खोजने में मदद करने के लिए हैं"
+    },
+    
+    // Session control menu
+    session: {
+      title: "सेशन",
+      startOver: "नए सिरे से शुरू करें",
+      startOverDesc: "नई बातचीत",
+      clearChat: "चैट साफ़ करें",
+      clearChatDesc: "संदेश इतिहास हटाएं",
+      helpTips: "सहायता और सुझाव",
+      helpTipsDesc: "Carelink+ का उपयोग कैसे करें",
+      endSession: "सेशन समाप्त करें",
+      endSessionDesc: "Carelink+ बंद करें"
     },
     
     // Location services
