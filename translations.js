@@ -531,6 +531,54 @@ const TRANSLATIONS = {
       }
     },
     
+    // About Section
+    about: {
+      title: "Ku Saabsan CareLink+",
+      description: "Caawimo raadinta ma aha inay noqoto mid wareeri ama culus. Dad badan ayaa wajaha caqabado sida luuqada, kharashka, iyo nidaamyada aan la aqoon marka ay isku dayaan inay helaan daryeelka caafimaadka iyo agabka aasaasiga ah. Waxaan u joognaa inaan habkaas u fududeyno. Barnameejeenku wuxuu ku xidhaa shakhsiyaadka iyo qoysaska adeegyo maxalli ah oo la aaminsan karo, oo ay ku jiraan daryeelka caafimaadka, caawimada caymiska, barnaamijyada cuntada, taageerada guriga, iyo hay'adaha bulshada. Waxaan rumaynaa in qof walba uu mudan yahay macluumaad cad iyo taageero ay ku kalsoon karaan, aan loo eegin halka ay ka yimaadeen ama luuqadda ay ku hadlaan.",
+      vision: {
+        title: "Aragtideenna",
+        description: "Mustaqbal ay dadku u heli karaan daryeelka caafimaadka iyo agabka muhiimka ah kalsooni iyo caddayn, aan cabsi, wareeri, ama caqabado aan loo baahnayn."
+      }
+    },
+    
+    // Values Section
+    values: {
+      title: "Qiyameenkeenna",
+      accessibility: {
+        title: "Helitaan",
+        description: "Macluumaadku waa inuu fudud u fahmi yahay oo uu u heli yahay qof kasta, aan loo eegin luuqada, dakhliga, ama asalka."
+      },
+      respect: {
+        title: "Ixtiraam",
+        description: "Qof walba wuxuu mudan yahay in loogu dhaqmo daryeel iyo faham marka uu caawimo raadinayo."
+      },
+      equity: {
+        title: "Sinnaanta",
+        description: "Waxaan u ballan qadnay inaan yareeyno farqiga oo aan ka caawinno xiritaanka farqiga gelitaanka daryeelka iyo adeegyada muhiimka ah."
+      },
+      trust: {
+        title: "Kalsoonida",
+        description: "Waxaan muhiim u dhignaa sirta, saxda, iyo iskaashi hay'ado run ahaan u adeega bulshada."
+      },
+      community: {
+        title: "Bulshada",
+        description: "Waxaan rumaynaa xoogga bulshada maxalliga ah oo aan ku shaqeyno inaan dadka ku xidho nidaamyada taageeraha ee guriga u dhow."
+      }
+    },
+    
+    // Footer Section
+    footer: {
+      description: "Ku xidhista bulshada daryeelka caafimaadka la aaminsan karo iyo agabka muhiimka ah caddayn iyo naxariis.",
+      quickLinks: "Xiriirada Degdega ah",
+      support: "Taageero",
+      help: "Xarunta Caawimada",
+      privacy: "Siyaasadda Sirta",
+      terms: "Shuruudaha Adeegga",
+      accessibility: "Helitaan",
+      copyright: "© 2025 CareLink+. Dhammaan xuquuqda way dhowran yihiin.",
+      emergency: "Xaaladaha degdegga ah, wac 911"
+    },
+    
     // Location services
     location: {
       servicesTitle: "Adeegyada Goobta:",
@@ -709,6 +757,54 @@ const TRANSLATIONS = {
       }
     },
     
+    // About Section
+    about: {
+      title: "حول CareLink+",
+      description: "البحث عن المساعدة يجب ألا يكون مشوشاً أو مرهقاً. العديد من الناس يواجهون حواجز مثل اللغة والتكلفة والأنظمة غير المألوفة عند محاولة الحصول على الرعاية الصحية والموارد الأساسية. نحن موجودون لجعل هذه العملية أسهل. منصتنا تربط الأفراد والعائلات بخدمات محلية موثوقة، تشمل الرعاية الصحية ومساعدة التأمين وبرامج الطعام ودعم الإسكان والمنظمات المجتمعية. نؤمن أن كل شخص يستحق معلومات واضحة ودعم يمكنه الوثوق به، بغض النظر عن مكان مجيئهم أو اللغة التي يتحدثون بها.",
+      vision: {
+        title: "رؤيتنا",
+        description: "مستقبل يمكن للناس فيه الوصول إلى الرعاية الصحية والموارد الأساسية بثقة ووضوح، بدون خوف أو تشويش أو حواجز غير ضرورية."
+      }
+    },
+    
+    // Values Section
+    values: {
+      title: "قيمنا",
+      accessibility: {
+        title: "إمكانية الوصول",
+        description: "يجب أن تكون المعلومات سهلة الفهم ومتاحة للجميع، بغض النظر عن اللغة أو الدخل أو الخلفية."
+      },
+      respect: {
+        title: "الاحترام",
+        description: "يستحق الجميع أن يُعاملوا بعناية وفهم عند طلب المساعدة."
+      },
+      equity: {
+        title: "العدالة",
+        description: "نحن ملتزمون بتقليل التفاوتات والمساعدة في سد الفجوات في الوصول إلى الرعاية والخدمات الأساسية."
+      },
+      trust: {
+        title: "الثقة",
+        description: "نولي أولوية للخصوصية والدقة والشراكات مع المنظمات التي تخدم المجتمعات حقاً."
+      },
+      community: {
+        title: "المجتمع",
+        description: "نؤمن بقوة المجتمعات المحلية ونعمل على ربط الناس بأنظمة الدعم القريبة من المنزل."
+      }
+    },
+    
+    // Footer Section
+    footer: {
+      description: "ربط المجتمعات بالرعاية الصحية الموثوقة والموارد الأساسية بوضوح ورحمة.",
+      quickLinks: "روابط سريعة",
+      support: "الدعم",
+      help: "مركز المساعدة",
+      privacy: "سياسة الخصوصية",
+      terms: "شروط الخدمة",
+      accessibility: "إمكانية الوصول",
+      copyright: "© 2025 CareLink+. جميع الحقوق محفوظة.",
+      emergency: "للطوارئ، اتصل بـ 911"
+    },
+    
     // Location services
     location: {
       servicesTitle: "خدمات الموقع:",
@@ -885,6 +981,54 @@ const TRANSLATIONS = {
         title: "ऐसा समर्थन पाएं जिस पर आप भरोसा कर सकें",
         description: "हमारे द्वारा साझा किए गए संसाधनों का उपयोग करें या उन स्वयंसेवकों से जुड़ें जो प्रक्रिया के माध्यम से आपकी मार्गदर्शन में और मदद कर सकते हैं। हम यहाँ सिस्टम को समझने में आसान बनाने और आपको अभिभूत नहीं, बल्कि समर्थित महसूस कराने के लिए हैं।"
       }
+    },
+    
+    // About Section
+    about: {
+      title: "CareLink+ के बारे में",
+      description: "सहायता मांगना भ्रमित करने वाला या भारी नहीं होना चाहिए। कई लोग स्वास्थ्य सेवा और बुनियादी संसाधनों तक पहुंचने की कोशिश करते समय भाषा, लागत और अपरिचित प्रणालियों जैसी बाधाओं का सामना करते हैं। हम उस प्रक्रिया को आसान बनाने के लिए मौजूद हैं। हमारा प्लेटफ़ॉर्म व्यक्तियों और परिवारों को विश्वसनीय स्थानीय सेवाओं से जोड़ता है, जिसमें स्वास्थ्य सेवा, बीमा सहायता, भोजन कार्यक्रम, आवास सहायता और सामुदायिक संगठन शामिल हैं। हमारा मानना है कि हर व्यक्ति स्पष्ट जानकारी और सहायता का हकदार है जिस पर वे भरोसा कर सकते हैं, चाहे वे कहीं से भी आएं या कोई भी भाषा बोलते हों।",
+      vision: {
+        title: "हमारा दृष्टिकोण",
+        description: "एक भविष्य जहां लोग बिना डर, भ्रम या अनावश्यक बाधाओं के, विश्वास और स्पष्टता के साथ स्वास्थ्य सेवा और आवश्यक संसाधनों तक पहुंच सकें।"
+      }
+    },
+    
+    // Values Section
+    values: {
+      title: "हमारे मूल्य",
+      accessibility: {
+        title: "पहुंच",
+        description: "जानकारी समझने में आसान होनी चाहिए और सभी के लिए उपलब्ध होनी चाहिए, चाहे भाषा, आय या पृष्ठभूमि कुछ भी हो।"
+      },
+      respect: {
+        title: "सम्मान",
+        description: "सहायता मांगते समय हर व्यक्ति देखभाल और समझ के साथ व्यवहार पाने का हकदार है।"
+      },
+      equity: {
+        title: "समानता",
+        description: "हम असमानताओं को कम करने और देखभाल और आवश्यक सेवाओं तक पहुंच में अंतराल को बंद करने में मदद करने के लिए प्रतिबद्ध हैं।"
+      },
+      trust: {
+        title: "भरोसा",
+        description: "हम गोपनीयता, सटीकता और उन संगठनों के साथ साझेदारी को प्राथमिकता देते हैं जो वास्तव में समुदायों की सेवा करते हैं।"
+      },
+      community: {
+        title: "समुदाय",
+        description: "हम स्थानीय समुदायों की शक्ति में विश्वास करते हैं और लोगों को घर के पास सहायता प्रणालियों से जोड़ने का काम करते हैं।"
+      }
+    },
+    
+    // Footer Section
+    footer: {
+      description: "स्पष्टता और करुणा के साथ समुदायों को विश्वसनीय स्वास्थ्य सेवा और आवश्यक संसाधनों से जोड़ना।",
+      quickLinks: "त्वरित लिंक",
+      support: "सहायता",
+      help: "सहायता केंद्र",
+      privacy: "गोपनीयता नीति",
+      terms: "सेवा की शर्तें",
+      accessibility: "पहुंच",
+      copyright: "© 2025 CareLink+. सभी अधिकार सुरक्षित।",
+      emergency: "आपातकाल के लिए, 911 पर कॉल करें"
     },
     
     // Location services
