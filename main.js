@@ -1919,36 +1919,36 @@ function createResourceCard(resource, index) {
       ` : ''}
     </div>
     
-    <!-- Action Buttons -->
-    <div class="space-y-3">
-      <div class="grid grid-cols-2 gap-3">
+    <!-- Action Buttons - Compact and properly sized -->
+    <div class="space-y-2">
+      <div class="grid grid-cols-2 gap-2">
         <button onclick="showResourceOnMap(${index})" 
-                class="flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-200 shadow-md hover:shadow-lg">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="flex items-center justify-center gap-1 bg-primary-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
           </svg>
-          <span data-i18n="ui.viewOnMap">${window.i18n.t('ui.viewOnMap')}</span>
+          <span class="truncate" data-i18n="ui.viewOnMap">${window.i18n.t('ui.viewOnMap')}</span>
         </button>
         
         ${resource.lat && resource.lng ? `
           <button onclick="getDirections(${resource.lat}, ${resource.lng}, '${resource.name.replace(/'/g, "\\'")}')" 
-                  class="flex items-center justify-center gap-2 bg-neutral-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-neutral-700 transition-all duration-200 shadow-md hover:shadow-lg">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  class="flex items-center justify-center gap-1 bg-neutral-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-neutral-700 transition-colors">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
             </svg>
-            <span data-i18n="ui.getDirections">${window.i18n.t('ui.getDirections')}</span>
+            <span class="truncate" data-i18n="ui.getDirections">${window.i18n.t('ui.getDirections')}</span>
           </button>
         ` : `
-          <div class="flex items-center justify-center px-4 py-3 rounded-xl bg-neutral-100 text-neutral-400 font-medium">
-            <span>No directions</span>
+          <div class="flex items-center justify-center px-3 py-2 rounded-lg bg-neutral-100 text-neutral-400 text-sm">
+            <span class="truncate">No directions</span>
           </div>
         `}
       </div>
       
       ${resource.phone ? `
         <button onclick="window.open('tel:${resource.phone}', '_self')" 
-                class="w-full flex items-center justify-center gap-2 bg-success-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-success-700 transition-all duration-200 shadow-md hover:shadow-lg">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="w-full flex items-center justify-center gap-2 bg-success-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-success-700 transition-colors">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
           </svg>
           <span data-i18n="ui.callNow">${window.i18n.t('ui.callNow')}</span>
