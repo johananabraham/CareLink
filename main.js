@@ -15,9 +15,11 @@ function initializeI18n() {
   
   // Listen for language changes
   window.i18n.addListener((newLanguage) => {
+    console.log(`🌐 Language changed to: ${newLanguage}`);
     updateUILanguage();
     translateChatHistory();
     refreshMapPopups();
+    console.log('✅ Language change processing completed');
   });
 }
 
@@ -65,13 +67,21 @@ function showLanguageModal() {
 
 // Select language and close modal
 function selectLanguage(langCode) {
+  console.log(`🌐 Selecting language: ${langCode}`);
   window.i18n.setLanguage(langCode);
   
   // Hide modal and remove body class
   document.getElementById('languageModal').classList.add('hidden');
   document.body.classList.remove('language-modal-open');
   
+  // Force immediate UI update
   updateUILanguage();
+  
+  // Ensure all content is translated after a short delay
+  setTimeout(() => {
+    updateUILanguage(); // Second pass to catch any missed elements
+    console.log('✅ Language selection completed');
+  }, 100);
   
   // Initialize map now that language is selected
   setTimeout(() => {
@@ -103,11 +113,20 @@ function updateUILanguage() {
   if (currentLanguageName) currentLanguageName.textContent = langInfo.nativeName;
   
   // Update all elements with data-i18n attributes
-  document.querySelectorAll('[data-i18n]').forEach(element => {
+  const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+  console.log(`🔄 Translating ${elementsToTranslate.length} elements`);
+  
+  elementsToTranslate.forEach(element => {
     const key = element.getAttribute('data-i18n');
     const translation = window.i18n.t(key);
     if (translation && translation !== `[Missing: ${key}]`) {
+      const oldText = element.textContent;
       element.textContent = translation;
+      if (oldText !== translation) {
+        console.log(`✅ Translated: ${key} = "${translation}"`);
+      }
+    } else {
+      console.warn(`⚠️ Missing translation for key: ${key}`);
     }
   });
   
