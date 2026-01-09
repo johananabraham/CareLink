@@ -1787,7 +1787,7 @@ function createResourceCarousel(resources, markers) {
 
 function createResourceCard(resource, index) {
   const card = document.createElement('div');
-  card.className = 'min-w-full bg-gradient-to-br from-white to-neutral-50 rounded-2xl p-8 border border-neutral-200 shadow-lg hover:shadow-xl transition-all duration-300 resource-card flex flex-col justify-between';
+  card.className = 'min-w-full bg-gradient-to-br from-white to-neutral-50 rounded-2xl p-6 border border-neutral-200 shadow-lg hover:shadow-xl transition-all duration-300 resource-card flex flex-col';
   
   // Distance display
   let distanceHtml = '';
@@ -1853,63 +1853,61 @@ function createResourceCard(resource, index) {
     `;
   }
   
+  // Truncate long descriptions
+  const maxDescLength = 120;
+  const description = resource.description || resource.services || 'Community resource available to help with your needs.';
+  const truncatedDesc = description.length > maxDescLength ? 
+    description.substring(0, maxDescLength) + '...' : description;
+
   card.innerHTML = `
-    <div class="flex-1">
-      <!-- Header Section -->
-      <div class="mb-6">
+    <!-- Header with distance and status -->
+    <div class="flex justify-between items-start mb-3">
+      <div class="flex-1">
         ${distanceHtml}
-        <h4 class="text-2xl font-bold text-neutral-900 mb-3 leading-tight">${resource.name}</h4>
-        <p class="text-neutral-600 text-base leading-relaxed mb-4">${resource.description || resource.services || 'Community resource available to help with your needs.'}</p>
+        <h4 class="text-xl font-bold text-neutral-900 mb-2 leading-tight">${resource.name}</h4>
         ${hoursHtml}
       </div>
-      
-      <!-- Address Section -->
+    </div>
+    
+    <!-- Compact description -->
+    <p class="text-neutral-600 text-sm leading-relaxed mb-4">${truncatedDesc}</p>
+    
+    <!-- Contact info in compact format -->
+    <div class="space-y-2 mb-4">
       ${resource.address ? `
-        <div class="mb-6">
-          <div class="flex items-center gap-2 mb-2">
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <span class="font-semibold text-neutral-800">Address</span>
-          </div>
-          <p class="text-neutral-600 leading-relaxed ml-7">${resource.address}</p>
+        <div class="flex items-center gap-2 text-sm">
+          <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span class="text-neutral-600 truncate">${resource.address}</span>
         </div>
       ` : ''}
       
-      <!-- Phone Section -->
       ${resource.phone ? `
-        <div class="mb-6">
-          <div class="flex items-center gap-2 mb-2">
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-            </svg>
-            <span class="font-semibold text-neutral-800">Phone</span>
-          </div>
-          <p class="text-neutral-600 ml-7">${resource.phone}</p>
+        <div class="flex items-center gap-2 text-sm">
+          <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+          </svg>
+          <a href="tel:${resource.phone}" class="text-primary-600 hover:text-primary-700 font-medium">${resource.phone}</a>
         </div>
       ` : ''}
       
-      <!-- Website Section -->
       ${resource.website ? `
-        <div class="mb-6">
-          <div class="flex items-center gap-2 mb-2">
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-            </svg>
-            <span class="font-semibold text-neutral-800">Website</span>
-          </div>
-          <p class="text-primary-600 hover:text-primary-700 ml-7 cursor-pointer break-all" onclick="window.open('${resource.website}', '_blank')">${resource.website}</p>
+        <div class="flex items-center gap-2 text-sm">
+          <svg class="w-4 h-4 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+          </svg>
+          <a href="${resource.website}" target="_blank" class="text-primary-600 hover:text-primary-700 font-medium truncate">Visit Website</a>
         </div>
       ` : ''}
     </div>
     
-    <!-- Action Buttons Section -->
-    <div class="space-y-3 mt-6">
-      <!-- Map and Directions Row -->
-      <div class="grid grid-cols-2 gap-3">
+    <!-- Compact action buttons -->
+    <div class="mt-auto space-y-2">
+      <div class="grid grid-cols-2 gap-2">
         <button onclick="showResourceOnMap(${index})" 
-                class="flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                class="flex items-center justify-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-primary-700 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 8V9m0 0L9 7"></path>
           </svg>
@@ -1918,40 +1916,27 @@ function createResourceCard(resource, index) {
         
         ${resource.lat && resource.lng ? `
           <button onclick="getDirections(${resource.lat}, ${resource.lng}, '${resource.name.replace(/'/g, "\\'")}')" 
-                  class="flex items-center justify-center gap-2 bg-neutral-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-neutral-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                  class="flex items-center justify-center gap-2 bg-neutral-600 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-neutral-700 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
             </svg>
             <span data-i18n="ui.getDirections">${window.i18n.t('ui.getDirections')}</span>
           </button>
         ` : `
-          <div></div>
+          <div class="flex items-center justify-center px-3 py-2 rounded-lg bg-neutral-100 text-neutral-400 text-sm">
+            <span>No directions</span>
+          </div>
         `}
       </div>
       
-      <!-- Contact Buttons Row -->
-      ${(resource.phone || resource.website) ? `
-        <div class="grid ${resource.phone && resource.website ? 'grid-cols-2' : 'grid-cols-1'} gap-3">
-          ${resource.phone ? `
-            <button onclick="window.open('tel:${resource.phone}', '_self')" 
-                    class="flex items-center justify-center gap-2 bg-success-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-success-700 transition-all duration-200 shadow-md hover:shadow-lg">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-              </svg>
-              <span data-i18n="ui.callNow">${window.i18n.t('ui.callNow')}</span>
-            </button>
-          ` : ''}
-          
-          ${resource.website ? `
-            <button onclick="window.open('${resource.website}', '_blank')" 
-                    class="flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-200 shadow-md hover:shadow-lg">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-              <span data-i18n="ui.website">${window.i18n.t('ui.website')}</span>
-            </button>
-          ` : ''}
-        </div>
+      ${resource.phone ? `
+        <button onclick="window.open('tel:${resource.phone}', '_self')" 
+                class="w-full flex items-center justify-center gap-2 bg-success-600 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-success-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+          </svg>
+          <span data-i18n="ui.callNow">${window.i18n.t('ui.callNow')}</span>
+        </button>
       ` : ''}
     </div>
   `;

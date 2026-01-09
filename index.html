@@ -190,8 +190,15 @@
     
     /* Resource card styles */
     .resource-card {
-      min-height: 320px;
+      min-height: 280px;
+      max-height: 320px;
       scroll-snap-align: center;
+      overflow: hidden;
+    }
+    
+    /* Ensure all cards have consistent height */
+    .resource-card {
+      height: 300px;
     }
     
     /* Custom focus styles for accessibility */
