@@ -2407,6 +2407,8 @@ async function handleTier1NameCollection(name) {
   
   try {
     // Send to Airtable backend
+    console.log('📊 Submitting Tier 1 analytics to Airtable...');
+    
     const response = await fetch('/api/user-data', {
       method: 'POST',
       headers: {
@@ -2418,16 +2420,27 @@ async function handleTier1NameCollection(name) {
       })
     });
     
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
     const result = await response.json();
     
     if (result.success) {
+      console.log('✅ Analytics submitted successfully:', result.recordId);
       addMessage(`Thank you, ${name}! We're glad we could help you find ${conversationState.lastSearchCategory} resources.`, "bot");
     } else {
-      console.error('Failed to submit analytics:', result.error);
+      console.error('❌ Failed to submit analytics:', result.error);
       addMessage(`Thank you, ${name}! We're glad we could help you find ${conversationState.lastSearchCategory} resources.`, "bot");
     }
   } catch (error) {
-    console.error('Error submitting analytics:', error);
+    console.error('❌ Error submitting analytics:', error);
+    
+    // Handle development environment gracefully
+    if (error.message?.includes('fetch') || error.message?.includes('404')) {
+      console.log('🏠 Development mode detected - analytics would be submitted in production');
+    }
+    
     // Still show success message to user even if logging fails
     addMessage(`Thank you, ${name}! We're glad we could help you find ${conversationState.lastSearchCategory} resources.`, "bot");
   }
@@ -3121,6 +3134,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+// Airtable Integration Test Function (for development)
+async function testAirtableConnection() {
+  try {
+    console.log('🧪 Testing Airtable connection...');
+    
+    // Test Analytics endpoint
+    const analyticsTest = {
+      firstName: 'Test User',
+      searchCategory: 'healthcare', 
+      language: 'en',
+      sessionId: 'test-session-' + Date.now(),
+      timestamp: new Date().toISOString()
+    };
+    
+    const response = await fetch('/api/user-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'analytics',
+        data: analyticsTest
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log('✅ Airtable connection successful!', result.recordId);
+      return true;
+    } else {
+      console.error('❌ Airtable test failed:', result.error);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Airtable connection error:', error);
+    return false;
+  }
+}
 
 // Session Control Functions
 function initializeSessionControl() {
