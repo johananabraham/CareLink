@@ -244,6 +244,15 @@ const TRANSLATIONS = {
       close: "Cerrar"
     },
     
+    // Navigation
+    nav: {
+      home: "Inicio",
+      howItWorks: "Cómo Funciona",
+      about: "Acerca de",
+      contact: "Contacto",
+      getHelp: "Obtener Ayuda Ahora"
+    },
+    
     // Main UI elements
     ui: {
       chatPlaceholder: "Escribe tu mensaje...",
@@ -270,6 +279,73 @@ const TRANSLATIONS = {
       helpTipsDesc: "Cómo usar Carelink+",
       endSession: "Finalizar Sesión",
       endSessionDesc: "Cerrar Carelink+"
+    },
+    
+    // Process/How It Works Section
+    process: {
+      badge: "Proceso Simple",
+      title: "Cómo Funciona",
+      subtitle: "Conectarse a atención de calidad no tiene que ser confuso. Sigue estos tres pasos.",
+      step1: {
+        title: "Comparte Tus Necesidades",
+        description: "Responde algunas preguntas cortas sobre lo que estás buscando. Esto puede incluir atención médica, seguro, comida, vivienda, o ayuda en tu idioma. No necesitas compartir documentos personales, y tu información se mantiene privada."
+      },
+      step2: {
+        title: "Encuentra Ayuda Local Confiable",
+        description: "Te conectamos con organizaciones comunitarias, clínicas y programas confiables cerca de ti que se adapten a tus necesidades. Nos enfocamos en servicios que son asequibles, acogedores, y disponibles en tu idioma preferido."
+      },
+      step3: {
+        title: "Obtén Apoyo en el que Puedes Confiar",
+        description: "Usa los recursos que compartimos o conéctate con voluntarios que pueden ayudarte a guiarte a través del proceso. Estamos aquí para hacer que el sistema sea más fácil de entender y para ayudarte a sentirte apoyado, no abrumado."
+      }
+    },
+    
+    // About Section
+    about: {
+      title: "Acerca de CareLink+",
+      description: "Buscar ayuda no debe sentirse confuso o abrumador. Muchas personas enfrentan barreras como el idioma, el costo y sistemas desconocidos al tratar de acceder a atención médica y recursos básicos. Existimos para hacer ese proceso más fácil. Nuestra plataforma conecta a individuos y familias con servicios locales confiables, incluyendo atención médica, asistencia de seguros, programas de alimentos, apoyo de vivienda y organizaciones comunitarias. Creemos que todos merecen información clara y apoyo en el que puedan confiar, sin importar de dónde vengan o qué idioma hablen.",
+      vision: {
+        title: "Nuestra Visión",
+        description: "Un futuro donde las personas puedan acceder a atención médica y recursos esenciales con confianza y claridad, sin miedo, confusión o barreras innecesarias."
+      }
+    },
+    
+    // Values Section
+    values: {
+      title: "Nuestros Valores",
+      accessibility: {
+        title: "Accesibilidad",
+        description: "La información debe ser fácil de entender y estar disponible para todos, independientemente del idioma, ingresos o antecedentes."
+      },
+      respect: {
+        title: "Respeto",
+        description: "Todos merecen ser tratados con cuidado y comprensión al buscar ayuda."
+      },
+      equity: {
+        title: "Equidad",
+        description: "Estamos comprometidos a reducir las disparidades y ayudar a cerrar las brechas en el acceso a la atención y servicios esenciales."
+      },
+      trust: {
+        title: "Confianza",
+        description: "Priorizamos la privacidad, precisión y asociaciones con organizaciones que verdaderamente sirven a las comunidades."
+      },
+      community: {
+        title: "Comunidad",
+        description: "Creemos en la fuerza de las comunidades locales y trabajamos para conectar a las personas con sistemas de apoyo cercanos a casa."
+      }
+    },
+    
+    // Footer Section
+    footer: {
+      description: "Conectando comunidades a atención médica confiable y recursos esenciales con claridad y compasión.",
+      quickLinks: "Enlaces Rápidos",
+      support: "Apoyo",
+      help: "Centro de Ayuda",
+      privacy: "Política de Privacidad",
+      terms: "Términos de Servicio",
+      accessibility: "Accesibilidad",
+      copyright: "© 2025 CareLink+. Todos los derechos reservados.",
+      emergency: "Para emergencias, llama al 911"
     },
     
     // Location services
@@ -399,6 +475,15 @@ const TRANSLATIONS = {
       close: "Xidh"
     },
     
+    // Navigation
+    nav: {
+      home: "Guriga",
+      howItWorks: "Sidee u Shaqeyso",
+      about: "Ku Saabsan",
+      contact: "Xiriir",
+      getHelp: "Hel Caawimo Hadda"
+    },
+    
     // Main UI elements
     ui: {
       chatPlaceholder: "Qor fariintaada...",
@@ -425,6 +510,25 @@ const TRANSLATIONS = {
       helpTipsDesc: "Sida loo isticmaalo Carelink+",
       endSession: "Dhamaadka Fadhiga",
       endSessionDesc: "Xidh Carelink+"
+    },
+    
+    // Process/How It Works Section
+    process: {
+      badge: "Habka Fudud",
+      title: "Sidee u Shaqeyso",
+      subtitle: "Ku xidhka daryeel tayo leh ma aha in uu noqdo mid wareeri leh. Raac saddexdan tallaabo.",
+      step1: {
+        title: "Wadaag Baahiyahaaga",
+        description: "Ka jawaab dhowr su'aalood gaagaaban oo ku saabsan waxa aad raadinayso. Tan waxay ku dari kartaa daryeelka caafimaadka, caymiska, cuntada, guriga, ama caawimada luuqaddaada. Uma baahnid inaad wadaagto dukumentiyada gaarka ah, macluumaadkaaguna waa qarsoomi doonaan."
+      },
+      step2: {
+        title: "Hel Caawimo Maxalli ah oo Aaminsan",
+        description: "Waxaan kugu xidhaynaa hay'adaha bulshada, isbitaalada iyo barnaamijyada la aaminsan karo ee ku dhow ee u habboon baahiyahaaga. Waxaan diiradda saarnaa adeegyada jaban, soo dhaweyn, oo ku heli kara luuqaddaada la doortay."
+      },
+      step3: {
+        title: "Hel Taageero aad Ku Kalsoon Karto",
+        description: "Isticmaal agabka aan la wadaagno ama ku xidho mutadawiciinta kuu caawin kara inay ku hagaan habka. Waxaan halkan u joognaa si aan habka u fududeyno in la fahmo oo aan kaa caawino inaad dareemto taageero, ee aan ku curyaamin."
+      }
     },
     
     // Location services
@@ -549,6 +653,15 @@ const TRANSLATIONS = {
       close: "إغلاق"
     },
     
+    // Navigation
+    nav: {
+      home: "الرئيسية",
+      howItWorks: "كيف تعمل",
+      about: "حول",
+      contact: "اتصل",
+      getHelp: "احصل على المساعدة الآن"
+    },
+    
     // Main UI elements
     ui: {
       chatPlaceholder: "اكتب رسالتك...",
@@ -575,6 +688,25 @@ const TRANSLATIONS = {
       helpTipsDesc: "كيفية استخدام Carelink+",
       endSession: "إنهاء الجلسة",
       endSessionDesc: "إغلاق Carelink+"
+    },
+    
+    // Process/How It Works Section
+    process: {
+      badge: "عملية بسيطة",
+      title: "كيف تعمل",
+      subtitle: "الحصول على الرعاية الجيدة ليس بالأمر المعقد. اتبع هذه الخطوات الثلاث.",
+      step1: {
+        title: "شارك احتياجاتك",
+        description: "أجب على بعض الأسئلة القصيرة حول ما تبحث عنه. يمكن أن يشمل ذلك الرعاية الصحية أو التأمين أو الطعام أو الإسكان أو المساعدة بلغتك. لا تحتاج إلى مشاركة الوثائق الشخصية، ومعلوماتك تبقى خاصة."
+      },
+      step2: {
+        title: "اعثر على المساعدة المحلية الموثوقة",
+        description: "نربطك بالمنظمات المجتمعية والعيادات والبرامج الموثوقة بالقرب منك التي تناسب احتياجاتك. نركز على الخدمات التي تكون ميسورة التكلفة ومرحبة ومتوفرة بلغتك المفضلة."
+      },
+      step3: {
+        title: "احصل على الدعم الذي يمكنك الوثوق به",
+        description: "استخدم الموارد التي نشاركها أو تواصل مع المتطوعين الذين يمكنهم مساعدتك أكثر في توجيهك خلال العملية. نحن هنا لجعل النظام أسهل للفهم ولمساعدتك على الشعور بالدعم، وليس الإرهاق."
+      }
     },
     
     // Location services
@@ -699,6 +831,15 @@ const TRANSLATIONS = {
       close: "बंद करें"
     },
     
+    // Navigation
+    nav: {
+      home: "होम",
+      howItWorks: "यह कैसे काम करता है",
+      about: "के बारे में",
+      contact: "संपर्क",
+      getHelp: "अभी सहायता पाएं"
+    },
+    
     // Main UI elements
     ui: {
       chatPlaceholder: "अपना संदेश लिखें...",
@@ -725,6 +866,25 @@ const TRANSLATIONS = {
       helpTipsDesc: "Carelink+ का उपयोग कैसे करें",
       endSession: "सेशन समाप्त करें",
       endSessionDesc: "Carelink+ बंद करें"
+    },
+    
+    // Process/How It Works Section
+    process: {
+      badge: "सरल प्रक्रिया",
+      title: "यह कैसे काम करता है",
+      subtitle: "गुणवत्तापूर्ण देखभाल से जुड़ना भ्रमित करने वाला नहीं होना चाहिए। इन तीन चरणों का पालन करें।",
+      step1: {
+        title: "अपनी जरूरतें साझा करें",
+        description: "आप क्या खोज रहे हैं, इसके बारे में कुछ छोटे प्रश्नों के उत्तर दें। इसमें स्वास्थ्य सेवा, बीमा, भोजन, आवास, या आपकी भाषा में सहायता शामिल हो सकती है। आपको व्यक्तिगत दस्तावेज़ साझा करने की आवश्यकता नहीं है, और आपकी जानकारी निजी रहती है।"
+      },
+      step2: {
+        title: "भरोसेमंद स्थानीय सहायता खोजें",
+        description: "हम आपको आपके पास के विश्वसनीय सामुदायिक संगठनों, क्लीनिकों और कार्यक्रमों से जोड़ते हैं जो आपकी आवश्यकताओं के अनुकूल हैं। हम उन सेवाओं पर ध्यान देते हैं जो किफायती, स्वागत करने वाली, और आपकी पसंदीदा भाषा में उपलब्ध हैं।"
+      },
+      step3: {
+        title: "ऐसा समर्थन पाएं जिस पर आप भरोसा कर सकें",
+        description: "हमारे द्वारा साझा किए गए संसाधनों का उपयोग करें या उन स्वयंसेवकों से जुड़ें जो प्रक्रिया के माध्यम से आपकी मार्गदर्शन में और मदद कर सकते हैं। हम यहाँ सिस्टम को समझने में आसान बनाने और आपको अभिभूत नहीं, बल्कि समर्थित महसूस कराने के लिए हैं।"
+      }
     },
     
     // Location services
