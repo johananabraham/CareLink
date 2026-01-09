@@ -836,6 +836,16 @@
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    // Ensure Leaflet is loaded before proceeding
+    window.addEventListener('load', function() {
+      if (typeof L !== 'undefined') {
+        console.log('✅ Leaflet loaded successfully');
+      } else {
+        console.error('❌ Leaflet failed to load');
+      }
+    });
+  </script>
   <script src="config.js"></script>
   <script src="translations.js"></script>
   <script src="i18n.js"></script>

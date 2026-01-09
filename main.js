@@ -6,7 +6,9 @@ function initializeI18n() {
   } else {
     // Apply saved language immediately and initialize map
     updateUILanguage();
-    initializeMap();
+    setTimeout(() => {
+      initializeMap();
+    }, 500); // Small delay to ensure Leaflet is loaded
     // Show welcome message for returning users
     addMessage(window.i18n.t('bot.welcome'), "bot");
   }
@@ -21,8 +23,14 @@ function initializeI18n() {
 
 // Show language selection modal
 function showLanguageModal() {
+  console.log('὞3️ Showing language modal');
   const modal = document.getElementById('languageModal');
   const optionsContainer = document.getElementById('languageOptions');
+  
+  if (!modal || !optionsContainer) {
+    console.error('❌ Language modal elements not found');
+    return;
+  }
   
   // Add body class to hide map and other content
   document.body.classList.add('language-modal-open');
@@ -66,7 +74,9 @@ function selectLanguage(langCode) {
   updateUILanguage();
   
   // Initialize map now that language is selected
-  initializeMap();
+  setTimeout(() => {
+    initializeMap();
+  }, 500); // Small delay to ensure everything is ready
   
   // Show welcome message in selected language
   addMessage(window.i18n.t('bot.welcome'), "bot");
@@ -175,7 +185,13 @@ function refreshMapPopups() {
 
 // Setup language switcher
 function setupLanguageSwitcher() {
-  document.getElementById('languageSwitcher').onclick = showLanguageModal;
+  const languageSwitcher = document.getElementById('languageSwitcher');
+  if (languageSwitcher) {
+    languageSwitcher.onclick = showLanguageModal;
+    console.log('✅ Language switcher initialized');
+  } else {
+    console.error('❌ Language switcher element not found');
+  }
 }
 
 // Location service for geolocation and distance calculations
@@ -496,8 +512,15 @@ function updateNearMeButton(isEnabled) {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('✅ DOM Content Loaded - Initializing CareLink+');
+  
+  // Initialize in the correct order
   initializeI18n();
-  setupLanguageSwitcher();
+  
+  // Setup language switcher with error handling
+  setTimeout(() => {
+    setupLanguageSwitcher();
+  }, 100); // Small delay to ensure DOM is ready
   
   // Request location permission early for better UX
   setTimeout(() => {
@@ -733,14 +756,37 @@ let map = null; // Will be initialized after language selection
 
 // Initialize map (called after language selection)
 function initializeMap() {
+  // Check if Leaflet is loaded
+  if (typeof L === 'undefined') {
+    console.error('❌ Leaflet library not loaded');
+    setTimeout(() => {
+      initializeMap(); // Retry after a delay
+    }, 1000);
+    return;
+  }
+  
   // Only initialize if not already initialized
   if (map === null) {
-    map = L.map('map').setView([39.9612, -82.9988], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    
-    // Add user location marker if location is already available
-    if (LocationService.userLocation) {
-      LocationService.addUserMarkerToMap();
+    try {
+      const mapContainer = document.getElementById('map');
+      if (!mapContainer) {
+        console.error('❌ Map container not found');
+        return;
+      }
+      
+      map = L.map('map').setView([39.9612, -82.9988], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+      
+      console.log('✅ Map initialized successfully');
+      
+      // Add user location marker if location is already available
+      if (LocationService.userLocation) {
+        LocationService.addUserMarkerToMap();
+      }
+    } catch (error) {
+      console.error('❌ Error initializing map:', error);
     }
   }
 }
@@ -2684,4 +2730,26 @@ function handleEscapePhrase(text) {
 document.addEventListener('DOMContentLoaded', () => {
   // Give other initializations a moment to complete
   setTimeout(initializeSessionControl, 100);
+});
+
+// Fallback initialization for map and language switcher
+window.addEventListener('load', () => {
+  console.log('🔄 Window fully loaded - checking initializations');
+  
+  // Fallback for language switcher if not already set up
+  setTimeout(() => {
+    const languageSwitcher = document.getElementById('languageSwitcher');
+    if (languageSwitcher && !languageSwitcher.onclick) {
+      console.log('🔄 Setting up language switcher fallback');
+      setupLanguageSwitcher();
+    }
+  }, 1000);
+  
+  // Fallback for map if not already initialized
+  setTimeout(() => {
+    if (map === null && typeof L !== 'undefined') {
+      console.log('🔄 Initializing map fallback');
+      initializeMap();
+    }
+  }, 2000);
 });
