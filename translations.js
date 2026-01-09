@@ -168,7 +168,13 @@ const TRANSLATIONS = {
       feedbackNo: "I need more assistance",
       feedbackThankYou: "Great! We're glad we could help.",
       offerPersonalHelp: "Let us connect you with someone who can provide personal assistance.",
-      noResourcesOffer: "Since we couldn't find the right resources, would you like us to connect you with someone who can help personally?"
+      noResourcesOffer: "Since we couldn't find the right resources, would you like us to connect you with someone who can help personally?",
+      personalAssistance: "I'd be happy to connect you with someone who can provide personalized assistance.",
+      shareInfo: "Would you like to share some basic information so we can connect you with the right resources and support?",
+      helpPrompt: "You can ask me about food, housing, healthcare, or any other community resources.",
+      instructions: "Type 'food', 'housing', 'healthcare', or tell me what you need help with.",
+      foundResources: "I found {count} resources for {category}",
+      searchingFor: "Looking for {category} resources"
     },
     
     // Clarification questions
@@ -298,7 +304,13 @@ const TRANSLATIONS = {
       feedbackNo: "Necesito más asistencia",
       feedbackThankYou: "¡Excelente! Nos alegra haber podido ayudarte.",
       offerPersonalHelp: "Permítenos conectarte con alguien que pueda brindarte asistencia personal.",
-      noResourcesOffer: "Como no pudimos encontrar los recursos adecuados, ¿te gustaría que te conectemos con alguien que pueda ayudarte personalmente?"
+      noResourcesOffer: "Como no pudimos encontrar los recursos adecuados, ¿te gustaría que te conectemos con alguien que pueda ayudarte personalmente?",
+      personalAssistance: "Me encantaría conectarte con alguien que pueda proporcionarte asistencia personalizada.",
+      shareInfo: "¿Te gustaría compartir información básica para que podamos conectarte con los recursos y apoyo adecuados?",
+      helpPrompt: "Puedes preguntarme sobre alimentos, vivienda, atención médica, o cualquier otro recurso comunitario.",
+      instructions: "Escribe 'comida', 'vivienda', 'salud', o dime en qué necesitas ayuda.",
+      foundResources: "Encontré {count} recursos para {category}",
+      searchingFor: "Buscando recursos de {category}"
     },
     
     // Clarification questions
@@ -423,7 +435,13 @@ const TRANSLATIONS = {
       feedbackNo: "Waxaan u baahanahay caawimo dheeraad ah",
       feedbackThankYou: "Fiican! Waan ku faraxsan nahay inaan ku caawin karney.",
       offerPersonalHelp: "Waxaan kuu ogolaaneyn in aan ku xidhno qof ku siinaya caawimo shakhsi ah.",
-      noResourcesOffer: "Maadaama aanan ka helin agabkii saxda ahaa, miyaad jeclaanahayd inaan ku xidhno qof ku caawin kara si shakhsi ah?"
+      noResourcesOffer: "Maadaama aanan ka helin agabkii saxda ahaa, miyaad jeclaanahayd inaan ku xidhno qof ku caawin kara si shakhsi ah?",
+      personalAssistance: "Waxaan ku farxi lahaa inaan ku xidhno qof ku siini kara caawimo gaara ah.",
+      shareInfo: "Miyaad jeclaanahayd inaad wadaagto macluumaad aasaasi ah si aan kuugu xidhno agabka iyo taageerada ku habboon?",
+      helpPrompt: "Waxaad i weydiin kartaa wax ku saabsan cunto, guri, daryeel caafimaad, ama agab kale oo bulsho.",
+      instructions: "Qor 'cunto', 'guri', 'caafimaad', ama ii sheeg waxa aad u baahan tahay caawimo.",
+      foundResources: "Waxaan helay {count} agab loogu talagalay {category}",
+      searchingFor: "Raadinta agabka {category}"
     },
     
     // Clarification questions
@@ -548,7 +566,13 @@ const TRANSLATIONS = {
       feedbackNo: "أحتاج مساعدة أكثر",
       feedbackThankYou: "ممتاز! يسرنا أن نكون قد تمكنا من مساعدتك.",
       offerPersonalHelp: "دعنا نربطك بشخص يمكنه تقديم المساعدة الشخصية.",
-      noResourcesOffer: "بما أننا لم نتمكن من العثور على الموارد المناسبة، هل تريد أن نربطك بشخص يمكنه مساعدتك شخصياً؟"
+      noResourcesOffer: "بما أننا لم نتمكن من العثور على الموارد المناسبة، هل تريد أن نربطك بشخص يمكنه مساعدتك شخصياً؟",
+      personalAssistance: "سأكون سعيداً لربطك بشخص يمكنه تقديم المساعدة الشخصية.",
+      shareInfo: "هل تود مشاركة بعض المعلومات الأساسية حتى نتمكن من ربطك بالموارد والدعم المناسبين؟",
+      helpPrompt: "يمكنك أن تسألني عن الطعام أو الإسكان أو الرعاية الصحية أو أي موارد مجتمعية أخرى.",
+      instructions: "اكتب 'طعام' أو 'إسكان' أو 'رعاية صحية' أو أخبرني بما تحتاج للمساعدة فيه.",
+      foundResources: "وجدت {count} مورد لـ {category}",
+      searchingFor: "البحث عن موارد {category}"
     },
     
     // Clarification questions
@@ -673,7 +697,13 @@ const TRANSLATIONS = {
       feedbackNo: "मुझे और सहायता चाहिए",
       feedbackThankYou: "बहुत बढ़िया! हमें खुशी है कि हम आपकी मदद कर सके।",
       offerPersonalHelp: "आइए हम आपको किसी ऐसे व्यक्ति से जोड़ते हैं जो व्यक्तिगत सहायता प्रदान कर सकता है।",
-      noResourcesOffer: "चूंकि हम सही संसाधन नहीं ढूंढ सके, क्या आप चाहेंगे कि हम आपको किसी ऐसे व्यक्ति से जोड़ें जो व्यक्तिगत रूप से आपकी सहायता कर सकता है?"
+      noResourcesOffer: "चूंकि हम सही संसाधन नहीं ढूंढ सके, क्या आप चाहेंगे कि हम आपको किसी ऐसे व्यक्ति से जोड़ें जो व्यक्तिगत रूप से आपकी सहायता कर सकता है?",
+      personalAssistance: "मुझे खुशी होगी आपको किसी ऐसे व्यक्ति से जोड़ने में जो व्यक्तिगत सहायता प्रदान कर सकता है।",
+      shareInfo: "क्या आप कुछ बुनियादी जानकारी साझा करना चाहेंगे ताकि हम आपको सही संसाधनों और सहायता से जोड़ सकें?",
+      helpPrompt: "आप मुझसे भोजन, आवास, स्वास्थ्य देखभाल, या किसी अन्य सामुदायिक संसाधन के बारे में पूछ सकते हैं।",
+      instructions: "'भोजन', 'आवास', 'स्वास्थ्य देखभाल' टाइप करें, या बताएं कि आपको किस चीज़ में मदद चाहिए।",
+      foundResources: "मैंने {category} के लिए {count} संसाधन पाए",
+      searchingFor: "{category} संसाधन खोज रहे हैं"
     },
     
     // Clarification questions

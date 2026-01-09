@@ -87,6 +87,8 @@ function updateUILanguage() {
   const currentLang = window.i18n.getCurrentLanguage();
   const langInfo = window.LANGUAGE_INFO[currentLang];
   
+  console.log(`🌐 Updating UI language to: ${currentLang}`);
+  
   // Update document properties
   document.documentElement.lang = currentLang;
   document.documentElement.dir = window.i18n.getLanguageDirection();
@@ -95,74 +97,113 @@ function updateUILanguage() {
   document.title = window.i18n.t('pageTitle');
   
   // Update language switcher
-  document.getElementById('currentLanguageFlag').textContent = langInfo.flag;
-  document.getElementById('currentLanguageName').textContent = langInfo.nativeName;
+  const currentLanguageFlag = document.getElementById('currentLanguageFlag');
+  const currentLanguageName = document.getElementById('currentLanguageName');
+  if (currentLanguageFlag) currentLanguageFlag.textContent = langInfo.flag;
+  if (currentLanguageName) currentLanguageName.textContent = langInfo.nativeName;
   
   // Update all elements with data-i18n attributes
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');
-    element.textContent = window.i18n.t(key);
+    const translation = window.i18n.t(key);
+    if (translation && translation !== `[Missing: ${key}]`) {
+      element.textContent = translation;
+    }
   });
   
   // Update placeholder texts
   document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
     const key = element.getAttribute('data-i18n-placeholder');
-    element.placeholder = window.i18n.t(key);
+    const translation = window.i18n.t(key);
+    if (translation && translation !== `[Missing: ${key}]`) {
+      element.placeholder = translation;
+    }
   });
+  
+  // Update select options with translations
+  document.querySelectorAll('option[data-i18n]').forEach(option => {
+    const key = option.getAttribute('data-i18n');
+    const translation = window.i18n.t(key);
+    if (translation && translation !== `[Missing: ${key}]`) {
+      option.textContent = translation;
+    }
+  });
+  
+  console.log('✅ UI language update completed');
 }
 
 // Translate existing chat history when language changes
 function translateChatHistory() {
-  const messages = document.querySelectorAll('#messages .mb-2');
+  console.log('💬 Translating chat history');
+  
+  const messages = document.querySelectorAll('#messages .message');
+  let translatedCount = 0;
+  
   messages.forEach(messageDiv => {
-    const messageSpan = messageDiv.querySelector('span');
-    if (messageSpan) {
-      const messageText = messageSpan.textContent;
-      
-      // Check if this is a bot message that can be translated
-      if (messageDiv.className.includes('text-left')) {
+    const messageContent = messageDiv.querySelector('.message-content');
+    if (messageContent) {
+      // Check if this is a bot message
+      if (messageDiv.classList.contains('bot-message')) {
+        const messageText = messageContent.textContent;
         const translatedText = translateBotMessage(messageText);
         if (translatedText !== messageText) {
-          messageSpan.textContent = translatedText;
+          messageContent.textContent = translatedText;
+          translatedCount++;
         }
       }
     }
   });
+  
+  console.log(`✅ Translated ${translatedCount} chat messages`);
 }
 
 // Translate bot messages to current language
 function translateBotMessage(originalText) {
-  // Common bot message patterns to translate
-  const patterns = {
-    // Welcome message
-    'I can help you find resources': 'bot.welcome',
-    'Puedo ayudarte a encontrar recursos': 'bot.welcome',
+  // Direct translation mappings for common bot messages
+  const directTranslations = {
+    // Welcome messages
+    "I can help you find resources like food, housing, healthcare, and more in your community. What are you looking for?": 'bot.welcome',
+    "Puedo ayudarte a encontrar recursos como comida, vivienda, atención médica y más en tu comunidad. ¿Qué estás buscando?": 'bot.welcome',
     
-    // Searching messages  
-    'Looking for': 'bot.searchingResources',
-    'Buscando recursos de': 'bot.searchingResources',
+    // Consent messages
+    "I'd be happy to connect you with someone who can provide personalized assistance.": 'bot.personalAssistance',
+    "Would you like to share some basic information so we can connect you with the right resources and support?": 'bot.shareInfo',
     
-    // Resource found messages
-    'Found ': 'bot.resourcesFound',
-    'Encontré ': 'bot.resourcesFound',
+    // Help messages
+    "You can ask me about food, housing, healthcare, or any other community resources.": 'bot.helpPrompt',
     
-    // Clarification prefix
-    'Great! Looking for': 'bot.clarificationPrefix',
-    '¡Perfecto! Buscando recursos de': 'bot.clarificationPrefix',
-    
-    // Need more info
-    'I want to make sure I understand': 'bot.needMoreInfo',
-    'Quiero asegurarme de entender': 'bot.needMoreInfo'
+    // Instructions
+    "Type 'food', 'housing', 'healthcare', or tell me what you need help with.": 'bot.instructions',
   };
   
-  // Try to match and translate common patterns
-  for (const [pattern, key] of Object.entries(patterns)) {
-    if (originalText.includes(pattern)) {
-      // For complex messages with parameters, return as-is for now
-      // Full implementation would require storing message context
-      if (key === 'bot.welcome' || key === 'bot.needMoreInfo') {
-        return window.i18n.t(key);
+  // Check for direct translations first
+  if (directTranslations[originalText]) {
+    return window.i18n.t(directTranslations[originalText]);
+  }
+  
+  // Pattern matching for dynamic messages
+  const patterns = [
+    {
+      regex: /I found (\d+) resources? for (.+)/,
+      key: 'bot.foundResources',
+      replacer: (match, count, category) => {
+        return window.i18n.t('bot.foundResources', { count, category });
       }
+    },
+    {
+      regex: /Looking for (.+) resources/,
+      key: 'bot.searchingFor',
+      replacer: (match, category) => {
+        return window.i18n.t('bot.searchingFor', { category });
+      }
+    }
+  ];
+  
+  // Try pattern matching
+  for (const pattern of patterns) {
+    const match = originalText.match(pattern.regex);
+    if (match && pattern.replacer) {
+      return pattern.replacer.apply(null, match);
     }
   }
   
@@ -1260,14 +1301,14 @@ function addMessage(text, sender, delay = 0) {
     hideTypingIndicator();
 
     const msg = document.createElement("div");
-    msg.className = sender === "user" ? "text-right mb-4" : "text-left mb-4";
+    msg.className = `message ${sender === "user" ? "user-message text-right" : "bot-message text-left"} mb-4`;
     
     if (sender === "user") {
       msg.innerHTML = `
         <div class="flex justify-end">
           <div class="flex items-end gap-2 max-w-xs lg:max-w-md">
             <div class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-3 rounded-2xl rounded-br-md shadow-sm">
-              <p class="text-sm font-medium">${text}</p>
+              <p class="message-content text-sm font-medium">${text}</p>
             </div>
             <div class="w-8 h-8 bg-gradient-to-r from-primary-100 to-primary-200 rounded-full flex items-center justify-center flex-shrink-0">
               <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1287,7 +1328,7 @@ function addMessage(text, sender, delay = 0) {
               </svg>
             </div>
             <div class="bg-white border border-neutral-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm">
-              <p class="text-sm text-neutral-800">${text}</p>
+              <p class="message-content text-sm text-neutral-800">${text}</p>
             </div>
           </div>
         </div>
