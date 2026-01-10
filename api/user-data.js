@@ -114,7 +114,7 @@ async function submitTier1Analytics(data, apiKey, baseId) {
 
 // Submit Tier 2 Help Request Data with enhanced structure for progressive forms
 async function submitTier2HelpRequest(data, apiKey, baseId) {
-  const url = `https://api.airtable.com/v0/${baseId}/Help_Requests`;
+  const url = `https://api.airtable.com/v0/${baseId}/tblQlaDP1TQARbN7E`;
   
   // Validate required fields for progressive forms
   const isProgressiveForm = data.userName && data.userPhone;
