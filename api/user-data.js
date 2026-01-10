@@ -16,6 +16,10 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
+  
+  // CRITICAL DEBUG - This should show up!
+  console.log('🚨 FUNCTION CALLED - API KEY EXISTS:', !!process.env.AIRTABLE_API_KEY);
+  console.log('🚨 BASE ID:', process.env.AIRTABLE_BASE_ID);
 
   try {
     // DEBUG: Log everything we receive
