@@ -17,23 +17,30 @@ export default async function handler(req, res) {
     return;
   }
   
-  // CRITICAL DEBUG - This should show up!
-  console.log('🚨 FUNCTION CALLED - API KEY EXISTS:', !!process.env.AIRTABLE_API_KEY);
-  console.log('🚨 BASE ID:', process.env.AIRTABLE_BASE_ID);
-
   try {
-    // DEBUG: Log everything we receive
-    console.log('=== DEBUG START ===');
-    console.log('Request body:', JSON.stringify(req.body, null, 2));
-    console.log('Environment check:', {
-      hasApiKey: !!process.env.AIRTABLE_API_KEY,
-      hasBaseId: !!process.env.AIRTABLE_BASE_ID,
-      apiKeyLength: process.env.AIRTABLE_API_KEY?.length,
-      baseIdLength: process.env.AIRTABLE_BASE_ID?.length,
-      apiKeyStart: process.env.AIRTABLE_API_KEY?.substring(0, 10),
-      baseId: process.env.AIRTABLE_BASE_ID
+    console.log('🧪 TESTING: Direct API call to verify credentials...');
+    
+    // TEST: Try a direct GET request to the table first
+    const testResponse = await fetch(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/tblD8BxXqFAfocUMb?maxRecords=1`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`
+      }
     });
-    console.log('=== DEBUG END ===');
+    
+    const testResult = await testResponse.text();
+    console.log('🧪 Test response status:', testResponse.status);
+    console.log('🧪 Test response:', testResult);
+    
+    if (!testResponse.ok) {
+      return res.status(500).json({
+        success: false,
+        error: 'Airtable credentials test failed',
+        details: {
+          status: testResponse.status,
+          response: testResult
+        }
+      });
+    }
     
     const { type, data } = req.body;
 
