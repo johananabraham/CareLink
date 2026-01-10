@@ -2,10 +2,14 @@
 // Handles both Tier 1 (analytics) and Tier 2 (help requests) data
 
 export default async function handler(req, res) {
-  // Enable CORS
+  // Security headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -126,17 +130,33 @@ async function submitTier1Analytics(data, apiKey, baseId) {
 async function submitTier2HelpRequest(data, apiKey, baseId) {
   const url = `https://api.airtable.com/v0/${baseId}/tblQlaDP1TQARbN7E`;
   
-  // Validate required fields for progressive forms
+  // Enhanced validation for progressive forms
   const isProgressiveForm = data.userName && data.userPhone;
   
   if (isProgressiveForm) {
-    // Validate progressive form data
+    // Validate progressive form data with security checks
     if (!data.userName || !data.userPhone || !data.helpCategory) {
       return {
         success: false,
         error: 'Missing required form fields (name, phone, or category)'
       };
     }
+    
+    // Enhanced validation
+    if (data.userEmail && !isValidEmail(data.userEmail)) {
+      return {
+        success: false,
+        error: 'Invalid email format'
+      };
+    }
+    
+    if (!isValidPhone(data.userPhone)) {
+      return {
+        success: false,
+        error: 'Invalid phone number format'
+      };
+    }
+    
   } else if (!data.sessionId) {
     return {
       success: false,
@@ -295,16 +315,31 @@ async function submitToAirtableWithRetry(url, record, apiKey, type, maxRetries =
   };
 }
 
-// Sanitize string inputs to prevent injection and data issues
+// Enhanced sanitization for production security
 function sanitizeString(input) {
   if (typeof input !== 'string') {
     return String(input || '');
   }
   
-  // Remove potentially problematic characters and trim
+  // Enhanced sanitization for production
   return input
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove control characters
-    .replace(/[<>]/g, '') // Remove HTML angle brackets  
-    .substring(0, 1000) // Limit length to prevent data overflow
+    .replace(/[<>]/g, '') // Remove HTML angle brackets
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .replace(/style\s*=/gi, '') // Remove style attributes
+    .substring(0, 1000) // Limit length
     .trim();
+}
+
+// Validate email format
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.length <= 254;
+}
+
+// Validate phone number format
+function isValidPhone(phone) {
+  const phoneRegex = /^[\d\s\-\+\(\)\.]+$/;
+  return phoneRegex.test(phone) && phone.length >= 10 && phone.length <= 20;
 }
