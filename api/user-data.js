@@ -85,7 +85,8 @@ export default async function handler(req, res) {
 
 // Submit Tier 1 Analytics Data with enhanced error handling
 async function submitTier1Analytics(data, apiKey, baseId) {
-  const url = `https://api.airtable.com/v0/${baseId}/Success_Analytics`;
+  // Use table ID instead of table name for more reliable API calls
+  const url = `https://api.airtable.com/v0/${baseId}/tblD8BxXqFAfocUMb`;
   
   // Validate required fields
   if (!data.firstName && !data.sessionId) {
