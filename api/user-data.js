@@ -68,8 +68,11 @@ export default async function handler(req, res) {
     let result;
     
     if (type === 'analytics') {
+      console.log('📊 Processing analytics request...');
       result = await submitTier1Analytics(data, AIRTABLE_API_KEY, AIRTABLE_BASE_ID);
     } else if (type === 'help_request') {
+      console.log('📝 Processing help request...');
+      console.log('📝 Help request data:', JSON.stringify(data, null, 2));
       result = await submitTier2HelpRequest(data, AIRTABLE_API_KEY, AIRTABLE_BASE_ID);
     } else {
       res.status(400).json({ 
