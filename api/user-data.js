@@ -18,6 +18,19 @@ export default async function handler(req, res) {
   }
 
   try {
+    // DEBUG: Log everything we receive
+    console.log('=== DEBUG START ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    console.log('Environment check:', {
+      hasApiKey: !!process.env.AIRTABLE_API_KEY,
+      hasBaseId: !!process.env.AIRTABLE_BASE_ID,
+      apiKeyLength: process.env.AIRTABLE_API_KEY?.length,
+      baseIdLength: process.env.AIRTABLE_BASE_ID?.length,
+      apiKeyStart: process.env.AIRTABLE_API_KEY?.substring(0, 10),
+      baseId: process.env.AIRTABLE_BASE_ID
+    });
+    console.log('=== DEBUG END ===');
+    
     const { type, data } = req.body;
 
     if (!type || !data) {
