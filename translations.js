@@ -185,7 +185,7 @@ const TRANSLATIONS = {
     
     // Bot responses
     bot: {
-      welcome: "I can help you find resources for food, housing, healthcare, mental health, substance use treatment, employment, veteran services, or crisis support. What do you need help with?",
+      welcome: "I can help you find resources for free medical clinics, community health centers, mental health support, crisis & emergency mental health, substance use recovery, housing & shelter, rent & utility assistance, food & basic needs, employment services, legal services, refugee & immigrant support, or veteran services. What do you need help with?",
       searchingResources: "Looking for {category} resources in your area...",
       resourcesFound: "Found {count} {category} resource{plural} near you! Check the map above to see their locations. Click on any marker for more details.",
       noResourcesFound: "I'm sorry, I couldn't find any mappable {category} resources in your area right now. This might be because:\n\n• The resources don't have location coordinates yet\n• They may be listed under a different category name\n• The data is still being updated\n\nYou can try asking for a different type of assistance, or check back later.",
@@ -199,33 +199,41 @@ const TRANSLATIONS = {
       noResourcesOffer: "Since we couldn't find the right resources, would you like us to connect you with someone who can help personally?",
       personalAssistance: "I'd be happy to connect you with someone who can provide personalized assistance.",
       shareInfo: "Would you like to share some basic information so we can connect you with the right resources and support?",
-      helpPrompt: "You can ask me about food, housing, healthcare, or any other community resources.",
-      instructions: "Type 'food', 'housing', 'healthcare', or tell me what you need help with.",
+      helpPrompt: "You can ask me about food, housing, medical clinics, mental health, legal help, employment, or any other community resources.",
+      instructions: "Type 'food', 'housing', 'clinic', 'rent help', or tell me what you need help with.",
       foundResources: "I found {count} resources for {category}",
       searchingFor: "Looking for {category} resources"
     },
     
     // Clarification questions
     clarifications: {
-      Food: "It sounds like you might need food assistance. Would you like to see food pantries, soup kitchens, or meal programs?",
-      Housing: "Are you looking for emergency shelter, housing assistance, or help with rent?",
-      Healthcare: "Do you need medical care, dental services, or help finding health insurance?",
-      "Mental Health": "Are you interested in counseling, therapy, or mental health support services?",
-      "Substance Use": "Are you looking for detox services, recovery programs, or ongoing addiction support?",
-      Employment: "Would you like job training, resume help, or employment placement services?",
-      Veterans: "Are you looking for VA benefits, veteran housing, or veteran healthcare services?",
-      Crisis: "Do you need immediate crisis support, a suicide hotline, or emergency assistance?"
+      "Free & Charitable Medical Clinics": "Are you looking for a free or walk-in medical clinic for immediate care?",
+      "Community Health Centers": "Are you looking for a community health center for ongoing care, like a primary doctor?",
+      "Mental Health (Non-Crisis)": "Are you looking for counseling, therapy, or non-emergency mental health support?",
+      "Crisis & Emergency Mental Health": "Do you need immediate crisis support, a crisis hotline, or emergency mental health services?",
+      "Substance Use & Addiction Recovery": "Are you looking for detox services, recovery programs, or ongoing addiction support?",
+      "Housing & Shelter": "Are you looking for emergency shelter or transitional housing?",
+      "Rent, Utility & Eviction Assistance": "Do you need help paying rent, utilities, or are you facing eviction?",
+      "Food & Basic Needs": "Are you looking for food assistance, clothing, or other basic necessities?",
+      "Employment Services": "Would you like job training, resume help, or employment placement services?",
+      "Legal Services": "Are you looking for free legal help, such as a legal aid lawyer?",
+      "Refugee & Immigrant Support": "Are you looking for refugee or immigrant services, like resettlement help or language assistance?",
+      Veterans: "Are you looking for VA benefits, veteran housing, or veteran healthcare services?"
     },
-    
+
     // Categories
     categories: {
-      Food: "food",
-      Housing: "housing", 
-      Healthcare: "healthcare",
-      "Mental Health": "mental health",
-      "Substance Use": "substance use",
-      Crisis: "crisis",
-      Employment: "employment",
+      "Free & Charitable Medical Clinics": "free & charitable medical clinics",
+      "Community Health Centers": "community health centers",
+      "Mental Health (Non-Crisis)": "mental health (non-crisis)",
+      "Crisis & Emergency Mental Health": "crisis & emergency mental health",
+      "Substance Use & Addiction Recovery": "substance use & addiction recovery",
+      "Housing & Shelter": "housing & shelter",
+      "Rent, Utility & Eviction Assistance": "rent, utility & eviction assistance",
+      "Food & Basic Needs": "food & basic needs",
+      "Employment Services": "employment services",
+      "Legal Services": "legal services",
+      "Refugee & Immigrant Support": "refugee & immigrant support",
       Veterans: "veterans"
     },
     
@@ -425,7 +433,7 @@ const TRANSLATIONS = {
     
     // Bot responses
     bot: {
-      welcome: "Puedo ayudarte a encontrar recursos para alimentación, vivienda, atención médica, salud mental, tratamiento de sustancias, empleo, servicios para veteranos, o apoyo en crisis. ¿Con qué necesitas ayuda?",
+      welcome: "Puedo ayudarte a encontrar recursos para clínicas médicas gratuitas, centros de salud comunitarios, salud mental, crisis y salud mental de emergencia, recuperación de adicciones, vivienda y refugio, asistencia de alquiler y servicios públicos, alimentos y necesidades básicas, servicios de empleo, servicios legales, apoyo a refugiados e inmigrantes, o servicios para veteranos. ¿Con qué necesitas ayuda?",
       searchingResources: "Buscando recursos de {category} en tu área...",
       resourcesFound: "¡Encontré {count} recurso{plural} de {category} cerca de ti! Revisa el mapa arriba para ver sus ubicaciones. Haz clic en cualquier marcador para más detalles.",
       noResourcesFound: "Lo siento, no pude encontrar recursos de {category} mapeables en tu área ahora mismo. Esto puede ser porque:\n\n• Los recursos aún no tienen coordenadas de ubicación\n• Pueden estar listados bajo un nombre de categoría diferente\n• Los datos aún se están actualizando\n\nPuedes intentar preguntar por un tipo diferente de asistencia, o volver a intentar más tarde.",
@@ -439,33 +447,41 @@ const TRANSLATIONS = {
       noResourcesOffer: "Como no pudimos encontrar los recursos adecuados, ¿te gustaría que te conectemos con alguien que pueda ayudarte personalmente?",
       personalAssistance: "Me encantaría conectarte con alguien que pueda proporcionarte asistencia personalizada.",
       shareInfo: "¿Te gustaría compartir información básica para que podamos conectarte con los recursos y apoyo adecuados?",
-      helpPrompt: "Puedes preguntarme sobre alimentos, vivienda, atención médica, o cualquier otro recurso comunitario.",
-      instructions: "Escribe 'comida', 'vivienda', 'salud', o dime en qué necesitas ayuda.",
+      helpPrompt: "Puedes preguntarme sobre alimentos, vivienda, clínicas médicas, salud mental, ayuda legal, empleo, o cualquier otro recurso comunitario.",
+      instructions: "Escribe 'comida', 'vivienda', 'clínica', 'ayuda con alquiler', o dime en qué necesitas ayuda.",
       foundResources: "Encontré {count} recursos para {category}",
       searchingFor: "Buscando recursos de {category}"
     },
     
     // Clarification questions
     clarifications: {
-      Food: "Parece que podrías necesitar asistencia alimentaria. ¿Te gustaría ver bancos de alimentos, comedores populares, o programas de comidas?",
-      Housing: "¿Buscas refugio de emergencia, asistencia de vivienda, o ayuda con el alquiler?",
-      Healthcare: "¿Necesitas atención médica, servicios dentales, o ayuda para encontrar seguro médico?",
-      "Mental Health": "¿Te interesan servicios de consejería, terapia, o apoyo de salud mental?",
-      "Substance Use": "¿Buscas servicios de desintoxicación, programas de recuperación, o apoyo continuo para adicciones?",
-      Employment: "¿Te gustaría capacitación laboral, ayuda con currículum, o servicios de colocación laboral?",
-      Veterans: "¿Buscas beneficios de VA, vivienda para veteranos, o servicios de atención médica para veteranos?",
-      Crisis: "¿Necesitas apoyo inmediato en crisis, una línea de crisis, o asistencia de emergencia?"
+      "Free & Charitable Medical Clinics": "¿Buscas una clínica médica gratuita o sin cita previa para atención inmediata?",
+      "Community Health Centers": "¿Buscas un centro de salud comunitario para atención continua, como un médico de cabecera?",
+      "Mental Health (Non-Crisis)": "¿Buscas consejería, terapia, o apoyo de salud mental no urgente?",
+      "Crisis & Emergency Mental Health": "¿Necesitas apoyo inmediato en crisis, una línea de crisis, o servicios de salud mental de emergencia?",
+      "Substance Use & Addiction Recovery": "¿Buscas servicios de desintoxicación, programas de recuperación, o apoyo continuo para adicciones?",
+      "Housing & Shelter": "¿Buscas refugio de emergencia o vivienda de transición?",
+      "Rent, Utility & Eviction Assistance": "¿Necesitas ayuda para pagar el alquiler, los servicios públicos, o estás enfrentando un desalojo?",
+      "Food & Basic Needs": "¿Buscas asistencia alimentaria, ropa, u otras necesidades básicas?",
+      "Employment Services": "¿Te gustaría capacitación laboral, ayuda con currículum, o servicios de colocación laboral?",
+      "Legal Services": "¿Buscas ayuda legal gratuita, como un abogado de asistencia legal?",
+      "Refugee & Immigrant Support": "¿Buscas servicios para refugiados o inmigrantes, como ayuda de reasentamiento o asistencia con el idioma?",
+      Veterans: "¿Buscas beneficios de VA, vivienda para veteranos, o servicios de atención médica para veteranos?"
     },
-    
+
     // Categories
     categories: {
-      Food: "alimentación",
-      Housing: "vivienda", 
-      Healthcare: "atención médica",
-      "Mental Health": "salud mental",
-      "Substance Use": "abuso de sustancias",
-      Crisis: "crisis",
-      Employment: "empleo",
+      "Free & Charitable Medical Clinics": "clínicas médicas gratuitas y de caridad",
+      "Community Health Centers": "centros de salud comunitarios",
+      "Mental Health (Non-Crisis)": "salud mental (no crisis)",
+      "Crisis & Emergency Mental Health": "crisis y salud mental de emergencia",
+      "Substance Use & Addiction Recovery": "uso de sustancias y recuperación de adicciones",
+      "Housing & Shelter": "vivienda y refugio",
+      "Rent, Utility & Eviction Assistance": "asistencia de alquiler, servicios y desalojo",
+      "Food & Basic Needs": "alimentos y necesidades básicas",
+      "Employment Services": "servicios de empleo",
+      "Legal Services": "servicios legales",
+      "Refugee & Immigrant Support": "apoyo a refugiados e inmigrantes",
       Veterans: "veteranos"
     },
     
@@ -660,7 +676,7 @@ const TRANSLATIONS = {
     
     // Bot responses
     bot: {
-      welcome: "Waxaan kaa caawin karaa in aad hesho agab loogu talagalay cunto, guri, daryeel caafimaad, caafimaadka maskaxda, daawaynta isticmaalka daroogada, shaqo, adeegyada askarta, ama taageerada xiisadaha. Maxaad u baahan tahay caawimo?",
+      welcome: "Waxaan kaa caawin karaa in aad hesho agab loogu talagalay kilinikyo caafimaad oo bilaash ah, xarumaha caafimaadka bulshada, caafimaadka maskaxda, xiisadaha degdegga ah, ka soo kabashada daroogada, guri iyo hoy, caawimada kirada iyo khidmadaha, cunto iyo baahiyaha aasaasiga, adeegyada shaqada, adeegyada sharci, taageerada qaxootiga iyo soo galootiga, ama adeegyada askarta hore. Maxaad u baahan tahay caawimo?",
       searchingResources: "Waan baadhayaa agabka {category} ee agagaaga ku yaal...",
       resourcesFound: "Waxaan helay {count} agab {category} oo ku dhow! Fiiri khariidadda kor ku taal si aad u aragto meelaha ay ku yaalliin. Gujii calaamad kasta si aad faahfaahin u hesho.",
       noResourcesFound: "Waan ka xunnahay, ma heli karo agab {category} oo khariidadda lagu saari karo oo agagaaga ah hadda. Taani waxay noqon kartaa sababtoo ah:\n\n• Agabku wali ma haysto tirtiro goob\n• Waxay u badan tahay inay ku qoran yihiin magac kale\n• Xogta wali waa la cusboneysiiinayaa\n\nWaxaad tijaabi kartaa inaad weydiiso caawimo kale, ama dib ugu soo noqo mar dambe.",
@@ -674,33 +690,41 @@ const TRANSLATIONS = {
       noResourcesOffer: "Maadaama aanan ka helin agabkii saxda ahaa, miyaad jeclaanahayd inaan ku xidhno qof ku caawin kara si shakhsi ah?",
       personalAssistance: "Waxaan ku farxi lahaa inaan ku xidhno qof ku siini kara caawimo gaara ah.",
       shareInfo: "Miyaad jeclaanahayd inaad wadaagto macluumaad aasaasi ah si aan kuugu xidhno agabka iyo taageerada ku habboon?",
-      helpPrompt: "Waxaad i weydiin kartaa wax ku saabsan cunto, guri, daryeel caafimaad, ama agab kale oo bulsho.",
-      instructions: "Qor 'cunto', 'guri', 'caafimaad', ama ii sheeg waxa aad u baahan tahay caawimo.",
+      helpPrompt: "Waxaad i weydiin kartaa wax ku saabsan cunto, guri, kilinik caafimaad, caafimaadka maskaxda, caawimo sharci, shaqo, ama agab kale oo bulsho.",
+      instructions: "Qor 'cunto', 'guri', 'kilinik', 'caawimo kiro', ama ii sheeg waxa aad u baahan tahay caawimo.",
       foundResources: "Waxaan helay {count} agab loogu talagalay {category}",
       searchingFor: "Raadinta agabka {category}"
     },
     
     // Clarification questions
     clarifications: {
-      Food: "Waxay umuuqataa inaad u baahan tahay caawimo cunto. Miyaad jeclaan lahayd inaad aragto bangiyada cuntada, matbakhyada guud, ama barnaamijyada cuntada?",
-      Housing: "Miyaad raadinaysaa meel galabni ah oo degdeg ah, caawimo guri, ama caawimo kiro?",
-      Healthcare: "Miyaad u baahan tahay daryeel caafimaad, adeegyada ilkaha, ama caawimo si aad u hesho caymis caafimaad?",
-      "Mental Health": "Miyaad xiisaynaysaa adeegyada la-talinta, daaweynta, ama taageerada caafimaadka maskaxda?",
-      "Substance Use": "Miyaad raadinaysaa adeegyada nadiifeynta jidhka, barnaamijyada soo kabashadhka, ama taageero joogto ah ee iska-ceejinta?",
-      Employment: "Miyaad jeclaan lahayd tababar shaqo, caawimo resume, ama adeegyada heleynta shaqo?",
-      Veterans: "Miyaad raadinaysaa faa'iidooyinka VA, guri askari, ama adeegyada daryeelka caafimaadka askarta?",
-      Crisis: "Miyaad u baahan tahay taageero degdeg ah oo xiisad ah, khadka xiisadaha, ama caawimo degdeg ah?"
+      "Free & Charitable Medical Clinics": "Miyaad raadinaysaa kilinik caafimaad oo bilaash ah ama aan ballan loo qaban doonin?",
+      "Community Health Centers": "Miyaad raadinaysaa xarun caafimaad oo bulsho ah oo daryeel joogto ah, sida dhakhtar qoys?",
+      "Mental Health (Non-Crisis)": "Miyaad raadinaysaa la-talin, daaweyn, ama taageero caafimaad maskaxda oo aan degdeg ahayn?",
+      "Crisis & Emergency Mental Health": "Miyaad u baahan tahay taageero xiisad oo degdeg ah, khadka xiisadaha, ama adeegyo caafimaad maskaxda oo degdeg ah?",
+      "Substance Use & Addiction Recovery": "Miyaad raadinaysaa adeegyada nadiifeynta jidhka, barnaamijyada soo kabashadhka, ama taageero joogto ah ee iska-ceejinta?",
+      "Housing & Shelter": "Miyaad raadinaysaa hoy degdeg ah ama guri ku meel gaar ah?",
+      "Rent, Utility & Eviction Assistance": "Miyaad u baahan tahay caawimo lacag-bixinta kirada, khidmadaha, ama miyaad wajahaysaa eryid?",
+      "Food & Basic Needs": "Miyaad raadinaysaa caawimada cuntada, dharka, ama baahiyaha aasaasiga ah ee kale?",
+      "Employment Services": "Miyaad jeclaan lahayd tababar shaqo, caawimo resume, ama adeegyada heleynta shaqo?",
+      "Legal Services": "Miyaad raadinaysaa caawimo sharci oo bilaash ah, sida qareen caawimo sharci?",
+      "Refugee & Immigrant Support": "Miyaad raadinaysaa adeegyada qaxootiga ama soo galootiga, sida caawimada dib-u-dejinta ama caawimada luuqadda?",
+      Veterans: "Miyaad raadinaysaa faa'iidooyinka VA, guri askari, ama adeegyada daryeelka caafimaadka askarta?"
     },
-    
+
     // Categories
     categories: {
-      Food: "cunto",
-      Housing: "guri", 
-      Healthcare: "daryeel caafimaad",
-      "Mental Health": "caafimaadka maskaxda",
-      "Substance Use": "isticmaalka daroogada",
-      Crisis: "xiisad",
-      Employment: "shaqo",
+      "Free & Charitable Medical Clinics": "kilinikyo caafimaad oo bilaash ah",
+      "Community Health Centers": "xarumaha caafimaadka bulshada",
+      "Mental Health (Non-Crisis)": "caafimaadka maskaxda (aan xiisad ahayn)",
+      "Crisis & Emergency Mental Health": "xiisadaha iyo caafimaadka maskaxda ee degdegga ah",
+      "Substance Use & Addiction Recovery": "isticmaalka daroogada iyo soo kabashada",
+      "Housing & Shelter": "guri iyo hoy",
+      "Rent, Utility & Eviction Assistance": "caawimada kirada, khidmadaha iyo eryidda",
+      "Food & Basic Needs": "cunto iyo baahiyaha aasaasiga ah",
+      "Employment Services": "adeegyada shaqada",
+      "Legal Services": "adeegyada sharciga",
+      "Refugee & Immigrant Support": "taageerada qaxootiga iyo soo galootiga",
       Veterans: "askarta hore"
     },
     
@@ -895,7 +919,7 @@ const TRANSLATIONS = {
     
     // Bot responses
     bot: {
-      welcome: "يمكنني مساعدتك في العثور على موارد للطعام والإسكان والرعاية الصحية والصحة النفسية وعلاج تعاطي المواد والتوظيف وخدمات المحاربين القدامى أو دعم الأزمات. بماذا تحتاج المساعدة؟",
+      welcome: "يمكنني مساعدتك في العثور على موارد للعيادات الطبية المجانية، مراكز صحة المجتمع، الصحة النفسية، الأزمات والصحة النفسية الطارئة، التعافي من الإدمان، الإسكان والمأوى، مساعدة الإيجار والمرافق، الطعام والاحتياجات الأساسية، خدمات التوظيف، الخدمات القانونية، دعم اللاجئين والمهاجرين، أو خدمات المحاربين القدامى. بماذا تحتاج المساعدة؟",
       searchingResources: "البحث عن موارد {category} في منطقتك...",
       resourcesFound: "تم العثور على {count} مورد {category} بالقرب منك! تحقق من الخريطة أعلاه لرؤية مواقعها. انقر على أي علامة للحصول على تفاصيل أكثر.",
       noResourcesFound: "أعتذر، لا يمكنني العثور على أي موارد {category} قابلة للرسم على الخريطة في منطقتك الآن. قد يكون هذا بسبب:\n\n• الموارد ليس لديها إحداثيات الموقع بعد\n• قد تكون مدرجة تحت اسم فئة مختلف\n• البيانات ما زالت يجري تحديثها\n\nيمكنك محاولة السؤال عن نوع مختلف من المساعدة، أو العودة لاحقاً.",
@@ -909,33 +933,41 @@ const TRANSLATIONS = {
       noResourcesOffer: "بما أننا لم نتمكن من العثور على الموارد المناسبة، هل تريد أن نربطك بشخص يمكنه مساعدتك شخصياً؟",
       personalAssistance: "سأكون سعيداً لربطك بشخص يمكنه تقديم المساعدة الشخصية.",
       shareInfo: "هل تود مشاركة بعض المعلومات الأساسية حتى نتمكن من ربطك بالموارد والدعم المناسبين؟",
-      helpPrompt: "يمكنك أن تسألني عن الطعام أو الإسكان أو الرعاية الصحية أو أي موارد مجتمعية أخرى.",
-      instructions: "اكتب 'طعام' أو 'إسكان' أو 'رعاية صحية' أو أخبرني بما تحتاج للمساعدة فيه.",
+      helpPrompt: "يمكنك أن تسألني عن الطعام أو الإسكان أو العيادات الطبية أو الصحة النفسية أو المساعدة القانونية أو التوظيف أو أي موارد مجتمعية أخرى.",
+      instructions: "اكتب 'طعام' أو 'إسكان' أو 'عيادة' أو 'مساعدة إيجار' أو أخبرني بما تحتاج للمساعدة فيه.",
       foundResources: "وجدت {count} مورد لـ {category}",
       searchingFor: "البحث عن موارد {category}"
     },
     
     // Clarification questions
     clarifications: {
-      Food: "يبدو أنك قد تحتاج إلى مساعدة غذائية. هل تود رؤية بنوك الطعام أو مطابخ الحساء أو برامج الوجبات؟",
-      Housing: "هل تبحث عن مأوى طارئ أو مساعدة في الإسكان أو مساعدة في الإيجار؟",
-      Healthcare: "هل تحتاج رعاية طبية أو خدمات أسنان أو مساعدة في العثور على تأمين صحي؟",
-      "Mental Health": "هل أنت مهتم بخدمات الاستشارة أو العلاج أو خدمات دعم الصحة النفسية؟",
-      "Substance Use": "هل تبحث عن خدمات إزالة السموم أو برامج التعافي أو الدعم المستمر للإدمان؟",
-      Employment: "هل تود التدريب المهني أو مساعدة في السيرة الذاتية أو خدمات التوظيف؟",
-      Veterans: "هل تبحث عن مزايا VA أو إسكان المحاربين القدامى أو خدمات الرعاية الصحية للمحاربين القدامى؟",
-      Crisis: "هل تحتاج دعم أزمة فوري أو خط أزمة أو مساعدة طارئة؟"
+      "Free & Charitable Medical Clinics": "هل تبحث عن عيادة طبية مجانية أو بدون موعد للرعاية الفورية؟",
+      "Community Health Centers": "هل تبحث عن مركز صحة مجتمعي للرعاية المستمرة، مثل طبيب العائلة؟",
+      "Mental Health (Non-Crisis)": "هل تبحث عن استشارة أو علاج أو دعم صحة نفسية غير طارئ؟",
+      "Crisis & Emergency Mental Health": "هل تحتاج دعم أزمة فوري أو خط أزمة أو خدمات صحة نفسية طارئة؟",
+      "Substance Use & Addiction Recovery": "هل تبحث عن خدمات إزالة السموم أو برامج التعافي أو الدعم المستمر للإدمان؟",
+      "Housing & Shelter": "هل تبحث عن مأوى طارئ أو سكن انتقالي؟",
+      "Rent, Utility & Eviction Assistance": "هل تحتاج مساعدة في دفع الإيجار أو المرافق أو تواجه إخلاء؟",
+      "Food & Basic Needs": "هل تبحث عن مساعدة غذائية أو ملابس أو احتياجات أساسية أخرى؟",
+      "Employment Services": "هل تود التدريب المهني أو مساعدة في السيرة الذاتية أو خدمات التوظيف؟",
+      "Legal Services": "هل تبحث عن مساعدة قانونية مجانية، مثل محامي مساعدة قانونية؟",
+      "Refugee & Immigrant Support": "هل تبحث عن خدمات للاجئين أو المهاجرين، مثل مساعدة إعادة التوطين أو المساعدة اللغوية؟",
+      Veterans: "هل تبحث عن مزايا VA أو إسكان المحاربين القدامى أو خدمات الرعاية الصحية للمحاربين القدامى؟"
     },
-    
+
     // Categories
     categories: {
-      Food: "طعام",
-      Housing: "إسكان", 
-      Healthcare: "رعاية صحية",
-      "Mental Health": "صحة نفسية",
-      "Substance Use": "تعاطي المواد",
-      Crisis: "أزمة",
-      Employment: "توظيف",
+      "Free & Charitable Medical Clinics": "عيادات طبية مجانية وخيرية",
+      "Community Health Centers": "مراكز صحة المجتمع",
+      "Mental Health (Non-Crisis)": "صحة نفسية (غير طارئة)",
+      "Crisis & Emergency Mental Health": "الأزمات والصحة النفسية الطارئة",
+      "Substance Use & Addiction Recovery": "تعاطي المواد والتعافي من الإدمان",
+      "Housing & Shelter": "إسكان ومأوى",
+      "Rent, Utility & Eviction Assistance": "مساعدة الإيجار والمرافق والإخلاء",
+      "Food & Basic Needs": "طعام واحتياجات أساسية",
+      "Employment Services": "خدمات التوظيف",
+      "Legal Services": "خدمات قانونية",
+      "Refugee & Immigrant Support": "دعم اللاجئين والمهاجرين",
       Veterans: "محاربون قدامى"
     },
     
@@ -1130,7 +1162,7 @@ const TRANSLATIONS = {
     
     // Bot responses
     bot: {
-      welcome: "मैं आपको भोजन, आवास, स्वास्थ्य देखभाल, मानसिक स्वास्थ्य, पदार्थ उपयोग उपचार, रोजगार, वयोवृद्ध सेवाओं, या संकट सहायता के लिए संसाधन खोजने में मदद कर सकता हूं। आपको किस चीज़ में मदद चाहिए?",
+      welcome: "मैं आपको मुफ्त चिकित्सा क्लीनिक, सामुदायिक स्वास्थ्य केंद्र, मानसिक स्वास्थ्य सहायता, संकट और आपातकालीन मानसिक स्वास्थ्य, नशा मुक्ति, आवास और आश्रय, किराया और उपयोगिता सहायता, भोजन और बुनियादी जरूरतें, रोजगार सेवाएं, कानूनी सेवाएं, शरणार्थी और प्रवासी सहायता, या पूर्व सैनिक सेवाओं के लिए संसाधन खोजने में मदद कर सकता हूं। आपको किस चीज़ में मदद चाहिए?",
       searchingResources: "आपके क्षेत्र में {category} संसाधन खोज रहे हैं...",
       resourcesFound: "आपके पास {count} {category} संसाधन मिले! उनके स्थानों को देखने के लिए ऊपर का नक्शा देखें। अधिक विवरण के लिए किसी भी मार्कर पर क्लिक करें।",
       noResourcesFound: "मुझे खुशी है, मैं आपके क्षेत्र में अभी कोई मानचित्र योग्य {category} संसाधन नहीं ढूंढ सका। यह इसलिए हो सकता है:\n\n• संसाधनों के पास अभी तक स्थान निर्देशांक नहीं हैं\n• वे एक अलग श्रेणी नाम के तहत सूचीबद्ध हो सकते हैं\n• डेटा अभी भी अपडेट हो रहा है\n\nआप एक अलग प्रकार की सहायता मांगने की कोशिश कर सकते हैं, या बाद में वापस आ सकते हैं।",
@@ -1144,33 +1176,41 @@ const TRANSLATIONS = {
       noResourcesOffer: "चूंकि हम सही संसाधन नहीं ढूंढ सके, क्या आप चाहेंगे कि हम आपको किसी ऐसे व्यक्ति से जोड़ें जो व्यक्तिगत रूप से आपकी सहायता कर सकता है?",
       personalAssistance: "मुझे खुशी होगी आपको किसी ऐसे व्यक्ति से जोड़ने में जो व्यक्तिगत सहायता प्रदान कर सकता है।",
       shareInfo: "क्या आप कुछ बुनियादी जानकारी साझा करना चाहेंगे ताकि हम आपको सही संसाधनों और सहायता से जोड़ सकें?",
-      helpPrompt: "आप मुझसे भोजन, आवास, स्वास्थ्य देखभाल, या किसी अन्य सामुदायिक संसाधन के बारे में पूछ सकते हैं।",
-      instructions: "'भोजन', 'आवास', 'स्वास्थ्य देखभाल' टाइप करें, या बताएं कि आपको किस चीज़ में मदद चाहिए।",
+      helpPrompt: "आप मुझसे भोजन, आवास, चिकित्सा क्लीनिक, मानसिक स्वास्थ्य, कानूनी सहायता, रोजगार, या किसी अन्य सामुदायिक संसाधन के बारे में पूछ सकते हैं।",
+      instructions: "'भोजन', 'आवास', 'क्लीनिक', 'किराया सहायता' टाइप करें, या बताएं कि आपको किस चीज़ में मदद चाहिए।",
       foundResources: "मैंने {category} के लिए {count} संसाधन पाए",
       searchingFor: "{category} संसाधन खोज रहे हैं"
     },
     
     // Clarification questions
     clarifications: {
-      Food: "ऐसा लगता है कि आपको भोजन सहायता की आवश्यकता हो सकती है। क्या आप फूड बैंक, सूप किचन, या भोजन कार्यक्रम देखना चाहेंगे?",
-      Housing: "क्या आप आपातकालीन आश्रय, आवास सहायता, या किराए में मदद की तलाश कर रहे हैं?",
-      Healthcare: "क्या आपको चिकित्सा देखभाल, दंत सेवाओं, या स्वास्थ्य बीमा खोजने में मदद चाहिए?",
-      "Mental Health": "क्या आप परामर्श, चिकित्सा, या मानसिक स्वास्थ्य सहायता सेवाओं में रुचि रखते हैं?",
-      "Substance Use": "क्या आप डिटॉक्स सेवाओं, रिकवरी प्रोग्राम, या निरंतर लत समर्थन की तलाश कर रहे हैं?",
-      Employment: "क्या आप नौकरी प्रशिक्षण, रिज्यूमे मदद, या रोजगार नियुक्ति सेवाओं को पसंद करेंगे?",
-      Veterans: "क्या आप VA लाभ, वयोवृद्ध आवास, या वयोवृद्ध स्वास्थ्य देखभाल सेवाओं की तलाश कर रहे हैं?",
-      Crisis: "क्या आपको तत्काल संकट सहायता, एक संकट हॉटलाइन, या आपातकालीन सहायता चाहिए?"
+      "Free & Charitable Medical Clinics": "क्या आप तत्काल देखभाल के लिए मुफ्त या वॉक-इन चिकित्सा क्लीनिक की तलाश कर रहे हैं?",
+      "Community Health Centers": "क्या आप निरंतर देखभाल के लिए सामुदायिक स्वास्थ्य केंद्र की तलाश कर रहे हैं, जैसे पारिवारिक डॉक्टर?",
+      "Mental Health (Non-Crisis)": "क्या आप परामर्श, चिकित्सा, या गैर-आपातकालीन मानसिक स्वास्थ्य सहायता की तलाश कर रहे हैं?",
+      "Crisis & Emergency Mental Health": "क्या आपको तत्काल संकट सहायता, संकट हॉटलाइन, या आपातकालीन मानसिक स्वास्थ्य सेवाओं की आवश्यकता है?",
+      "Substance Use & Addiction Recovery": "क्या आप डिटॉक्स सेवाओं, रिकवरी प्रोग्राम, या निरंतर लत समर्थन की तलाश कर रहे हैं?",
+      "Housing & Shelter": "क्या आप आपातकालीन आश्रय या संक्रमणकालीन आवास की तलाश कर रहे हैं?",
+      "Rent, Utility & Eviction Assistance": "क्या आपको किराया, उपयोगिताओं का भुगतान करने में मदद चाहिए, या आप बेदखली का सामना कर रहे हैं?",
+      "Food & Basic Needs": "क्या आप भोजन सहायता, कपड़े, या अन्य बुनियादी आवश्यकताओं की तलाश कर रहे हैं?",
+      "Employment Services": "क्या आप नौकरी प्रशिक्षण, रिज्यूमे मदद, या रोजगार नियुक्ति सेवाओं को पसंद करेंगे?",
+      "Legal Services": "क्या आप मुफ्त कानूनी सहायता की तलाश कर रहे हैं, जैसे कानूनी सहायता वकील?",
+      "Refugee & Immigrant Support": "क्या आप शरणार्थी या प्रवासी सेवाओं की तलाश कर रहे हैं, जैसे पुनर्वास सहायता या भाषा सहायता?",
+      Veterans: "क्या आप VA लाभ, वयोवृद्ध आवास, या वयोवृद्ध स्वास्थ्य देखभाल सेवाओं की तलाश कर रहे हैं?"
     },
-    
+
     // Categories
     categories: {
-      Food: "भोजन",
-      Housing: "आवास", 
-      Healthcare: "स्वास्थ्य देखभाल",
-      "Mental Health": "मानसिक स्वास्थ्य",
-      "Substance Use": "पदार्थ उपयोग",
-      Crisis: "संकट",
-      Employment: "रोजगार",
+      "Free & Charitable Medical Clinics": "मुफ्त और धर्मार्थ चिकित्सा क्लीनिक",
+      "Community Health Centers": "सामुदायिक स्वास्थ्य केंद्र",
+      "Mental Health (Non-Crisis)": "मानसिक स्वास्थ्य (गैर-संकट)",
+      "Crisis & Emergency Mental Health": "संकट और आपातकालीन मानसिक स्वास्थ्य",
+      "Substance Use & Addiction Recovery": "पदार्थ उपयोग और नशा मुक्ति",
+      "Housing & Shelter": "आवास और आश्रय",
+      "Rent, Utility & Eviction Assistance": "किराया, उपयोगिता और बेदखली सहायता",
+      "Food & Basic Needs": "भोजन और बुनियादी जरूरतें",
+      "Employment Services": "रोजगार सेवाएं",
+      "Legal Services": "कानूनी सेवाएं",
+      "Refugee & Immigrant Support": "शरणार्थी और प्रवासी सहायता",
       Veterans: "पूर्व सैनिक"
     },
     

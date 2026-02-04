@@ -46,7 +46,14 @@ export default async function handler(req, res) {
 }
 
 async function detectIntentWithAI(message, language) {
-  const categories = ['Food', 'Housing', 'Healthcare', 'Mental Health', 'Substance Use', 'Employment', 'Veterans', 'Crisis'];
+  const categories = [
+    'Free & Charitable Medical Clinics', 'Community Health Centers',
+    'Mental Health (Non-Crisis)', 'Crisis & Emergency Mental Health',
+    'Substance Use & Addiction Recovery', 'Housing & Shelter',
+    'Rent, Utility & Eviction Assistance', 'Food & Basic Needs',
+    'Employment Services', 'Legal Services',
+    'Refugee & Immigrant Support', 'Veterans'
+  ];
   
   console.log('🧠 Using enhanced local AI - completely free & reliable!');
   
@@ -98,12 +105,15 @@ async function detectIntentWithAI(message, language) {
     };
   }
 
-  // Check if it matches a valid category
-  const matchedCategory = categories.find(cat => 
-    cat.toUpperCase() === detectedCategory || 
-    cat.toUpperCase().includes(detectedCategory) ||
-    detectedCategory.includes(cat.toUpperCase())
+  // Check if it matches a valid category (prefer exact match to avoid ambiguity)
+  let matchedCategory = categories.find(cat =>
+    cat.toUpperCase() === detectedCategory
   );
+  if (!matchedCategory) {
+    matchedCategory = categories.find(cat =>
+      detectedCategory.includes(cat.toUpperCase())
+    );
+  }
 
   if (matchedCategory) {
     return {
@@ -191,111 +201,159 @@ function analyzeIntentLocally(text, categories) {
   
   // 3. Enhanced category detection with context and negation (multilingual)
   const categoryPatterns = {
-    'Food': [
+    'Free & Charitable Medical Clinics': [
       // English
-      /(?:^|[^a-z])(hungry|starving|food|eat|meal|grocery|restaurant|kitchen|cook)/,
-      /(food.*assistance|food.*help|food.*bank|snap|wic)/,
-      /(breakfast|lunch|dinner|snack)/,
-      /(help.*with.*food|need.*food|food.*support)/,
+      /(free.*clinic|walk.*in.*clinic|charitable.*clinic|free.*medical|no.*insurance.*doctor)/,
+      /(uninsured|student.*run.*clinic)/,
       // Spanish
-      /(hambre|comida|comer|alimento|restaurante|cocina)/,
-      /(ayuda.*con.*comida|necesito.*comida|banco.*de.*alimentos)/,
-      /(desayuno|almuerzo|cena)/,
+      /(clínica.*gratuita|clínica.*sin.*cita|atención.*gratuita)/,
       // Arabic
-      /(جوعان|طعام|أكل|وجبة|مطعم|مطبخ)/,
-      /(مساعدة.*في.*الطعام|أحتاج.*طعام)/,
+      /(عيادة.*مجانية|بدون.*تأمين|رعاية.*مجانية)/,
       // Hindi
-      /(भूखा|भोजन|खाना|रसोई|भूख)/,
-      /(मदद.*खाने.*के|खाना.*चाहिए)/,
+      /(मुफ्त.*क्लीनिक|बिना.*बीमा)/,
       // Somali
-      /(gaajo|cunto|cunno|matbakh)/,
-      /(caawimo.*cunto|u.*baahan.*cunto)/
+      /(kilinik.*bilaash|daryeel.*bilaash)/
     ],
-    'Housing': [
-      // English
-      /(?:^|[^a-z])(rent|apartment|house|homeless|shelter|evict)/,
-      /(housing.*assistance|housing.*help|place.*stay|roof)/,
-      /(lease|landlord|utilities|mortgage)/,
-      /(help.*with.*housing|need.*housing|housing.*support)/,
-      // Spanish
-      /(renta|apartamento|casa|sin.*hogar|vivienda)/,
-      /(ayuda.*con.*vivienda|necesito.*casa)/,
-      // Arabic
-      /(إيجار|شقة|بيت|مأوى|سكن)/,
-      /(مساعدة.*في.*السكن|أحتاج.*بيت)/,
-      // Hindi
-      /(किराया|घर|मकान|आवास|शरण)/,
-      /(मदद.*घर.*के|घर.*चाहिए)/,
-      // Somali
-      /(kiro|guri|hoy|hoyga|meel.*lagu.*noolaado)/,
-      /(caawimo.*guri|u.*baahan.*hoy)/
-    ],
-    'Healthcare': [
+    'Community Health Centers': [
       // English
       /(?:^|[^a-z])(doctor|hospital|medical|health|sick|medicine|clinic)/,
-      /(health.*insurance|medical.*help|see.*doctor)/,
-      /(prescription|pharmacy|urgent.*care)/,
+      /(health.*insurance|medical.*help|see.*doctor|primary.*care)/,
+      /(prescription|pharmacy|dental|vision|checkup)/,
+      /(community.*health|health.*center|family.*doctor|ongoing.*care)/,
       // Spanish
       /(médico|hospital|salud|enfermo|medicina|clínica)/,
-      /(seguro.*médico|ayuda.*médica)/,
+      /(seguro.*médico|ayuda.*médica|atención.*primaria|centro.*de.*salud)/,
       // Arabic
       /(طبيب|مستشفى|صحة|مريض|دواء|عيادة)/,
-      /(تأمين.*صحي|مساعدة.*طبية)/,
+      /(تأمين.*صحي|مساعدة.*طبية|مركز.*صحة)/,
       // Hindi
       /(डॉक्टर|अस्पताल|स्वास्थ्य|बीमार|दवा)/,
-      /(स्वास्थ्य.*बीमा|चिकित्सा.*सहायता)/,
+      /(स्वास्थ्य.*बीमा|चिकित्सा.*सहायता|स्वास्थ्य.*केंद्र)/,
       // Somali
-      /(dhakhtar|isbitaal|caafimaad|bukaan|dawo)/
+      /(dhakhtar|isbitaal|caafimaad|bukaan|dawo)/,
+      /(xarun.*caafimaad|daryeelka.*guud)/
     ],
-    'Mental Health': [
+    'Mental Health (Non-Crisis)': [
       // English
-      /(?:^|[^a-z])(depress|anxiety|mental|therapy|counseling|stress)/,
-      /(mental.*health|feeling.*down|suicide|crisis.*line)/,
-      /(therapist|counselor|psychiatrist)/,
+      /(?:^|[^a-z])(depress|anxiety|therapy|counseling|stress|trauma)/,
+      /(mental.*health|feeling.*down|therapist|counselor|psychiatrist)/,
       // Spanish
-      /(depresión|ansiedad|salud.*mental|terapia|estrés)/,
-      /(ayuda.*psicológica|consejería)/,
+      /(depresión|ansiedad|salud.*mental|terapia|estrés|consejería)/,
       // Arabic
-      /(اكتئاب|قلق|صحة.*نفسية|علاج.*نفسي|توتر)/,
-      /(مساعدة.*نفسية|استشارة.*نفسية)/,
+      /(اكتئاب|قلق|صحة.*نفسية|علاج.*نفسي|توتر|استشارة)/,
       // Hindi
-      /(अवसाद|चिंता|मानसिक.*स्वास्थ्य|तनाव)/,
-      /(मानसिक.*सहायता|परामर्श)/,
+      /(अवसाद|चिंता|मानसिक.*स्वास्थ्य|तनाव|परामर्श)/,
       // Somali
-      /(murugo|walwal|caafimaadka.*maskaxda)/
+      /(murugo|walwal|caafimaadka.*maskaxda|la-talin|daaweyn)/
     ],
-    'Substance Use': [
+    'Crisis & Emergency Mental Health': [
       // English
-      /(?:^|[^a-z])(addiction|rehab|substance|alcohol|drug|sober)/,
-      /(addiction.*help|recovery|detox|aa|na)/,
-      /(substance.*abuse|drinking.*problem)/,
+      /(?:^|[^a-z])(emergency|crisis|urgent|immediate|911|988)/,
+      /(suicide|suicidal|kill.*myself|want.*to.*die|harm)/,
+      /(crisis.*help|crisis.*line|emergency.*assistance|domestic.*violence)/,
       // Spanish
-      /(adicción|rehabilitación|alcohol|drogas|sobrio)/,
-      /(ayuda.*adicción|recuperación)/,
+      /(emergencia|crisis|urgente|suicidio|suicida|violencia.*doméstica)/,
+      // Arabic
+      /(طوارئ|أزمة|عاجل|انتحار|عنف.*منزلي)/,
+      // Hindi
+      /(आपातकाल|संकट|तत्काल|आत्महत्या|घरेलू.*हिंसा)/,
+      // Somali
+      /(xiisad|degdeg|dil-nafsi|rabshad|xaalad.*degdeg)/
+    ],
+    'Substance Use & Addiction Recovery': [
+      // English
+      /(?:^|[^a-z])(addiction|rehab|substance|alcohol|drug|sober|detox)/,
+      /(recovery.*program|drinking.*problem|aa|na)/,
+      // Spanish
+      /(adicción|rehabilitación|alcohol|drogas|sobrio|desintoxicación)/,
       // Arabic
       /(إدمان|إعادة.*تأهيل|كحول|مخدرات|علاج.*الإدمان)/,
       // Hindi
-      /(नशा|पुनर्वास|शराब|ड्रग्स|नशामुक्ति)/,
+      /(नशा|पुनर्वास|शराब|ड्रग्स|नशामुक्ति|डिटॉक्स)/,
       // Somali
-      /(qamri|daroogada|ka.*daaweyn)/
+      /(daroog|khamri|dib-u-soo-kabashada|nadiifineed)/
     ],
-    'Employment': [
+    'Housing & Shelter': [
+      // English
+      /(?:^|[^a-z])(homeless|shelter|transitional)/,
+      /(housing.*assistance|place.*to.*stay|emergency.*shelter)/,
+      /(need.*housing|need.*shelter)/,
+      // Spanish
+      /(sin.*hogar|refugio|albergue|vivienda.*de.*transición)/,
+      // Arabic
+      /(مأوى|مشرد|سكن.*انتقالي|بلا.*مأوى)/,
+      // Hindi
+      /(बेघर|आश्रय|संक्रमणकालीन.*आवास)/,
+      // Somali
+      /(guri|hoy|masaakinta|galbeed)/
+    ],
+    'Rent, Utility & Eviction Assistance': [
+      // English
+      /(?:^|[^a-z])(rent|evict|eviction|utility|utilities)/,
+      /(can't.*pay.*rent|behind.*on.*rent|rental.*help|utility.*bill|electric.*bill)/,
+      /(landlord|lease|eviction.*notice)/,
+      // Spanish
+      /(alquiler|desalojo|servicios.*públicos|no.*puedo.*pagar.*alquiler)/,
+      // Arabic
+      /(إيجار|إخلاء|مرافق|لا.*أستطيع.*دفع.*الإيجار|فاتورة)/,
+      // Hindi
+      /(किराया|बेदखली|उपयोगिता|किराया.*नहीं.*दे.*सकते|बिल)/,
+      // Somali
+      /(kiro|eryid|khidmadaha|ma.*bixin.*karo.*kiro)/
+    ],
+    'Food & Basic Needs': [
+      // English
+      /(?:^|[^a-z])(hungry|starving|food|eat|meal|grocery|kitchen|cook|clothing)/,
+      /(food.*bank|soup.*kitchen|food.*pantry|snap|wic|free.*meals)/,
+      /(basic.*needs|need.*food|food.*assistance)/,
+      // Spanish
+      /(hambre|comida|comer|alimento|cocina|ropa|necesidades.*básicas)/,
+      /(banco.*de.*alimentos|comedor.*popular)/,
+      // Arabic
+      /(جوعان|طعام|أكل|وجبة|مطبخ|ملابس|احتياجات.*أساسية)/,
+      // Hindi
+      /(भूखा|भोजन|खाना|रसोई|कपड़े|बुनियादी.*जरूरतें)/,
+      // Somali
+      /(gaajo|cunto|cunno|dhar|baahiyaha.*aasaasiga)/
+    ],
+    'Employment Services': [
       // English
       /(?:^|[^a-z])(job|work|employment|career|resume|interview)/,
-      /(job.*training|employment.*help|work.*program)/,
-      /(unemployment|benefits|workforce)/,
+      /(job.*training|employment.*help|work.*program|workforce)/,
       // Spanish
-      /(trabajo|empleo|carrera|currículum|entrevista)/,
-      /(capacitación.*laboral|ayuda.*empleo)/,
-      /(desempleo|beneficios)/,
+      /(trabajo|empleo|carrera|currículum|entrevista|capacitación.*laboral)/,
       // Arabic
-      /(وظيفة|عمل|مهنة|سيرة.*ذاتية|مقابلة.*عمل)/,
-      /(تدريب.*مهني|مساعدة.*توظيف)/,
+      /(وظيفة|عمل|مهنة|سيرة.*ذاتية|مقابلة.*عمل|تدريب.*مهني)/,
       // Hindi
-      /(नौकरी|काम|रोजगार|करियर|साक्षात्कार)/,
-      /(व्यावसायिक.*प्रशिक्षण|रोजगार.*सहायता)/,
+      /(नौकरी|काम|रोजगार|करियर|रिज्यूमे|साक्षात्कार)/,
       // Somali
-      /(shaqo|hawl|tacliin.*shaqo|mushaharo)/
+      /(shaqo|hawl|tababar|xirfad|raadinta.*shaqada)/
+    ],
+    'Legal Services': [
+      // English
+      /(?:^|[^a-z])(legal|lawyer|attorney|court|lawsuit)/,
+      /(legal.*aid|legal.*help|need.*lawyer|tenant.*rights|free.*lawyer)/,
+      // Spanish
+      /(legal|abogado|tribunal|derechos|asesoría.*legal)/,
+      // Arabic
+      /(قانوني|محامي|محكمة|حقوق|مساعدة.*قانونية)/,
+      // Hindi
+      /(कानूनी|वकील|अदालत|अधिकार|कानूनी.*सहायता)/,
+      // Somali
+      /(sharci|qareen|maxkamad|xuquuq)/
+    ],
+    'Refugee & Immigrant Support': [
+      // English
+      /(?:^|[^a-z])(refugee|immigrant|asylum|resettlement|newcomer|citizenship|visa|deportation)/,
+      /(immigration.*services|english.*classes|language.*assistance|esl)/,
+      // Spanish
+      /(refugiado|inmigrante|asilo|reasentamiento|ciudadanía|deportación)/,
+      // Arabic
+      /(لاجئ|مهاجر|لجوء|إعادة.*توطين|جنسية|تأشيرة|ترحيل)/,
+      // Hindi
+      /(शरणार्थी|प्रवासी|शरण|पुनर्वास|नागरिकता|वीजा)/,
+      // Somali
+      /(qaxooti|soo.*galootiga|magangalo|dib-u-dejin|muwaadin)/
     ],
     'Veterans': [
       // English
@@ -303,33 +361,13 @@ function analyzeIntentLocally(text, categories) {
       /(veteran.*benefits|military.*help|gi.*bill)/,
       /(army|navy|marines|air.*force)/,
       // Spanish
-      /(veterano|militar|fuerzas.*armadas)/,
-      /(beneficios.*veteranos|ayuda.*militar)/,
+      /(veterano|militar|fuerzas.*armadas|beneficios.*veteranos)/,
       // Arabic
       /(محارب.*قديم|عسكري|القوات.*المسلحة)/,
-      /(مساعدة.*المحاربين|فوائد.*المحاربين)/,
       // Hindi
-      /(सेवानिवृत्त.*सैनिक|सेना|सशस्त्र.*बल)/,
-      /(वेटेरन.*लाभ|सैन्य.*सहायता)/,
+      /(सेवानिवृत्त.*सैनिक|सेना|सशस्त्र.*बल|पूर्व.*सैनिक)/,
       // Somali
-      /(askari.*hore|ciidan|qoryooley)/
-    ],
-    'Crisis': [
-      // English
-      /(?:^|[^a-z])(emergency|crisis|urgent|immediate|911)/,
-      /(crisis.*help|emergency.*assistance|urgent.*need)/,
-      /(domestic.*violence|abuse|danger)/,
-      // Spanish
-      /(emergencia|crisis|urgente|violencia.*doméstica)/,
-      /(ayuda.*emergencia|asistencia.*crisis)/,
-      // Arabic
-      /(طوارئ|أزمة|عاجل|عنف.*منزلي)/,
-      /(مساعدة.*طارئة|مساعدة.*الأزمة)/,
-      // Hindi
-      /(आपातकाल|संकट|तत्काल|घरेलू.*हिंसा)/,
-      /(आपातकालीन.*सहायता|संकट.*सहायता)/,
-      // Somali
-      /(xaalad.*degdeg|mashakii|gurmad|rabshad)/
+      /(askari.*hore|ciidamada|qoryooley)/
     ]
   };
   

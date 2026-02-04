@@ -1041,39 +1041,69 @@ async function showResources(category) {
       return true;
     }
     
+    // Legacy mapping: old sheet category names → new category names (for transition period)
+    const legacyMapping = {
+      'food': 'food & basic needs',
+      'housing': 'housing & shelter',
+      'healthcare': 'community health centers',
+      'mental health': 'mental health (non-crisis)',
+      'substance use': 'substance use & addiction recovery',
+      'crisis': 'crisis & emergency mental health',
+      'employment': 'employment services',
+      'rent and housing': 'rent, utility & eviction assistance'
+    };
+
+    // Normalize legacy category names from the sheet
+    const normalizedResourceCategory = legacyMapping[resourceCategory] || resourceCategory;
+    const normalizedTargetCategory = legacyMapping[targetCategory] || targetCategory;
+
+    // Check normalized match
+    if (normalizedResourceCategory === normalizedTargetCategory) {
+      console.log(`✅ Normalized match: "${r.category}" → "${normalizedResourceCategory}" === "${category}"`);
+      return true;
+    }
+
     // Map intent categories to Google Sheet categories
     const intentToSheetMapping = {
-      'food': 'food',
-      'housing': 'housing', 
-      'healthcare': 'healthcare',
-      'mental health': 'mental health',
-      'substance use': 'substance use',
-      'crisis': 'crisis',
-      'employment': 'employment',
+      'free & charitable medical clinics': 'free & charitable medical clinics',
+      'community health centers': 'community health centers',
+      'mental health (non-crisis)': 'mental health (non-crisis)',
+      'crisis & emergency mental health': 'crisis & emergency mental health',
+      'substance use & addiction recovery': 'substance use & addiction recovery',
+      'housing & shelter': 'housing & shelter',
+      'rent, utility & eviction assistance': 'rent, utility & eviction assistance',
+      'food & basic needs': 'food & basic needs',
+      'employment services': 'employment services',
+      'legal services': 'legal services',
+      'refugee & immigrant support': 'refugee & immigrant support',
       'veterans': 'veterans'
     };
-    
+
     // Check if we have a direct mapping
-    const mappedCategory = intentToSheetMapping[targetCategory];
-    if (mappedCategory && resourceCategory === mappedCategory) {
+    const mappedCategory = intentToSheetMapping[normalizedTargetCategory];
+    if (mappedCategory && normalizedResourceCategory === mappedCategory) {
       console.log(`✅ Mapped match: "${r.category}" maps to "${category}"`);
       return true;
     }
-    
+
     // Fallback: flexible keyword matching
     const categoryMappings = {
-      'food': ['food', 'nutrition', 'meal', 'pantry', 'kitchen'],
-      'housing': ['housing', 'shelter', 'homeless'],
-      'healthcare': ['healthcare', 'health', 'medical', 'clinic'],
-      'mental health': ['mental', 'therapy', 'counseling', 'behavioral'],
-      'substance use': ['substance', 'addiction', 'recovery', 'drug'],
-      'crisis': ['crisis', 'emergency', 'urgent', 'immediate'],
-      'employment': ['employment', 'job', 'work', 'career'],
+      'free & charitable medical clinics': ['free clinic', 'charitable clinic', 'walk-in clinic', 'free medical'],
+      'community health centers': ['community health', 'health center', 'primary care', 'healthcare', 'medical'],
+      'mental health (non-crisis)': ['mental health', 'mental', 'therapy', 'counseling', 'behavioral'],
+      'crisis & emergency mental health': ['crisis', 'emergency mental', 'hotline', 'crisis line', 'urgent mental'],
+      'substance use & addiction recovery': ['substance', 'addiction', 'recovery', 'drug', 'detox', 'rehab'],
+      'housing & shelter': ['housing', 'shelter', 'homeless', 'transitional'],
+      'rent, utility & eviction assistance': ['rent', 'utility', 'eviction', 'rental assistance', 'bill help'],
+      'food & basic needs': ['food', 'nutrition', 'meal', 'pantry', 'kitchen', 'clothing', 'basic needs'],
+      'employment services': ['employment', 'job', 'work', 'career', 'workforce'],
+      'legal services': ['legal', 'lawyer', 'attorney', 'legal aid', 'court'],
+      'refugee & immigrant support': ['refugee', 'immigrant', 'resettlement', 'asylum', 'newcomer'],
       'veterans': ['veteran', 'military', 'va']
     };
     
-    const keywords = categoryMappings[targetCategory] || [];
-    const matches = keywords.some(keyword => resourceCategory.includes(keyword));
+    const keywords = categoryMappings[normalizedTargetCategory] || [];
+    const matches = keywords.some(keyword => normalizedResourceCategory.includes(keyword));
     
     if (!matches) {
       console.log(`❌ No match: "${r.category}" vs "${category}"`);
@@ -1466,126 +1496,186 @@ function hideTypingIndicator() {
 // Enhanced Multilingual Intent Detection System
 const INTENT_PATTERNS = {
   en: {
-  "Food": {
-    keywords: ["food", "hungry", "eat", "meal", "kitchen", "pantry", "nutrition", "groceries", "feeding", "starving", "appetite", "dining", "nourishment", "sustenance", "help"],
-    phrases: ["food bank", "soup kitchen", "food pantry", "free meals", "food assistance", "help with food", "need food", "can't afford food", "food stamps", "snap benefits"],
-    weight: 1.0
-  },
-  "Housing": {
-    keywords: ["shelter", "housing", "homeless", "rent", "apartment", "home", "eviction", "foreclosure", "roommate", "lease", "landlord", "utilities", "help"],
-    phrases: ["need shelter", "need housing", "help with housing", "help with rent", "can't pay rent", "being evicted", "homeless shelter", "housing assistance", "affordable housing", "rental help", "utility assistance"],
-    weight: 1.3
-  },
-  "Mental Health": {
-    keywords: ["mental", "therapy", "counseling", "depression", "anxiety", "psychiatric", "psychological", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd", "help"],
-    phrases: ["mental health", "mental health help", "help with mental health", "need mental health", "mental health support", "feeling depressed", "need therapy", "counseling services", "psychological help", "emotional support"],
-    weight: 1.5
-  },
-  "Healthcare": {
-    keywords: ["medical", "clinic", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment", "health"],
-    phrases: ["primary care", "medical clinic", "free clinic", "medical care", "help with health", "health help", "doctor visit", "medical insurance", "medical help", "dental care", "vision care"],
-    weight: 1.0
-  },
-  "Substance Use": {
-    keywords: ["drug", "alcohol", "addiction", "recovery", "rehab", "substance", "detox", "sober", "sobriety", "withdrawal", "overdose", "clean"],
-    phrases: ["substance abuse", "drug addiction", "alcohol problem", "need rehab", "drug treatment", "addiction recovery", "detox program", "getting clean"],
-    weight: 1.0
-  },
-  "Crisis": {
-    keywords: ["crisis", "emergency", "urgent", "immediate", "suicide", "suicidal", "harm", "danger", "distress", "desperate", "hopeless"],
-    phrases: ["suicide hotline", "crisis line", "emergency help", "need help now", "feeling suicidal", "crisis support", "immediate assistance"],
-    weight: 1.2
-  },
-  "Employment": {
-    keywords: ["job", "work", "employment", "career", "resume", "interview", "unemployed", "training", "skills", "hiring", "help"],
-    phrases: ["need job", "job training", "resume help", "help with job", "help with work", "career services", "employment assistance", "job search", "work training", "find job", "looking for work"],
-    weight: 1.0
-  },
-  "Veterans": {
-    keywords: ["veteran", "military", "va", "army", "navy", "marines", "air force", "combat", "deployment", "service"],
-    phrases: ["veteran services", "veteran resources", "va benefits", "military help", "military assistance", "veteran housing", "veteran healthcare"],
-    weight: 1.6
-  }
-  },
-  
-  es: {
-    "Food": {
-      keywords: ["comida", "hambre", "comer", "alimento", "cocina", "despensa", "nutrición", "víveres", "alimentación", "muerto de hambre", "apetito", "cenar", "alimentar", "ayuda"],
-      phrases: ["banco de alimentos", "comedor popular", "despensa de alimentos", "comidas gratis", "asistencia alimentaria", "ayuda con comida", "no puedo pagar comida", "necesito comida", "cupones de comida", "beneficios snap"],
-      weight: 1.0
-    },
-    "Housing": {
-      keywords: ["refugio", "vivienda", "sin hogar", "alquiler", "apartamento", "casa", "desalojo", "ejecución hipotecaria", "compañero de cuarto", "arrendamiento", "propietario", "servicios públicos", "ayuda"],
-      phrases: ["necesito refugio", "necesito vivienda", "ayuda con vivienda", "ayuda con alquiler", "no puedo pagar alquiler", "siendo desalojado", "refugio para personas sin hogar", "asistencia de vivienda", "vivienda asequible"],
-      weight: 1.3
-    },
-    "Mental Health": {
-      keywords: ["mental", "terapia", "consejería", "depresión", "ansiedad", "psiquiátrico", "psicológico", "terapeuta", "consejero", "estrés", "trauma", "bipolar", "tept", "ayuda"],
-      phrases: ["salud mental", "ayuda de salud mental", "ayuda con salud mental", "necesito salud mental", "apoyo de salud mental", "sintiéndome deprimido", "necesito terapia", "servicios de consejería", "ayuda psicológica", "apoyo emocional"],
-      weight: 1.5
-    },
-    "Healthcare": {
-      keywords: ["médico", "clínica", "doctor", "hospital", "enfermera", "receta", "medicamento", "seguro", "chequeo", "enfermo", "enfermedad", "tratamiento", "salud", "ayuda"],
-      phrases: ["atención primaria", "clínica médica", "clínica gratuita", "atención médica", "ayuda con salud", "ayuda médica", "visita al doctor", "seguro médico", "atención dental", "atención de la vista"],
-      weight: 1.0
-    },
-    "Substance Use": {
-      keywords: ["drogas", "alcohol", "adicción", "recuperación", "rehabilitación", "sustancia", "desintoxicación", "sobrio", "sobriedad", "abstinencia", "sobredosis", "limpio", "ayuda"],
-      phrases: ["abuso de sustancias", "adicción a las drogas", "problema de alcohol", "ayuda con drogas", "ayuda con alcohol", "necesito rehabilitación", "tratamiento de drogas", "recuperación de adicciones", "programa de desintoxicación", "volverse sobrio"],
-      weight: 1.0
-    },
-    "Crisis": {
-      keywords: ["crisis", "emergencia", "urgente", "inmediato", "suicidio", "suicida", "daño", "peligro", "angustia", "desesperado", "sin esperanza"],
-      phrases: ["línea de suicidio", "línea de crisis", "ayuda de emergencia", "necesito ayuda ahora", "sintiéndome suicida", "apoyo de crisis", "asistencia inmediata"],
+    "Free & Charitable Medical Clinics": {
+      keywords: ["clinic", "uninsured", "charitable", "volunteer clinic"],
+      phrases: ["free clinic", "free medical", "walk-in clinic", "no insurance doctor", "free healthcare", "charitable medical", "student-run clinic"],
       weight: 1.2
     },
-    "Employment": {
-      keywords: ["trabajo", "empleo", "carrera", "currículum", "entrevista", "desempleado", "capacitación", "habilidades", "contratación", "ayuda"],
-      phrases: ["necesito trabajo", "capacitación laboral", "ayuda con currículum", "ayuda con trabajo", "ayuda con empleo", "servicios de carrera", "asistencia de empleo", "búsqueda de trabajo", "busco trabajo", "quiero trabajo"],
+    "Community Health Centers": {
+      keywords: ["medical", "doctor", "hospital", "physician", "nurse", "prescription", "medication", "insurance", "checkup", "sick", "illness", "treatment", "health", "dental", "vision"],
+      phrases: ["primary care", "community health center", "health center", "see a doctor", "medical care", "health insurance", "dental care", "vision care", "family doctor", "ongoing care", "regular doctor"],
       weight: 1.0
     },
+    "Mental Health (Non-Crisis)": {
+      keywords: ["therapy", "counseling", "depression", "anxiety", "psychiatric", "therapist", "counselor", "stress", "trauma", "bipolar", "ptsd"],
+      phrases: ["mental health", "mental health help", "need therapy", "counseling services", "feeling depressed", "mental health support", "psychological help", "emotional support"],
+      weight: 1.3
+    },
+    "Crisis & Emergency Mental Health": {
+      keywords: ["crisis", "emergency", "urgent", "suicide", "suicidal", "harm", "danger", "distress", "desperate", "hopeless", "988"],
+      phrases: ["crisis line", "suicide hotline", "emergency help", "need help now", "feeling suicidal", "crisis support", "immediate help", "domestic violence", "want to die", "kill myself"],
+      weight: 1.5
+    },
+    "Substance Use & Addiction Recovery": {
+      keywords: ["drug", "alcohol", "addiction", "recovery", "rehab", "substance", "detox", "sober", "sobriety", "withdrawal", "overdose"],
+      phrases: ["substance abuse", "drug addiction", "alcohol problem", "need rehab", "drug treatment", "addiction recovery", "detox program", "getting clean", "aa meeting", "na meeting"],
+      weight: 1.0
+    },
+    "Housing & Shelter": {
+      keywords: ["shelter", "housing", "homeless", "transitional"],
+      phrases: ["need shelter", "need housing", "homeless shelter", "housing assistance", "affordable housing", "place to stay", "transitional housing", "emergency shelter"],
+      weight: 1.2
+    },
+    "Rent, Utility & Eviction Assistance": {
+      keywords: ["rent", "utility", "eviction", "evicted", "landlord", "lease"],
+      phrases: ["help with rent", "can't pay rent", "being evicted", "rental help", "utility assistance", "utility bill", "behind on rent", "eviction notice", "rent assistance", "electric bill"],
+      weight: 1.3
+    },
+    "Food & Basic Needs": {
+      keywords: ["food", "hungry", "eat", "meal", "kitchen", "pantry", "nutrition", "groceries", "starving", "clothing", "clothes"],
+      phrases: ["food bank", "soup kitchen", "food pantry", "free meals", "food assistance", "need food", "can't afford food", "food stamps", "snap benefits", "basic needs", "free clothing"],
+      weight: 1.0
+    },
+    "Employment Services": {
+      keywords: ["job", "work", "employment", "career", "resume", "interview", "unemployed", "training", "skills", "hiring"],
+      phrases: ["need job", "job training", "resume help", "career services", "employment assistance", "job search", "looking for work", "find job", "work training"],
+      weight: 1.0
+    },
+    "Legal Services": {
+      keywords: ["legal", "lawyer", "attorney", "court", "lawsuit", "rights"],
+      phrases: ["legal aid", "legal help", "need a lawyer", "free lawyer", "legal assistance", "legal advice", "court help", "tenant rights"],
+      weight: 1.1
+    },
+    "Refugee & Immigrant Support": {
+      keywords: ["refugee", "immigrant", "asylum", "resettlement", "newcomer", "esl", "citizenship", "visa", "deportation"],
+      phrases: ["refugee services", "immigrant help", "resettlement assistance", "asylum help", "immigration services", "english classes", "citizenship help", "language assistance"],
+      weight: 1.4
+    },
     "Veterans": {
-      keywords: ["veterano", "militar", "va", "ejército", "marina", "marines", "fuerza aérea", "combate", "despliegue", "servicio"],
-      phrases: ["servicios para veteranos", "recursos para veteranos", "beneficios va", "ayuda militar", "asistencia militar", "vivienda para veteranos", "atención médica para veteranos"],
+      keywords: ["veteran", "military", "va", "army", "navy", "marines", "air force", "combat", "deployment", "service"],
+      phrases: ["veteran services", "veteran resources", "va benefits", "military help", "military assistance", "veteran housing", "veteran healthcare"],
       weight: 1.6
     }
   },
-  
-  so: {
-    "Food": {
-      keywords: ["cunto", "gaajo", "cuni", "cuntada", "jikada", "qado", "nafaqo", "dukaan", "cunno"],
-      phrases: ["bangiga cuntada", "matbakhyada guud", "caawimo cunto", "cunno bilaash ah", "ma heli karo cunto", "u baahan cunto", "kaalmada cuntada"],
-      weight: 1.0
-    },
-    "Housing": {
-      keywords: ["guri", "hoy", "galbeed", "kiro", "qaboojiye", "guryaha", "masaakinta", "dulucda"],
-      phrases: ["u baahan galbeed", "ma bixin karo kiro", "laga saari", "caawimo guri", "guryo jaban", "galbeed degdeg ah"],
-      weight: 1.3
-    },
-    "Mental Health": {
-      keywords: ["maskax", "daaweyn", "la-talin", "murugasho", "walwal", "cilmi-nafsiga", "dareen"],
-      phrases: ["caafimaadka maskaxda", "daaweynta maskaxda", "caawimo maskax", "la-talinta", "taageero dareen"],
-      weight: 1.5
-    },
-    "Healthcare": {
-      keywords: ["caafimaad", "dhakhtar", "isbitaal", "dawo", "caafimad", "bukaan", "daryeel"],
-      phrases: ["daryeelka guud", "xarun caafimaad", "dhakhtarka", "caymiska caafimaadka", "caawimo caafimaad"],
-      weight: 1.0
-    },
-    "Substance Use": {
-      keywords: ["daroog", "khamri", "qaylo", "dib-u-soo-kabashada", "dabaaldegga", "nadiifineed"],
-      phrases: ["isticmaalka daroogada", "dhibaatada khamriga", "caawimo daroog", "daaweynta qaylada"],
-      weight: 1.0
-    },
-    "Crisis": {
-      keywords: ["xiisad", "degdeg", "muhiim", "isla-markiiba", "dil-nafsi", "khataro"],
-      phrases: ["khadka xiisadaha", "caawimo degdeg ah", "taageero xiisad", "caawimo isla-markiiba"],
+
+  es: {
+    "Free & Charitable Medical Clinics": {
+      keywords: ["clínica", "gratuita", "benéfica", "sin cita"],
+      phrases: ["clínica gratuita", "clínica médica gratuita", "clínica sin cita", "sin seguro médico", "atención gratuita"],
       weight: 1.2
     },
-    "Employment": {
-      keywords: ["shaqo", "hawl", "shaqaale", "tababar", "xirfad", "kiraysan"],
+    "Community Health Centers": {
+      keywords: ["médico", "doctor", "hospital", "enfermera", "receta", "medicamento", "seguro", "chequeo", "enfermo", "enfermedad", "tratamiento", "salud", "dental"],
+      phrases: ["atención primaria", "centro de salud comunitario", "centro de salud", "ver un doctor", "atención médica", "seguro médico", "atención dental", "doctor de familia", "atención continua"],
+      weight: 1.0
+    },
+    "Mental Health (Non-Crisis)": {
+      keywords: ["terapia", "consejería", "depresión", "ansiedad", "psiquiátrico", "psicológico", "terapeuta", "consejero", "estrés", "trauma", "bipolar"],
+      phrases: ["salud mental", "ayuda de salud mental", "necesito terapia", "servicios de consejería", "sintiéndome deprimido", "apoyo de salud mental", "ayuda psicológica", "apoyo emocional"],
+      weight: 1.5
+    },
+    "Crisis & Emergency Mental Health": {
+      keywords: ["crisis", "emergencia", "urgente", "suicidio", "suicida", "daño", "peligro", "angustia", "desesperado"],
+      phrases: ["línea de suicidio", "línea de crisis", "ayuda de emergencia", "necesito ayuda ahora", "sintiéndome suicida", "apoyo de crisis", "asistencia inmediata", "violencia doméstica"],
+      weight: 1.5
+    },
+    "Substance Use & Addiction Recovery": {
+      keywords: ["drogas", "alcohol", "adicción", "recuperación", "rehabilitación", "sustancia", "desintoxicación", "sobrio"],
+      phrases: ["abuso de sustancias", "adicción a las drogas", "problema de alcohol", "necesito rehabilitación", "tratamiento de drogas", "recuperación de adicciones", "programa de desintoxicación"],
+      weight: 1.0
+    },
+    "Housing & Shelter": {
+      keywords: ["refugio", "vivienda", "sin hogar", "albergue", "transitorio"],
+      phrases: ["necesito refugio", "necesito vivienda", "refugio para personas sin hogar", "asistencia de vivienda", "vivienda asequible", "refugio de emergencia", "vivienda de transición"],
+      weight: 1.2
+    },
+    "Rent, Utility & Eviction Assistance": {
+      keywords: ["alquiler", "servicios públicos", "desalojo", "arrendamiento", "propietario"],
+      phrases: ["ayuda con alquiler", "no puedo pagar alquiler", "siendo desalojado", "asistencia de alquiler", "ayuda con servicios públicos", "aviso de desalojo", "atraso en el alquiler"],
+      weight: 1.3
+    },
+    "Food & Basic Needs": {
+      keywords: ["comida", "hambre", "comer", "alimento", "cocina", "despensa", "nutrición", "víveres", "ropa"],
+      phrases: ["banco de alimentos", "comedor popular", "comidas gratis", "asistencia alimentaria", "necesito comida", "no puedo pagar comida", "cupones de comida", "necesidades básicas", "ropa gratis"],
+      weight: 1.0
+    },
+    "Employment Services": {
+      keywords: ["trabajo", "empleo", "carrera", "currículum", "entrevista", "desempleado", "capacitación", "habilidades"],
+      phrases: ["necesito trabajo", "capacitación laboral", "ayuda con currículum", "servicios de carrera", "asistencia de empleo", "búsqueda de trabajo", "busco trabajo"],
+      weight: 1.0
+    },
+    "Legal Services": {
+      keywords: ["legal", "abogado", "tribunal", "demanda", "derechos"],
+      phrases: ["ayuda legal", "asistencia legal", "necesito abogado", "abogado gratis", "asesoría legal", "derechos del inquilino"],
+      weight: 1.1
+    },
+    "Refugee & Immigrant Support": {
+      keywords: ["refugiado", "inmigrante", "asilo", "reasentamiento", "ciudadanía", "visa", "deportación"],
+      phrases: ["servicios para refugiados", "ayuda para inmigrantes", "asistencia de reasentamiento", "servicios de inmigración", "clases de inglés", "ayuda de ciudadanía"],
+      weight: 1.4
+    },
+    "Veterans": {
+      keywords: ["veterano", "militar", "va", "ejército", "marina", "marines", "fuerza aérea", "combate"],
+      phrases: ["servicios para veteranos", "recursos para veteranos", "beneficios va", "ayuda militar", "vivienda para veteranos"],
+      weight: 1.6
+    }
+  },
+
+  so: {
+    "Free & Charitable Medical Clinics": {
+      keywords: ["kilinik", "bilaash", "ballan la'aan"],
+      phrases: ["kilinik bilaash ah", "kilinik caafimaad oo bilaash ah", "daryeel bilaash ah"],
+      weight: 1.2
+    },
+    "Community Health Centers": {
+      keywords: ["caafimaad", "dhakhtar", "isbitaal", "dawo", "bukaan", "daryeel"],
+      phrases: ["xarun caafimaad", "daryeelka guud", "dhakhtarka qoyska", "caymiska caafimaadka", "caawimo caafimaad", "daryeel joogto ah"],
+      weight: 1.0
+    },
+    "Mental Health (Non-Crisis)": {
+      keywords: ["maskax", "daaweyn", "la-talin", "murugasho", "walwal", "cilmi-nafsiga", "dareen"],
+      phrases: ["caafimaadka maskaxda", "daaweynta maskaxda", "caawimo maskax", "la-talinta", "taageero dareen"],
+      weight: 1.3
+    },
+    "Crisis & Emergency Mental Health": {
+      keywords: ["xiisad", "degdeg", "isla-markiiba", "dil-nafsi", "khataro", "rabshad"],
+      phrases: ["khadka xiisadaha", "caawimo degdeg ah", "taageero xiisad", "caawimo isla-markiiba", "rabshadda guriga"],
+      weight: 1.5
+    },
+    "Substance Use & Addiction Recovery": {
+      keywords: ["daroog", "khamri", "qaylo", "dib-u-soo-kabashada", "nadiifineed"],
+      phrases: ["isticmaalka daroogada", "dhibaatada khamriga", "caawimo daroog", "daaweynta qaylada", "soo kabashada"],
+      weight: 1.0
+    },
+    "Housing & Shelter": {
+      keywords: ["guri", "hoy", "masaakinta", "galbeed"],
+      phrases: ["u baahan galbeed", "caawimo guri", "galbeed degdeg ah", "guri ku meel gaar ah"],
+      weight: 1.2
+    },
+    "Rent, Utility & Eviction Assistance": {
+      keywords: ["kiro", "khidmadaha", "eryid", "laga saari"],
+      phrases: ["ma bixin karo kiro", "caawimo kiro", "caawimo khidmadaha", "la iga saarayo", "lacag bixinta kirada"],
+      weight: 1.3
+    },
+    "Food & Basic Needs": {
+      keywords: ["cunto", "gaajo", "cuni", "cuntada", "jikada", "qado", "nafaqo", "dhar"],
+      phrases: ["bangiga cuntada", "matbakhyada guud", "caawimo cunto", "cunno bilaash ah", "u baahan cunto", "baahiyaha aasaasiga ah", "dhar bilaash ah"],
+      weight: 1.0
+    },
+    "Employment Services": {
+      keywords: ["shaqo", "hawl", "shaqaale", "tababar", "xirfad"],
       phrases: ["u baahan shaqo", "tababarka shaqada", "caawimo shaqo", "raadinta shaqada"],
       weight: 1.0
+    },
+    "Legal Services": {
+      keywords: ["sharci", "qareen", "maxkamad", "xuquuq"],
+      phrases: ["caawimo sharci", "qareen bilaash ah", "caawimo maxkamad", "xuquuqda kireeystaha"],
+      weight: 1.1
+    },
+    "Refugee & Immigrant Support": {
+      keywords: ["qaxooti", "soo galootiga", "magangalo", "dib-u-dejin", "muwaadin"],
+      phrases: ["adeegyada qaxootiga", "caawimo soo galootiga", "dib-u-dejinta", "fasallada ingiriisiga", "caawimo muwaadinnimo"],
+      weight: 1.4
     },
     "Veterans": {
       keywords: ["askari", "ciidamada", "dagaalka", "hawlgal", "adeegga"],
@@ -1595,83 +1685,123 @@ const INTENT_PATTERNS = {
   },
 
   ar: {
-    "Food": {
-      keywords: ["طعام", "جوع", "أكل", "وجبة", "مطبخ", "مؤن", "غذاء", "طحين", "خضار"],
-      phrases: ["بنك الطعام", "مطبخ شعبي", "مساعدة غذائية", "وجبات مجانية", "لا أستطيع دفع ثمن الطعام", "أحتاج طعام"],
-      weight: 1.0
-    },
-    "Housing": {
-      keywords: ["مأوى", "سكن", "بيت", "إيجار", "شقة", "منزل", "طرد", "مشرد"],
-      phrases: ["أحتاج مأوى", "لا أستطيع دفع الإيجار", "مساعدة السكن", "مأوى طارئ", "مساعدة إيجار"],
-      weight: 1.3
-    },
-    "Mental Health": {
-      keywords: ["نفسي", "علاج", "استشارة", "اكتئاب", "قلق", "نفسية", "طبيب نفسي"],
-      phrases: ["الصحة النفسية", "مساعدة نفسية", "أحتاج علاج", "استشارة نفسية", "دعم عاطفي"],
-      weight: 1.5
-    },
-    "Healthcare": {
-      keywords: ["طبي", "عيادة", "طبيب", "مستشفى", "دواء", "تأمين", "علاج", "صحة"],
-      phrases: ["رعاية أولية", "عيادة طبية", "رعاية صحية", "مساعدة صحية", "تأمين صحي"],
-      weight: 1.0
-    },
-    "Substance Use": {
-      keywords: ["مخدرات", "كحول", "إدمان", "تعافي", "علاج إدمان", "مواد", "انسحاب"],
-      phrases: ["تعاطي المواد", "إدمان المخدرات", "مشكلة الكحول", "أحتاج علاج إدمان", "مساعدة مخدرات"],
-      weight: 1.0
-    },
-    "Crisis": {
-      keywords: ["أزمة", "طارئ", "عاجل", "فوري", "انتحار", "خطر", "ضائقة"],
-      phrases: ["خط الأزمة", "مساعدة طارئة", "أحتاج مساعدة الآن", "دعم أزمة"],
+    "Free & Charitable Medical Clinics": {
+      keywords: ["عيادة", "مجانية", "خيرية", "بدون موعد"],
+      phrases: ["عيادة مجانية", "عيادة طبية مجانية", "رعاية مجانية", "بدون تأمين"],
       weight: 1.2
     },
-    "Employment": {
-      keywords: ["عمل", "وظيفة", "مهنة", "سيرة ذاتية", "مقابلة", "عاطل", "تدريب"],
-      phrases: ["أحتاج عمل", "تدريب مهني", "مساعدة عمل", "البحث عن عمل", "مساعدة وظيفة"],
+    "Community Health Centers": {
+      keywords: ["طبي", "طبيب", "مستشفى", "دواء", "تأمين", "علاج", "صحة", "أسنان"],
+      phrases: ["مركز صحة مجتمعي", "رعاية أولية", "طبيب العائلة", "رعاية صحية", "مساعدة صحية", "تأمين صحي", "رعاية مستمرة"],
       weight: 1.0
     },
+    "Mental Health (Non-Crisis)": {
+      keywords: ["نفسي", "استشارة", "اكتئاب", "قلق", "نفسية", "طبيب نفسي", "توتر"],
+      phrases: ["الصحة النفسية", "مساعدة نفسية", "أحتاج علاج", "استشارة نفسية", "دعم عاطفي"],
+      weight: 1.3
+    },
+    "Crisis & Emergency Mental Health": {
+      keywords: ["أزمة", "طارئ", "عاجل", "انتحار", "خطر", "ضائقة", "يائس"],
+      phrases: ["خط الأزمة", "مساعدة طارئة", "أحتاج مساعدة الآن", "دعم أزمة", "عنف منزلي", "أريد الموت"],
+      weight: 1.5
+    },
+    "Substance Use & Addiction Recovery": {
+      keywords: ["مخدرات", "كحول", "إدمان", "تعافي", "مواد", "انسحاب"],
+      phrases: ["تعاطي المواد", "إدمان المخدرات", "مشكلة الكحول", "أحتاج علاج إدمان", "برنامج تعافي"],
+      weight: 1.0
+    },
+    "Housing & Shelter": {
+      keywords: ["مأوى", "سكن", "مشرد", "إيواء"],
+      phrases: ["أحتاج مأوى", "مأوى طارئ", "مساعدة السكن", "سكن انتقالي", "بلا مأوى"],
+      weight: 1.2
+    },
+    "Rent, Utility & Eviction Assistance": {
+      keywords: ["إيجار", "مرافق", "إخلاء", "طرد", "فاتورة"],
+      phrases: ["لا أستطيع دفع الإيجار", "مساعدة إيجار", "مساعدة المرافق", "إشعار إخلاء", "متأخر في الإيجار"],
+      weight: 1.3
+    },
+    "Food & Basic Needs": {
+      keywords: ["طعام", "جوع", "أكل", "وجبة", "مطبخ", "مؤن", "غذاء", "ملابس"],
+      phrases: ["بنك الطعام", "مطبخ شعبي", "وجبات مجانية", "مساعدة غذائية", "أحتاج طعام", "احتياجات أساسية", "ملابس مجانية"],
+      weight: 1.0
+    },
+    "Employment Services": {
+      keywords: ["عمل", "وظيفة", "مهنة", "سيرة ذاتية", "مقابلة", "عاطل", "تدريب"],
+      phrases: ["أحتاج عمل", "تدريب مهني", "مساعدة عمل", "البحث عن عمل"],
+      weight: 1.0
+    },
+    "Legal Services": {
+      keywords: ["قانوني", "محامي", "محكمة", "حقوق"],
+      phrases: ["مساعدة قانونية", "محامي مجاني", "مساعدة المحكمة", "حقوق المستأجر"],
+      weight: 1.1
+    },
+    "Refugee & Immigrant Support": {
+      keywords: ["لاجئ", "مهاجر", "لجوء", "إعادة توطين", "جنسية", "تأشيرة", "ترحيل"],
+      phrases: ["خدمات اللاجئين", "مساعدة المهاجرين", "مساعدة إعادة التوطين", "دروس الإنجليزية", "مساعدة الجنسية"],
+      weight: 1.4
+    },
     "Veterans": {
-      keywords: ["محارب قديم", "عسكري", "جيش", "بحرية", "قتال", "خدمة عسكرية"],
+      keywords: ["محارب قديم", "عسكري", "جيش", "بحرية", "قتال"],
       phrases: ["خدمات المحاربين القدامى", "مزايا المحاربين", "مساعدة عسكرية", "سكن المحاربين"],
       weight: 1.6
     }
   },
 
   hi: {
-    "Food": {
-      keywords: ["खाना", "भूख", "खाद्य", "भोजन", "रसोई", "पोषण", "राशन", "भंडार"],
-      phrases: ["फूड बैंक", "सूप किचन", "खाद्य सहायता", "मुफ्त भोजन", "खाना नहीं खरीद सकते", "खाने की जरूरत"],
+    "Free & Charitable Medical Clinics": {
+      keywords: ["क्लीनिक", "मुफ्त", "धर्मार्थ", "वॉक-इन"],
+      phrases: ["मुफ्त क्लीनिक", "मुफ्त चिकित्सा", "मुफ्त स्वास्थ्य सेवा", "बिना बीमा डॉक्टर"],
+      weight: 1.2
+    },
+    "Community Health Centers": {
+      keywords: ["चिकित्सा", "डॉक्टर", "अस्पताल", "दवा", "बीमा", "इलाज", "स्वास्थ्य", "दंत"],
+      phrases: ["प्राथमिक देखभाल", "सामुदायिक स्वास्थ्य केंद्र", "स्वास्थ्य केंद्र", "डॉक्टर से मिलना", "स्वास्थ्य देखभाल", "स्वास्थ्य बीमा", "पारिवारिक डॉक्टर", "निरंतर देखभाल"],
       weight: 1.0
     },
-    "Housing": {
-      keywords: ["आश्रय", "आवास", "घर", "किराया", "मकान", "बेघर", "निकासी"],
-      phrases: ["आश्रय चाहिए", "किराया नहीं दे सकते", "आवास सहायता", "आपातकालीन आश्रय", "किराया मदद"],
+    "Mental Health (Non-Crisis)": {
+      keywords: ["मानसिक", "चिकित्सा", "परामर्श", "अवसाद", "चिंता", "मनोवैज्ञानिक", "तनाव"],
+      phrases: ["मानसिक स्वास्थ्य", "मानसिक मदद", "चिकित्सा चाहिए", "परामर्श सेवा", "भावनात्मक सहायता"],
       weight: 1.3
     },
-    "Mental Health": {
-      keywords: ["मानसिक", "चिकित्सा", "परामर्श", "अवसाद", "चिंता", "मनोवैज्ञानिक"],
-      phrases: ["मानसिक स्वास्थ्य", "मानसिक मदद", "चिकित्सा चाहिए", "परामर्श सेवा", "भावनात्मक सहायता"],
+    "Crisis & Emergency Mental Health": {
+      keywords: ["संकट", "आपातकाल", "तत्काल", "आत्महत्या", "खतरा", "निराशा"],
+      phrases: ["संकट हॉटलाइन", "आपातकालीन मदद", "अभी मदद चाहिए", "संकट सहायता", "घरेलू हिंसा", "मरना चाहता हूं"],
       weight: 1.5
     },
-    "Healthcare": {
-      keywords: ["चिकित्सा", "क्लिनिक", "डॉक्टर", "अस्पताल", "दवा", "बीमा", "इलाज", "स्वास्थ्य"],
-      phrases: ["प्राथमिक देखभाल", "मेडिकल क्लिनिक", "स्वास्थ्य देखभाल", "चिकित्सा मदद", "स्वास्थ्य बीमा"],
-      weight: 1.0
-    },
-    "Substance Use": {
+    "Substance Use & Addiction Recovery": {
       keywords: ["नशा", "शराब", "लत", "रिकवरी", "पुनर्वास", "पदार्थ", "डिटॉक्स"],
       phrases: ["पदार्थ दुरुपयोग", "नशे की लत", "शराब की समस्या", "पुनर्वास चाहिए", "नशा मदद"],
       weight: 1.0
     },
-    "Crisis": {
-      keywords: ["संकट", "आपातकाल", "तत्काल", "तुरंत", "आत्महत्या", "खतरा"],
-      phrases: ["संकट हॉटलाइन", "आपातकालीन मदद", "अभी मदद चाहिए", "संकट सहायता"],
+    "Housing & Shelter": {
+      keywords: ["आश्रय", "आवास", "बेघर", "संक्रमणकालीन"],
+      phrases: ["आश्रय चाहिए", "आवास सहायता", "आपातकालीन आश्रय", "रहने की जगह", "संक्रमणकालीन आवास"],
       weight: 1.2
     },
-    "Employment": {
+    "Rent, Utility & Eviction Assistance": {
+      keywords: ["किराया", "उपयोगिता", "बेदखली", "मकान मालिक", "बिल"],
+      phrases: ["किराया नहीं दे सकते", "किराया मदद", "उपयोगिता सहायता", "बेदखली नोटिस", "किराए में पीछे"],
+      weight: 1.3
+    },
+    "Food & Basic Needs": {
+      keywords: ["खाना", "भूख", "भोजन", "रसोई", "पोषण", "राशन", "कपड़े"],
+      phrases: ["फूड बैंक", "सूप किचन", "खाद्य सहायता", "मुफ्त भोजन", "खाने की जरूरत", "बुनियादी जरूरतें", "मुफ्त कपड़े"],
+      weight: 1.0
+    },
+    "Employment Services": {
       keywords: ["नौकरी", "काम", "रोजगार", "करियर", "रिज्यूमे", "साक्षात्कार", "बेरोजगार"],
       phrases: ["नौकरी चाहिए", "नौकरी प्रशिक्षण", "काम की मदद", "नौकरी खोज", "रोजगार मदद"],
       weight: 1.0
+    },
+    "Legal Services": {
+      keywords: ["कानूनी", "वकील", "अदालत", "अधिकार"],
+      phrases: ["कानूनी सहायता", "मुफ्त वकील", "अदालत मदद", "किरायेदार अधिकार"],
+      weight: 1.1
+    },
+    "Refugee & Immigrant Support": {
+      keywords: ["शरणार्थी", "प्रवासी", "शरण", "पुनर्वास", "नागरिकता", "वीजा"],
+      phrases: ["शरणार्थी सेवाएं", "प्रवासी सहायता", "पुनर्वास सहायता", "अंग्रेजी कक्षाएं", "नागरिकता मदद"],
+      weight: 1.4
     },
     "Veterans": {
       keywords: ["पूर्व सैनिक", "सैन्य", "सेना", "नौसेना", "युद्ध", "सेवा"],
@@ -2131,8 +2261,8 @@ function detectIntent(text) {
 
     if (score > 0) {
       // Better normalization: Crisis gets special handling, others use 2.5 divisor
-      let confidence = category === "Crisis" ? 
-        Math.min(score / 2, 1.0) : 
+      let confidence = category === "Crisis & Emergency Mental Health" ?
+        Math.min(score / 2, 1.0) :
         Math.min(score / 2.5, 1.0);
       
       results.push({
@@ -2167,9 +2297,24 @@ function generateResponse(intent, userText) {
     ];
     const resourceMentions = [
       // English
-      'food pantries', 'soup kitchens', 'meal programs', 'emergency shelter', 'housing assistance', 'rental help', 'va benefits', 'veteran housing', 'veteran healthcare', 'medical care', 'dental services', 'counseling', 'therapy', 'detox services', 'recovery programs', 'job training', 'resume help',
+      'food pantries', 'soup kitchens', 'meal programs', 'clothing', 'basic needs',
+      'emergency shelter', 'housing assistance', 'transitional housing',
+      'rental help', 'utility assistance', 'eviction help', 'rent help',
+      'free clinic', 'walk-in clinic', 'community health', 'primary care',
+      'counseling', 'therapy', 'mental health support',
+      'crisis line', 'crisis hotline', 'emergency mental health',
+      'detox services', 'recovery programs', 'rehab',
+      'job training', 'resume help', 'employment placement',
+      'legal aid', 'lawyer', 'legal help',
+      'refugee services', 'immigrant help', 'resettlement',
+      'va benefits', 'veteran housing', 'veteran healthcare',
       // Spanish
-      'despensa de alimentos', 'comedores populares', 'programas de comida', 'refugio de emergencia', 'asistencia de vivienda', 'ayuda con alquiler', 'beneficios va', 'vivienda para veteranos', 'atención médica para veteranos', 'atención médica', 'servicios dentales', 'consejería', 'terapia', 'servicios de desintoxicación', 'programas de recuperación', 'capacitación laboral', 'ayuda con currículum'
+      'despensa de alimentos', 'comedores populares', 'programas de comida',
+      'refugio de emergencia', 'asistencia de vivienda', 'ayuda con alquiler',
+      'clínica gratuita', 'centro de salud', 'consejería', 'terapia',
+      'servicios de desintoxicación', 'programas de recuperación',
+      'capacitación laboral', 'ayuda con currículum',
+      'ayuda legal', 'servicios para refugiados', 'beneficios va'
     ];
     
     const isConfirmation = confirmationWords.some(word => userText.toLowerCase().includes(word)) ||
