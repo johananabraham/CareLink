@@ -112,7 +112,14 @@ const TRANSLATIONS = {
         description: "We believe in the strength of local communities and work to connect people to support systems close to home."
       }
     },
-    
+
+    // Partners Section
+    partners: {
+      badge: "Trusted By",
+      title: "Our Community Partners",
+      subtitle: "We're proud to work with organizations dedicated to serving our communities."
+    },
+
     // Footer Section
     footer: {
       description: "Connecting communities to trusted healthcare and essential resources with clarity and compassion.",
@@ -360,7 +367,14 @@ const TRANSLATIONS = {
         description: "Creemos en la fuerza de las comunidades locales y trabajamos para conectar a las personas con sistemas de apoyo cercanos a casa."
       }
     },
-    
+
+    // Partners Section
+    partners: {
+      badge: "Socios de Confianza",
+      title: "Nuestros Socios Comunitarios",
+      subtitle: "Estamos orgullosos de trabajar con organizaciones dedicadas a servir a nuestras comunidades."
+    },
+
     // Footer Section
     footer: {
       description: "Conectando comunidades a atención médica confiable y recursos esenciales con claridad y compasión.",
@@ -608,7 +622,14 @@ const TRANSLATIONS = {
         description: "Waxaan rumaynaa xoogga bulshada maxalliga ah oo aan ku shaqeyno inaan dadka ku xidho nidaamyada taageeraha ee guriga u dhow."
       }
     },
-    
+
+    // Partners Section
+    partners: {
+      badge: "Lagu Kalsoon Yahay",
+      title: "Saaxiibadayada Bulshada",
+      subtitle: "Waxaan ku faannaa inaan la shaqeyno hay'adaha u heellan u adeegista bulshadayada."
+    },
+
     // Footer Section
     footer: {
       description: "Ku xidhista bulshada daryeelka caafimaadka la aaminsan karo iyo agabka muhiimka ah caddayn iyo naxariis.",
@@ -851,7 +872,14 @@ const TRANSLATIONS = {
         description: "نؤمن بقوة المجتمعات المحلية ونعمل على ربط الناس بأنظمة الدعم القريبة من المنزل."
       }
     },
-    
+
+    // Partners Section
+    partners: {
+      badge: "موثوق من قبل",
+      title: "شركاؤنا المجتمعيون",
+      subtitle: "نفخر بالعمل مع المنظمات المكرسة لخدمة مجتمعاتنا."
+    },
+
     // Footer Section
     footer: {
       description: "ربط المجتمعات بالرعاية الصحية الموثوقة والموارد الأساسية بوضوح ورحمة.",
@@ -1094,7 +1122,14 @@ const TRANSLATIONS = {
         description: "हम स्थानीय समुदायों की शक्ति में विश्वास करते हैं और लोगों को घर के पास सहायता प्रणालियों से जोड़ने का काम करते हैं।"
       }
     },
-    
+
+    // Partners Section
+    partners: {
+      badge: "विश्वसनीय",
+      title: "हमारे सामुदायिक साझेदार",
+      subtitle: "हमें उन संगठनों के साथ काम करने पर गर्व है जो हमारे समुदायों की सेवा के लिए समर्पित हैं।"
+    },
+
     // Footer Section
     footer: {
       description: "स्पष्टता और करुणा के साथ समुदायों को विश्वसनीय स्वास्थ्य सेवा और आवश्यक संसाधनों से जोड़ना।",
